@@ -7,6 +7,7 @@ using TempoIQ.Json;
 
 namespace TempoIQ.Querying
 {
+    [JsonConverter(typeof(SelectionConverter))]
     public class Selection
     {
         public IDictionary<Selectors.Type, Selector> Selectors { get; private set; }
