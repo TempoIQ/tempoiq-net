@@ -7,6 +7,48 @@ using TempoIQ.Json;
 
 namespace TempoIQ.Querying
 {
+    public interface Selector { };
+
+    public static class Selectors
+    {
+        [JsonConverter(typeof(SelectorTypeConverter))]
+        public enum Type
+        {
+            Sensors,
+            Devices
+        }
+
+        public static AllSelector All()
+        {
+            return new AllSelector();
+        }
+
+        public static AndSelector And(params Selector[] children)
+        {
+            return new AndSelector(children);
+        }
+
+        public static AttributesSelector Attribute(string key, string value)
+        {
+            return new AttributesSelector(key, value);
+        }
+
+        public static AttributesSelector Attributes(IDictionary<string, string> attrs)
+        {
+            return new AttributesSelector(attrs);
+        }
+
+        public static AttributeKeySelector AttributeKey(string key)
+        {
+            return new AttributeKeySelector(key);
+        }
+
+        public static OrSelector Or(params Selector[] children)
+        {
+            return new OrSelector(children);
+        }
+    }
+
     [JsonConverter(typeof(SelectionConverter))]
     public class Selection
     {
@@ -43,51 +85,8 @@ namespace TempoIQ.Querying
         }
     }
 
-    public static class Selectors
-    {
-        [JsonConverter(typeof(SelectorTypeConverter))]
-        public enum Type
-        {
-            Sensors,
-            Devices
-        }
-
-        [JsonConverter(typeof(AllSelectorConverter))]
-        public static AllSelector All()
-        {
-            return new AllSelector();
-        }
-
-        public static AndSelector And(params Selector[] children)
-        {
-            return new AndSelector(children);
-        }
-
-        public static AttributesSelector Attribute(string key, string value)
-        {
-            return new AttributesSelector(key, value);
-        }
-
-        public static AttributesSelector Attributes(IDictionary<string, string> attrs)
-        {
-            return new AttributesSelector(attrs);
-        }
-
-        public static AttributeKeySelector AttributeKey(string key)
-        {
-            return new AttributeKeySelector(key);
-        }
-
-        public static OrSelector Or(params Selector[] children)
-        {
-            return new OrSelector(children);
-        }
-    }
-
-    public interface Selector { };
-
     [JsonConverter(typeof(AllSelectorConverter))]
-    public class AllSelector : Selectors { };
+    public struct AllSelector : Selector { };
 
     [JsonObject]
     public class AndSelector : Selector

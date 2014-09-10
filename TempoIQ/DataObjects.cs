@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,16 +17,27 @@ namespace TempoIQ.Models
         public double value;
     }
 
-    public interface Cursor<T> : IEnumerable<T> { }
-
     [JsonObject]
     public class Segment<T> : IEnumerable<T>
     {
-        [JsonArray("data")]
+        [JsonProperty("data")]
         protected IList<T> Data{ get; set; }
 
         [JsonProperty("next")]
         protected string Next { get; set; }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            foreach (var item in this.Data)
+            {
+                yield return item;
+            }
+        }
+
+        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
 
         public Segment(IList<T> data, string next)
         {
@@ -33,4 +45,7 @@ namespace TempoIQ.Models
             this.Next = next;
         }
     }
+
+
+
 }

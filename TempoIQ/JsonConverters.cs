@@ -23,7 +23,7 @@ namespace TempoIQ.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var selectors = JsonConvert.DeserializeObject<Dictionary<Selectors.Type, Selector>>(object);
+            var selectors = JsonConvert.DeserializeObject<Dictionary<Selectors.Type, Selector>>((string)reader.Value);
             return new Selection(selectors);
         }
     }
