@@ -9,17 +9,17 @@ namespace TempoIQ
     /// <summary>
     /// Api Credentials
     /// </summary>
-    class Credentials
+    public struct Credentials
     {
         /// <summary>
         /// The credentials key
         /// </summary>
-        public string Key { get; set; }
+        public string key;
 
         /// <summary>
         /// The credentials secret
         /// </summary>
-        public string Secret { get; set; }
+        public string secret;
 
         public Credentials()
         {
