@@ -20,6 +20,11 @@ namespace TempoIQ
         {
             this.Functions = functions;
         }
+
+        public Pipeline()
+        {
+            this.Functions = new List<PipelineFunction>();
+        }
     }
 
     public interface PipelineFunction

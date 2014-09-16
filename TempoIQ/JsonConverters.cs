@@ -48,14 +48,11 @@ namespace TempoIQ.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var stringVal = ((string)reader.Value);
-            if (stringVal.Equals("sensors"))
-            {
+            if (stringVal.Equals("sensors")) {
                 return Selectors.Type.Sensors;
-            } else if (stringVal.Equals("devices"))
-            {
+            } else if (stringVal.Equals("devices")) {
                 return Selectors.Type.Devices;
-            } else 
-            {
+            } else {
                 throw new ArgumentException(String.Format("%s is not a valid selector type", stringVal));
             }
         }
@@ -66,9 +63,37 @@ namespace TempoIQ.Json
         }
     }
 
-    class AttributesSelectorConverter : JsonConverter
+    public class SelectorConverter : JsonConverter
     {
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            string json = (string)reader.Value;
+            var dict = Newtonsoft.Json.JsonConvert.DeserializeObject(json) as Dictionary<string, object>;
+            dynamic val = null;
+            if (dict.TryGetValue("attributes", val)) {
+                return new AttributesSelector(val);
+            } else if (dict.TryGetValue("key", val)) {
+                return new KeySelector(val);
+            } else if (dict.TryGetValue("attribute_key", val)) {
+                return new AttributeKeySelector(val);
+            } else if (dict.TryGetValue("or", val)) {
+                return JsonConvert.DeserializeObject<OrSelector>(json);
+            } else if (dict.TryGetValue("and", val)) {
+                return JsonConvert.DeserializeObject<AndSelector>(json);
+            } else {
+                throw new JsonException("Invalid selector object");
+            }
+        }
 
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            JsonConvert.SerializeObject(value);
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.IsSubclassOf(typeof(Selector));
+        }
     }
 
     class AllSelectorConverter : JsonConverter

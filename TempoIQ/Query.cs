@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TempoIQ.Json;
+using NodaTime;
 
 namespace TempoIQ.Querying
 {
@@ -41,12 +42,12 @@ namespace TempoIQ.Querying
         public string Name { get { return "read"; } }
 
         [JsonProperty("start")]
-        public DateTime Start { get; private set; }
+        public ZonedDateTime Start { get; private set; }
 
         [JsonProperty("stop")]
-        public DateTime Stop { get; private set; }
+        public ZonedDateTime Stop { get; private set; }
 
-        public Read(DateTime start, DateTime stop)
+        public Read(ZonedDateTime start, ZonedDateTime stop)
         {
             this.Start = start;
             this.Stop = stop;

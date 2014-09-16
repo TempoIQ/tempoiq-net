@@ -43,6 +43,11 @@ namespace TempoIQ.Querying
             return new AttributeKeySelector(key);
         }
 
+        public static KeySelector Key(string key)
+        {
+            return new KeySelector(key);
+        }
+
         public static OrSelector Or(params Selector[] children)
         {
             return new OrSelector(children);
@@ -115,7 +120,7 @@ namespace TempoIQ.Querying
     [JsonObject]
     public class AttributeKeySelector : Selector
     {
-        [JsonProperty("key")]
+        [JsonProperty("attribute_key")]
         public string key;
 
         public AttributeKeySelector(string k)
@@ -140,6 +145,18 @@ namespace TempoIQ.Querying
             var pair = new Dictionary<string, string>(1);
             pair.Add(key, value);
             this.Attributes = pair;
+        }
+    }
+
+    [JsonObject]
+    public class KeySelector : Selector
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
+        
+        public KeySelector(string key)
+        {
+            this.Key = key;
         }
     }
 }

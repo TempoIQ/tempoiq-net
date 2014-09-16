@@ -9,7 +9,7 @@ using TempoIQ.Json;
 namespace TempoIQ.Models
 {
     [JsonObject]
-    class Device
+    public class Device : Model
     {
         [JsonProperty("key")]
         public string Key { get; set; }
@@ -40,7 +40,7 @@ namespace TempoIQ.Models
     }
 
     [JsonObject]
-    class Sensor
+    public class Sensor : Model
     {
         [JsonProperty("key")]
         public string Key { get; set; }

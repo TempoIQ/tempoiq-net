@@ -21,16 +21,10 @@ namespace TempoIQ
         /// </summary>
         public string secret;
 
-        public Credentials()
-        {
-            this.Key = "";
-            this.Secret = "";
-        }
-
         public Credentials(string key, string secret)
         {
-            this.Key = key;
-            this.Secret = secret;
+            this.key = key;
+            this.secret = secret;
         }
     }
 }
