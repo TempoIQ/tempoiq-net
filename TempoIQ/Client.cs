@@ -6,18 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using TempoIQ.Models;
+using TempoIQ.Models.Collections;
 using TempoIQ.Querying;
 using Newtonsoft.Json;
 using NodaTime;
 
 namespace TempoIQ
 {
-    class Client
+    public class Client
     {
         public RestClient Rest { get; set; }
 
-        private SimpleAuthenticator Authenticator { get; set;}
-        private string API_VERSION = "v2";
+        public SimpleAuthenticator Authenticator { get; set;}
+        public string API_VERSION { get { return "v2"; } }
 
         public Client(Credentials credentials, string baseUrl, string scheme)
         {
@@ -102,17 +103,17 @@ namespace TempoIQ
             return Execute<Unit>(request);
         }
 
-        public Result<Cursor<DataPoint>> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
+        public Result<Cursor<Row>> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
         {
             return Read(selection, new Pipeline(), start, stop);
         }
 
-        public Result<Cursor<DataPoint>> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
+        public Result<Cursor<Row>> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
         {
             var request = new RestRequest(String.Format("{0}/read/", API_VERSION), Method.GET);
             var query = new Query(new Search(Selectors.Type.Devices, selection), new Read(start, stop), pipeline);
             request.AddBody(JsonConvert.SerializeObject(query));
-            return Execute<Cursor<DataPoint>>(request);
+            return Execute<Cursor<Row>>(request);
         }
 
         public Result<T> Execute<T>(RestRequest request) where T : Model

@@ -54,8 +54,8 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregation.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="Collections.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="DomainObjects.cs" />
     <Compile Include="Fold.cs" />
