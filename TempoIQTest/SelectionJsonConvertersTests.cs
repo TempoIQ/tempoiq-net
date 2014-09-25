@@ -51,7 +51,7 @@ namespace TempoIQTest
         }
 
         [TestMethod]
-        public void SerializeAllSelector()
+        public void DeserializeAllSelector()
         {
             string[] anyWords = {"\"any\"", "\"all\"", "\"*\""};
             var allSelectors = from word in anyWords select JsonConvert.DeserializeObject<AllSelector>(word);
@@ -60,7 +60,7 @@ namespace TempoIQTest
         }
 
         [TestMethod]
-        public void DeserializeAllSelector()
+        public void SerializeAllSelector()
         {
             var all = new AllSelector();
             string serialized = JsonConvert.SerializeObject(all);

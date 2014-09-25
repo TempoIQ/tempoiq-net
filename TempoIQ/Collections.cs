@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NodaTime;
+using TempoIQ.Utilities;
 
 namespace TempoIQ.Models.Collections
 {
@@ -36,6 +37,22 @@ namespace TempoIQ.Models.Collections
             this.Data = data;
             this.Next = next;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (obj == this)
+                return true;
+            if (obj is Segment<T>)
+                return this.Equals(obj);
+            else return false;
+        }
+
+        public bool Equals(Segment<T> obj)
+        {
+            return obj.SequenceEqual(this);
+        }
     }
 
     public class Cursor<T> : IEnumerable<T>, Model
@@ -61,6 +78,29 @@ namespace TempoIQ.Models.Collections
         IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (obj == this)
+                return true;
+            if (obj is Cursor<T>)
+                return this.Equals(obj);
+            else return false;
+        }
+
+        public bool Equals(Cursor<T> obj)
+        {
+            return obj.SequenceEqual(this);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = HashCodeHelper.Initialize();
+            hash = HashCodeHelper.Hash<int>(hash, this.Segments.GetHashCode());
+            return hash;
         }
     }
 
@@ -89,6 +129,34 @@ namespace TempoIQ.Models.Collections
         public bool HasSensor(string deviceKey, string sensorKey)
         {
             return Data.ContainsKey(Tuple.Create(deviceKey, sensorKey));
+        }
+
+        public Dictionary<string, double> Get(string deviceKey)
+        {
+            return (from tuple in Data 
+                    where tuple.Key.Item1.Equals(deviceKey)
+                    select new { Key = tuple.Key.Item2, Value = tuple.Value }).ToDictionary(t => t.Key, t => t.Value);
+        }
+
+        public double Get(string deviceKey, string sensorKey)
+        {
+            return Data[Tuple.Create(deviceKey, sensorKey)];
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (obj == this)
+                return true;
+            if (obj is Row)
+                return this.Equals(obj);
+            else return false;
+        }
+
+        public bool Equals(Row obj)
+        {
+            return obj.SequenceEqual(this);
         }
     }
 }

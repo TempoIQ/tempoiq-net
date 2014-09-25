@@ -7,11 +7,45 @@ using NodaTime;
 using NodaTime.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using TempoIQ.Models;
 using TempoIQ.Querying;
 
 namespace TempoIQ.Json
 {
-    class SelectionConverter : JsonConverter
+    class JsonUtil
+    {
+        public static string RawJsonField(object key, object value)
+        {
+            return JsonConvert.SerializeObject(key) + " : " + JsonConvert.SerializeObject(value);
+        }
+
+        public static string RawJsonField<T1, T2>(KeyValuePair<T1, T2> pair)
+        {
+            return JsonUtil.RawJsonField(pair.Key, pair.Value);
+        }
+    }
+
+    public class WriteRequestConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.Equals(typeof(WriteRequest));
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            writer.WriteRaw(JsonConvert.SerializeObject(((WriteRequest)value).Data));
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            string json = (string)reader.Value;
+            var dict = Newtonsoft.Json.JsonConvert.DeserializeObject(json) as IDictionary<string, IDictionary<string, IList<DataPoint>>>;
+            return new WriteRequest(dict);
+        }
+    }
+
+    public class SelectionConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -21,7 +55,12 @@ namespace TempoIQ.Json
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var selection = (Selection)value;
-            writer.WriteValue(selection.Selectors);
+            writer.WriteStartObject();
+            foreach(var pair in selection.Selectors)
+            {
+                writer.WriteRaw(JsonUtil.RawJsonField(pair));
+            }
+            writer.WriteEndObject();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -31,7 +70,7 @@ namespace TempoIQ.Json
         }
     }
 
-    class SelectorTypeConverter : JsonConverter
+    public class SelectorTypeConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -96,7 +135,7 @@ namespace TempoIQ.Json
         }
     }
 
-    class AllSelectorConverter : JsonConverter
+    public class AllSelectorConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -119,24 +158,6 @@ namespace TempoIQ.Json
         public override bool CanConvert(Type objectType)
         {
             return objectType.Equals(typeof(Selection));
-        }
-    }
-
-    class QueryConverter : JsonConverter
-    {
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-          throw new NotImplementedException();
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-          return objectType.Equals(typeof(Query));
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-          throw new NotImplementedException();
         }
     }
 

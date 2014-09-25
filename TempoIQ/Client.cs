@@ -1,10 +1,10 @@
-﻿using RestSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using TempoIQ.Json;
 using TempoIQ.Models;
 using TempoIQ.Models.Collections;
 using TempoIQ.Querying;
@@ -15,74 +15,64 @@ namespace TempoIQ
 {
     public class Client
     {
-        public RestClient Rest { get; set; }
+        public Executor RequestRunner { get; set; }
+        private const string API_VERSION = "v2";
 
-        public SimpleAuthenticator Authenticator { get; set;}
-        public string API_VERSION { get { return "v2"; } }
-
-        public Client(Credentials credentials, string baseUrl, string scheme)
+        public Client(Credentials credentials, string baseUrl, int port = 443, int timeout = 50000)
         {
-            this.Rest = new RestClient(scheme + baseUrl);
-            this.Authenticator = new SimpleAuthenticator("key", credentials.key, "secret", credentials.secret);
+            this.RequestRunner = new Executor(baseUrl, credentials, port, timeout);
         }
 
         public Result<Device> CreateDevice(Device device)
-        { 
-            var request = new RestRequest("devices", Method.POST);
-            request.AddBody(device);
-            return Execute<Device>(request);
+        {
+            string target = String.Format("v2/devices/", device.Key);
+            return RequestRunner.Post<Device>(target, device);
         }
 
         public Result<Device> GetDevice(string key)
         {
-            string target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(key));
-            var request = new RestRequest(target, Method.GET);
-            return Execute<Device>(request);
+            string target = String.Format("v2/devices/{0}/",  HttpUtility.UrlEncode(key));
+            return RequestRunner.Get<Device>(target);
         }
 
         public Result<Device> UpdateDevice(Device device)
         {
-            string target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
-            var request = new RestRequest(target, Method.PUT);
-            request.AddBody(device);
-            return Execute<Device>(request);
+            string target = String.Format("v2/devices/{0}/", HttpUtility.UrlEncode(device.Key));
+            return RequestRunner.Put<Device>(target, device);
         }
 
         public Result<Cursor<Device>> ListDevics(Selection selection)
         {
-            var request = new RestRequest(String.Format("{0}/devices/"), Method.GET);
-            var query = new Query(new Search(Selectors.Type.Devices, selection), new Find(), null);
-            request.AddBody(query);
-            return Execute<Cursor<Device>>(request);
+            var query = new FindQuery(
+                new Search(Selectors.Type.Devices, selection),
+                new Find());
+            return RequestRunner.Post<Cursor<Device>>("v2/devices/query/", query);
         }
 
         public Result<Unit> DeleteDevice(Device device)
         {
-            string target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
-            var request = new RestRequest(target, Method.DELETE);
-            request.AddBody(device);
-            return Execute<Unit>(request);
+            string target = String.Format("v2/devices/{0}/", HttpUtility.UrlEncode(device.Key));
+            return RequestRunner.Delete<Unit>(target);
         }
 
         public Result<DeleteSummary> DeleteDevices(Selection selection)
         {
-            var request = new RestRequest(String.Format("{0}/devices/"), Method.DELETE);
-            var query = new Query(new Search(Selectors.Type.Devices, selection), new Find(), null);
-            request.AddBody(query);
-            return Execute<DeleteSummary>(request);
+            var query = new Search(Selectors.Type.Devices, selection);
+            return RequestRunner.Delete<DeleteSummary>("v2/devices/query/", query);
         }
 
         public Result<DeleteSummary> DeleteAllDevices()
         {
-            return DeleteDevices(new Selection().AddSelector(Selectors.Type.Devices, Selectors.All()));
+            var allSelection = new Selection().AddSelector(Selectors.Type.Devices, new AllSelector());
+            return DeleteDevices(allSelection);
         }
 
         public Result<Unit> WriteDataPoints(Device device, MultiDataPoint data)
         {
             var writeRequest = new WriteRequest();
-            foreach (var pair in data.Values)
+            foreach (var pair in data.vs)
             {
-                var dp = new DataPoint(data.Timestamp, pair.Value);
+                var dp = new DataPoint(data.t, pair.Value);
                 writeRequest.Add(device.Key, pair.Key, dp);
             }
             return WriteDataPoints(writeRequest);
@@ -91,16 +81,14 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(Device device, IList<MultiDataPoint> data)
         {
             var writeRequest = data.Aggregate(new WriteRequest(),
-                (acc, mdp) => mdp.Values.Aggregate(acc,
-                    (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.Timestamp, pair.Value))));
+                (acc, mdp) => mdp.vs.Aggregate(acc,
+                    (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
             return WriteDataPoints(writeRequest);
         }
 
         public Result<Unit> WriteDataPoints(WriteRequest writeRequest)
         {
-            var request = new RestRequest(String.Format("{0}/write/", API_VERSION), Method.POST);
-            request.AddBody(JsonConvert.SerializeObject(writeRequest.Data));
-            return Execute<Unit>(request);
+            return RequestRunner.Post<Unit>("v2/write/", writeRequest);
         }
 
         public Result<Cursor<Row>> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
@@ -110,21 +98,8 @@ namespace TempoIQ
 
         public Result<Cursor<Row>> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
         {
-            var request = new RestRequest(String.Format("{0}/read/", API_VERSION), Method.GET);
-            var query = new Query(new Search(Selectors.Type.Devices, selection), new Read(start, stop), pipeline);
-            request.AddBody(JsonConvert.SerializeObject(query));
-            return Execute<Cursor<Row>>(request);
-        }
-
-        public Result<T> Execute<T>(RestRequest request) where T : Model
-        {
-            return Execute<T>(request, typeof(T));
-        }
-
-        public Result<T> Execute<T>(RestRequest request, Type type) where T : Model
-        {
-            var response = new Result<T>(Rest.Execute(request));
-            return response;
+            var query = new ReadQuery(new Search(Selectors.Type.Devices, selection), new Read(start, stop));
+            return RequestRunner.Post<Cursor<Row>>("v2/read/query", query);
         }
     }
 }

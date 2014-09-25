@@ -1,5 +1,4 @@
-﻿using RestSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,38 +12,51 @@ namespace TempoIQ.Models
     public struct Unit : Model { };
 
     [JsonObject]
-    public class DataPoint
+    public struct DataPoint
     {
-        [JsonProperty("timestamp")]
-        public ZonedDateTime Timestamp { get; set; }
+        [JsonProperty("t")]
+        public ZonedDateTime t;
 
-        [JsonProperty("value")]
-        public double Value { get; set; }
+        [JsonProperty("v")]
+        public double v;
 
-        public DataPoint(ZonedDateTime timestamp, double value)
+        [JsonConstructor]
+        public DataPoint(ZonedDateTime t, double v)
         {
-            this.Timestamp = timestamp;
-            this.Value = value;
+            this.t = t;
+            this.v = v;
         }
     }
 
-    public class MultiDataPoint : Model
+    public struct MultiDataPoint : Model
     {
-        [JsonProperty("timestamp")]
-        public ZonedDateTime Timestamp;
-        [JsonProperty("values")]
-        public IDictionary<string, double> Values;
+        [JsonProperty("t")]
+        public ZonedDateTime t;
 
-        public MultiDataPoint(ZonedDateTime timestamp, IDictionary<string, double> values)
+        [JsonProperty("vs")]
+        public IDictionary<string, double> vs;
+
+        [JsonConstructor]
+        public MultiDataPoint(ZonedDateTime t, IDictionary<string, double> vs)
         {
-            this.Timestamp = timestamp;
-            this.Values = values;
+            this.t = t;
+            this.vs = vs;
         }
 
-        public MultiDataPoint()
+        public override bool Equals(object obj)
         {
-            this.Timestamp = new ZonedDateTime();
-            this.Values = new Dictionary<string, double>();
+            if (obj is MultiDataPoint)
+            {
+                return this.Equals((MultiDataPoint)obj);
+            } else
+            {
+                return false;
+            }
+        }
+
+        public bool Equals(MultiDataPoint mdp)
+        {
+            return mdp.t.Equals(this.t) && mdp.vs.SequenceEqual(this.vs);
         }
     }
 }

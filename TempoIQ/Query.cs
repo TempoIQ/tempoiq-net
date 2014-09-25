@@ -25,49 +25,37 @@ namespace TempoIQ.Querying
         }
     }
 
-    public interface Action
-    {
-        string Name { get; }
-    }
+    public interface Query { }
     
-    public class Find : Action
-    {
-        public string Name { get { return "find"; } }
-    }
-
     [JsonObject]
-    public class Read : Action
+    public class ReadQuery : Query
     {
-        [JsonProperty("name")]
-        public string Name { get { return "read"; } }
+        [JsonProperty("search")]
+        public Search Search { get; set; }
 
-        [JsonProperty("start")]
-        public ZonedDateTime Start { get; private set; }
+        [JsonProperty("read")]
+        public Read Read { get; set; }
 
-        [JsonProperty("stop")]
-        public ZonedDateTime Stop { get; private set; }
-
-        public Read(ZonedDateTime start, ZonedDateTime stop)
+        public ReadQuery(Search search, Read read)
         {
-            this.Start = start;
-            this.Stop = stop;
+            this.Search = Search;
+            this.Read = read;
         }
     }
 
-    [JsonConverter(typeof(QueryConverter))]
-    public class Query
+    [JsonObject]
+    public class FindQuery : Query
     {
-        public Search Search { get; private set; }
+        [JsonProperty("search")]
+        public Search Search { get; set; }
 
-        public Action Action { get; private set; }
+        [JsonProperty("find")]
+        public Find Find { get; set; }
 
-        public Pipeline Pipeline { get; private set; }
-
-        public Query(Search search, Action action, Pipeline pipeline)
+        public FindQuery(Search search, Find find)
         {
             this.Search = search;
-            this.Action = action;
-            this.Pipeline = pipeline;
+            this.Find = find;
         }
     }
 }

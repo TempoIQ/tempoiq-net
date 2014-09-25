@@ -61,21 +61,7 @@ namespace TempoIQ.Querying
 
         public Selection AddSelector(Selectors.Type type, Selector selector)
         {
-            this.Selectors.Add(type, selector);
-            Selector previous;
-            if (this.Selectors.TryGetValue(type, out previous))
-            {
-                Selector current;
-                if (previous is AndSelector)
-                {
-                    ((AndSelector)previous).Selectors.Add(selector);
-                    current = previous;
-                } else
-                {
-                    current = new AndSelector(new List<Selector> {previous, selector});
-                }
-                this.Selectors.Add(type, current);
-            }
+            this.Selectors[type] = selector;
             return this;
         }
 
@@ -84,6 +70,14 @@ namespace TempoIQ.Querying
             this.Selectors = new SortedDictionary<Selectors.Type, Selector>();
         }
 
+        public Selection(Selectors.Type type, Selector selector)
+        {
+            var dict = new Dictionary<Selectors.Type, Selector>();
+            dict.Add(type, selector);
+            this.Selectors = dict;
+        }
+
+        [JsonConstructor]
         public Selection(IDictionary<Selectors.Type, Selector> selectors)
         {
             this.Selectors = selectors;
@@ -99,6 +93,7 @@ namespace TempoIQ.Querying
         [JsonProperty("and")]
         public IList<Selector> Selectors { get; set; }
 
+        [JsonConstructor]
         public AndSelector(IList<Selector> Selectors)
         {
             this.Selectors = Selectors;
@@ -111,6 +106,7 @@ namespace TempoIQ.Querying
         [JsonProperty("or")]
         public IList<Selector> Selectors { get; set; }
 
+        [JsonConstructor]
         public OrSelector(IList<Selector> Selectors)
         {
             this.Selectors = Selectors;
@@ -123,6 +119,7 @@ namespace TempoIQ.Querying
         [JsonProperty("attribute_key")]
         public string key;
 
+        [JsonConstructor]
         public AttributeKeySelector(string k)
         {
             key = k;
@@ -135,6 +132,7 @@ namespace TempoIQ.Querying
         [JsonProperty("attributes")]
         public IDictionary<string, string> Attributes { get; set; }
 
+        [JsonConstructor]
         public AttributesSelector(IDictionary<string, string> attrs)
         {
             this.Attributes = attrs;
@@ -154,6 +152,7 @@ namespace TempoIQ.Querying
         [JsonProperty("key")]
         public string Key { get; set; }
         
+        [JsonConstructor]
         public KeySelector(string key)
         {
             this.Key = key;

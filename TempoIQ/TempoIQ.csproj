@@ -45,6 +45,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,10 +56,12 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Action.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Collections.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="DomainObjects.cs" />
+    <Compile Include="Executor.cs" />
     <Compile Include="Fold.cs" />
     <Compile Include="DataObjects.cs" />
     <Compile Include="JsonConverters.cs" />
@@ -66,6 +70,8 @@
     <Compile Include="Query.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="Selection.cs" />
+    <Compile Include="TempoIQSerializer.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="WriteRequest.cs" />
   </ItemGroup>
   <ItemGroup>

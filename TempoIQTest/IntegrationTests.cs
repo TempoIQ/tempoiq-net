@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TempoIQTest
 {
     [TestClass]
-    class ClientIT
+    public class ClientIT
     {
         public static Client Client { get; set; }
         public static Client InvalidClient { get; set; }
@@ -25,106 +25,92 @@ namespace TempoIQTest
         public static ZonedDateTime stop = UTC.AtStrictly(new LocalDateTime(2019, 1, 1, 0, 0, 1));
         public static Interval interval = new Interval(start.ToInstant(), stop.ToInstant());
         public static int SLEEP = 5000;
+        public static int NextKeyNumber;
         public Credentials LoadedCredentials { get; private set; }
 
         [TestInitialize]
         public void InitCredentials()
         {
-            XDocument credentialsSettings;
-            try
-            {
-                credentialsSettings = XDocument.Load("credentials.config");
-            }
-            catch (FileNotFoundException e)
-            {
-                string message = "Missing credentials file for integration test.\n" +
-                  "Please supply a file 'integration-credentials.configuration' with the following format:\n" +
-                  " <credentials>" +
-                  "  <add key=\"key\"value=\"YOUR KEY HERE\"" +
-                  "  <add key=\"secret\" value=\"YOUR SECRET HERE\"" +
-                  "  <add key=\"database_id\" value=\"YOUR DATABASE ID HERE\"" +
-                  "  <add key=\"hostname\" value=\"YOUR HOSTNAME HERE\"" +
-                  "  <add key=\"port\" value=\"YOUR PORT HERE\"" +
-                  "  <add key=\"scheme\" value=\"YOUR SCHEME HERE\"" +
-                  " </credentials>";
-                throw new ApplicationException(message);
-            }
-            var dict = (Dictionary<string, string>)credentialsSettings.Root.Elements()
-                .Select((kv =>
-                    new KeyValuePair<string, string>(
-                        kv.Attribute("key").Value,
-                        kv.Attribute("value").Value)));
-            string key = dict["key"];
-            string secret = dict["secret"];
-            string dbId = dict["database_id"];
-            string hostName = dict["hostname"];
-            string scheme = dict["scheme"];
-            InvalidClient = new Client(new Credentials("key", "secret"), hostName, scheme);
-            Client = new Client(new Credentials(key, secret), hostName, scheme);
+            string key = "2ab2bd61c9c7417c8161dbeb0d9a4f76";
+            string secret = "97832ebfb1d749639f442826c6d6902b";
+            string domain = "txedly-james.backend.tempoiq.com";
+            InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
+            Client = new Client(new Credentials(key, secret), domain);
         }
-
 
         [TestCleanup]
-        static public void Cleanup()
+        public void Cleanup()
         {
-            Result<DeleteSummary> result = Client.DeleteAllDevices();
-            Assert.AreEqual(State.Success, result.MultiStatus);
+            Client.DeleteAllDevices();
         }
 
-        static public Device createDevice()
+        static public Device PostNewDevice()
         {
             List<Sensor> sensors = new List<Sensor>();
             sensors.Add(new Sensor("sensor1"));
             sensors.Add(new Sensor("sensor2"));
-            Device device = new Device("device1", "name", new Dictionary<String, String>(), sensors);
+            var device = RandomKeyDevice();
+            device.Name = "name";
+            device.Sensors = sensors;
             Result<Device> result = Client.CreateDevice(device);
             return result.Value;
         }
 
-        [TestMethod]
-        public void testInvalidCredentials()
+        static public Device RandomKeyDevice()
         {
-            Device device = new Device();
-            Result<Device> result = InvalidClient.CreateDevice(device);
-            Result<Device> expected = new Result<Device>(null, 403, "Forbidden");
-            Assert.AreEqual(expected, result);
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var key = new string(
+                Enumerable.Repeat(chars, 8)
+                          .Select(s => s[random.Next(s.Length)])
+                          .ToArray());
+            return new Device(key, "device-name", new Dictionary<String, String>(), new List<Sensor>());
         }
 
         [TestMethod]
-        public void testCreateDevices()
+        public void TestInvalidCredentials()
         {
-            Device device = new Device("create-device", "name", new Dictionary<String, String>(), new List<Sensor>());
+            var device = RandomKeyDevice();
+            Result<Device> result = InvalidClient.CreateDevice(device);
+            Assert.AreEqual(403, result.Code);
+        }
 
+        [TestMethod]
+        public void TestCreateDevices()
+        {
+            var device = RandomKeyDevice();
             Result<Device> result = Client.CreateDevice(device);
             Result<Device> expected = new Result<Device>(device, 200, "OK");
-
-            Assert.AreEqual(expected, result);
+            Assert.AreEqual(expected.Value, result.Value);
         }
 
         [TestMethod]
-        public void testWriteDataPointBySensor()
+        public void TestListDevices()
         {
-            Device device = createDevice();
+            var selection = new Selection().AddSelector(Selectors.Type.Devices, Selectors.All());
+            var result = Client.ListDevics(selection);
+            Assert.IsTrue(result.Value.Any());
+        }
+
+        [TestMethod]
+        public void TestWriteDataPointBySensor()
+        {
+            Device device = PostNewDevice();
             var points = new Dictionary<string, double>();
             points.Add("sensor1", 1.23);
             points.Add("sensor2", 1.67);
             var mp = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0)), points);
             var result = Client.WriteDataPoints(device, mp);
-            Assert.Equals(State.Success, result.State);
+            Assert.AreEqual(State.Success, result.State);
         }
 
         [TestMethod]
-        public void testReadDataPoints()
+        public void TestReadDataPoints()
         {
-            Device device = createDevice();
+            Device device = PostNewDevice();
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
-            var stop = UTC.AtStrictly(new LocalDateTime(2012, 1, 2, 0, 0, 0, 0));
-
-            var points = new Dictionary<String, double>();
-            points.Add("sensor1", 1.23);
-            points.Add("sensor2", 1.677);
-            MultiDataPoint mp = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 1, 0, 0, 0)), points);
-            Result<Unit> result = Client.WriteDataPoints(device, mp);
+            var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
+            var result = Client.Read(new Selection().AddSelector(Selectors.Type.Devices, Selectors.All()), start, stop);
             Assert.AreEqual(State.Success, result.State);
 
             var selection = new Selection().AddSelector(Selectors.Type.Devices, Selectors.Key(device.Key));
@@ -134,15 +120,16 @@ namespace TempoIQTest
 
             foreach (var row in cursor)
             {
-                Assert.Equals(1.23, row.getValue(device.Key, "sensor1"));
-                Assert.Equals(1.677, row.getValue(device.Key, "sensor2"));
+                Assert.AreEqual(1.23, row.Get(device.Key, "sensor1"));
+                Assert.AreEqual(1.677, row.Get(device.Key, "sensor2"));
             }
         }
 
         [TestMethod]
-        public void testReadWithPipeline()
+        public void TestReadWithPipeline()
         {
-            var device = createDevice();
+            var device1 = PostNewDevice();
+            var device2 = PostNewDevice();
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2012, 1, 2, 0, 0, 0, 0));
 
@@ -156,11 +143,11 @@ namespace TempoIQTest
             allPoints.Add(mp);
             allPoints.Add(mp2);
 
-            Result<Unit> result = Client.WriteDataPoints(device, allPoints);
+            Result<Unit> result = Client.WriteDataPoints(device1, allPoints);
             Assert.AreEqual(State.Success, result.State);
 
             Selection sel = new Selection().
-              AddSelector(Selectors.Type.Devices, Selectors.Key(device.Key));
+              AddSelector(Selectors.Type.Devices, Selectors.Key(device1.Key));
 
             Pipeline pipeline = new Pipeline()
               .Rollup(Period.FromDays(1), Fold.Sum, start)
@@ -169,9 +156,8 @@ namespace TempoIQTest
             Assert.IsTrue(cursor.Any());
             foreach (var row in cursor)
             {
-                Assert.Equals(6.0, row.getValue(device.Key, "mean"));
+                Assert.AreEqual(6.0, row.Get(device1.Key, "mean"));
             }
         }
-
     }
 }

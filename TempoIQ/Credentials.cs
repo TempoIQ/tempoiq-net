@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace TempoIQ
 {
@@ -25,6 +26,13 @@ namespace TempoIQ
         {
             this.key = key;
             this.secret = secret;
+        }
+
+        public string ToBase64()
+        {
+            var keySecret = key + ":" + secret;
+            var bytes = Encoding.ASCII.GetBytes(keySecret);
+            return Convert.ToBase64String(bytes);
         }
     }
 }
