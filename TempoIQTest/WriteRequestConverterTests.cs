@@ -20,7 +20,7 @@ namespace TempoIQTest
                         "\"device-1\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]},"+
                         "\"device-2\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}"+
                         "}";
-            var reqIn = JsonConvert.DeserializeObject<WriteRequest>(json);
+            var reqIn = JsonConvert.DeserializeObject<WriteRequest>(json, TempoIQSerializer.Converters);
             var reqOut = JsonConvert.SerializeObject(reqIn);
             Assert.AreEqual(json, reqOut);
             Assert.AreEqual(reqIn, JsonConvert.DeserializeObject<WriteRequest>(reqOut));
@@ -30,7 +30,7 @@ namespace TempoIQTest
         public void DeserializeWriteRequestTest()
         {
             var json = "{\"device-1\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]},\"device-2\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}}";
-            var req = JsonConvert.DeserializeObject<WriteRequest>(json);
+            var req = JsonConvert.DeserializeObject<WriteRequest>(json, TempoIQSerializer.Converters);
             Assert.IsInstanceOfType(req, typeof(WriteRequest));
         }
     }

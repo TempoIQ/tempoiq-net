@@ -34,7 +34,7 @@ namespace TempoIQ.Json
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteRaw(JsonConvert.SerializeObject(((WriteRequest)value).Data));
+            writer.WriteRaw(JsonConvert.SerializeObject(((Dictionary<String, Dictionary<String, List<DataPoint>>>)value)));
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

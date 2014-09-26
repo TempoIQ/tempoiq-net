@@ -106,6 +106,25 @@ namespace TempoIQTest
         }
 
         [TestMethod]
+        public void TestWriteDataPointsWithWriteRequest()
+        {
+            var selection = new Selection().AddSelector(Selectors.Type.Devices, Selectors.All());
+            var devices = Client.ListDevics(selection).Value;
+            var points = new WriteRequest();
+            var lst = new List<DataPoint>();
+            lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 19.667));
+            foreach(var device in devices)
+            {
+                foreach(var sensor in device.Sensors)
+                {
+                    points.Add(device, sensor, lst);
+                }
+            }
+            var result = Client.WriteDataPoints(points);
+            Assert.IsTrue(result.State.Equals(State.Success));
+        }
+
+        [TestMethod]
         public void TestReadDataPoints()
         {
             Device device = PostNewDevice();

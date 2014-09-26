@@ -71,7 +71,7 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(Device device, MultiDataPoint data)
         {
             var writeRequest = new WriteRequest();
-            foreach (var pair in data.vs)
+            foreach(var pair in data.vs)
             {
                 var dp = new DataPoint(data.t, pair.Value);
                 writeRequest.Add(device.Key, pair.Key, dp);

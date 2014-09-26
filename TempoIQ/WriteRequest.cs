@@ -11,20 +11,23 @@ namespace TempoIQ.Models
 {
     ///<summary>A request for writing multiple DataPoints to multiple Sensor.</summary>
     ///<para>The request is created and datapoints are added for a Sensor.</para>
-    [JsonConverter(typeof(WriteRequestConverter))]
-    public class WriteRequest
+    
+    //[JsonConverter(typeof(WriteRequestConverter))]
+    public class WriteRequest : Dictionary<String, IDictionary<String, IList<DataPoint>>>
     {
-        public IDictionary<String, IDictionary<String, IList<DataPoint>>> Data { get; set; }
-
         [JsonConstructor]
-        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data)
+        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data) 
+            : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>())
         {
-            this.Data = data;
+            foreach(var pair in data)
+            {
+                this.Add(pair.Key, pair.Value);
+            }
         }
 
-        public WriteRequest()
+        public WriteRequest() : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>())
         {
-            this.Data = new Dictionary<String, IDictionary<String, IList<DataPoint>>>();
+            ;
         }
 
         ///<summary>Adds a DataPoint to the request for a Device and Sensor.</summary>
@@ -44,9 +47,9 @@ namespace TempoIQ.Models
         ///<returns>the updated request</returns>
         public WriteRequest Add(string deviceKey, string sensorKey, DataPoint datapoint)
         {
-            if (Data.ContainsKey(deviceKey))
+            if (this.ContainsKey(deviceKey))
             {
-                var innerDict = Data[deviceKey];
+                var innerDict = this[deviceKey];
                 if (innerDict.ContainsKey(sensorKey))
                 {
                     innerDict[sensorKey].Add(datapoint);
@@ -61,7 +64,7 @@ namespace TempoIQ.Models
             {
                 var map = new Dictionary<string, IList<DataPoint>>();
                 map.Add(sensorKey, new List<DataPoint>(new DataPoint[]{datapoint}));
-                Data.Add(deviceKey, map);
+                this.Add(deviceKey, map);
             }
             return this;
         }
@@ -73,9 +76,9 @@ namespace TempoIQ.Models
         ///<returns>the updated request</returns>
         public WriteRequest Add(string deviceKey, string sensorKey, IList<DataPoint> datapoints)
         {
-            if (Data.ContainsKey(deviceKey))
+            if (this.ContainsKey(deviceKey))
             {
-                var innerDict = Data[deviceKey];
+                var innerDict = this[deviceKey];
                 if (innerDict.ContainsKey(sensorKey))
                 {
                     foreach (var dp in datapoints)
@@ -92,7 +95,7 @@ namespace TempoIQ.Models
             {
                 var innerDict = new Dictionary<string, IList<DataPoint>>();
                 innerDict.Add(sensorKey, datapoints);
-                Data.Add(deviceKey, innerDict);
+                this.Add(deviceKey, innerDict);
             }
             return this;
         }

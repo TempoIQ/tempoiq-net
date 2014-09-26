@@ -1,8 +1,6 @@
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\TempoIQTest.dll.config
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\TempoIQTest.dll
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\TempoIQTest.pdb
-C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Elasticsearch.Net.Connection.HttpClient.dll
-C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Elasticsearch.Net.dll
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Newtonsoft.Json.dll
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\NodaTime.dll
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\NodaTime.Serialization.JsonNet.dll
@@ -10,10 +8,6 @@ C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\TempoIQ.dll
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\RestSharp.dll
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\TempoIQ.pdb
-C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Elasticsearch.Net.pdb
-C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Elasticsearch.Net.xml
-C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Elasticsearch.Net.Connection.HttpClient.pdb
-C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Elasticsearch.Net.Connection.HttpClient.xml
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\Newtonsoft.Json.xml
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\NodaTime.xml
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\bin\Debug\NodaTime.Serialization.JsonNet.xml

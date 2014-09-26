@@ -4,18 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using TempoIQ.Json;
 using RestSharp;
 using RestSharp.Serializers;
-using RestSharp.Deserializers;
 
-namespace TempoIQ
+namespace TempoIQ.Json
 {
     public class TempoIQSerializer : ISerializer
     {
+        public static JsonConverter[] Converters
+        {
+            get 
+            {
+                return new JsonConverter[]
+                {
+                    new AllSelectorConverter(),
+                    new SelectionConverter(),
+                    new SelectorConverter(),
+                    new SelectorTypeConverter(),
+//                    new WriteRequestConverter(),
+                    new ZonedDateTimeConverter()
+                };
+            }
+        }
+
         public string Serialize(object obj)
         {
             this.ContentType = "application/json";
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(obj, Converters);//(obj);
         }
 
         /// <summary>
