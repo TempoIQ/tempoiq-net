@@ -46,7 +46,8 @@ namespace TempoIQ
             var query = new FindQuery(
                 new Search(Selectors.Type.Devices, selection),
                 new Find());
-            return RequestRunner.Post<Cursor<Device>>("v2/devices/query/", query);
+            var prelim = RequestRunner.Post<Segment<Device>>("v2/devices/query/", query);
+            return prelim.ToCursorResult<Device>();
         }
 
         public Result<Unit> DeleteDevice(Device device)
@@ -100,6 +101,25 @@ namespace TempoIQ
         {
             var query = new ReadQuery(new Search(Selectors.Type.Devices, selection), new Read(start, stop));
             return RequestRunner.Post<Cursor<Row>>("v2/read/query", query);
+        }
+    }
+
+    public static class SegmentCursorConversion
+    {
+        public static Result<Cursor<T>> ToCursorResult<T>(this Result<Segment<T>> result)
+        {
+            Cursor<T> cursor;
+            if (result.Value == null)
+            {
+                cursor = new Cursor<T>(new List<Segment<T>>());
+            }
+            else
+            {
+                var lst = new List<Segment<T>>();
+                lst.Add(result.Value);
+                cursor = new Cursor<T>(lst);
+            }
+            return new Result<Cursor<T>>(cursor, result.Code, result.Message, result.MultiStatus);
         }
     }
 }

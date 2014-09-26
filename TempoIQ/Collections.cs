@@ -14,10 +14,10 @@ namespace TempoIQ.Models.Collections
     public class Segment<T> : IEnumerable<T>, Model
     {
         [JsonProperty("data")]
-        protected IList<T> Data{ get; set; }
+        public IList<T> Data{ get; set; }
 
-        [JsonProperty("next")]
-        protected string Next { get; set; }
+        [JsonIgnore]
+        public string Next { get; set; }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -66,9 +66,9 @@ namespace TempoIQ.Models.Collections
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach(var segment in this.Segments)
+            foreach (var segment in Segments)
             {
-                foreach(var item in segment)
+                foreach (var item in segment)
                 {
                     yield return item;
                 }

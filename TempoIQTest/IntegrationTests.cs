@@ -89,6 +89,7 @@ namespace TempoIQTest
         {
             var selection = new Selection().AddSelector(Selectors.Type.Devices, Selectors.All());
             var result = Client.ListDevics(selection);
+            Assert.AreEqual(200, result.Code);
             Assert.IsTrue(result.Value.Any());
         }
 
