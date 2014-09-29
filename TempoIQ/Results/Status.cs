@@ -60,11 +60,10 @@ namespace TempoIQ.Results
         ///<param name="Statuses"> List of <cref>ResponseStatus</cref> objects.</param>
         public MultiStatus(IList<Status> statuses = null)
         {
-            if (statuses == null) {
+            if (statuses == null)
                 this.Statuses = new List<Status>();
-            } else {
+            else
                 this.Statuses = statuses;
-            }
         }
 
         ///<summary> Returns iterator over the Statuses.</summary>

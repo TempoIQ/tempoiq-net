@@ -32,9 +32,9 @@ namespace TempoIQTest
         [TestInitialize]
         public void InitCredentials()
         {
-            string key = "your_key";
-            string secret = "your_secret";
-            string domain = "txedly-james.backend.tempoiq.com";
+            string key = "YOUR KEY";
+            string secret = "YOUR SECRET";
+            string domain = "YOUR BACKEND URL";
             InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
             Client = new Client(new Credentials(key, secret), domain);
         }
@@ -61,9 +61,7 @@ namespace TempoIQTest
         {
             var lst = new List<Device>();
             for(int i=0; i<n; i++)
-            {
                 lst.Add(PostNewDevice());
-            }
             return lst;
         }
 
@@ -137,12 +135,8 @@ namespace TempoIQTest
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 11019.647));
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 5.090913));
             foreach(var device in devices)
-            {
                 foreach(var sensor in device.Sensors)
-                {
                     points.Add(device, sensor, lst);
-                }
-            }
             var result = Client.WriteDataPoints(points);
             Assert.IsTrue(result.State.Equals(State.Success));
         }
@@ -160,12 +154,8 @@ namespace TempoIQTest
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 11019.647));
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 5.090913));
             foreach(var device in devices)
-            {
                 foreach(var sensor in device.Sensors)
-                {
                     points.Add(device, sensor, lst);
-                }
-            }
             var written = Client.WriteDataPoints(points);
             
             //Read that data out
@@ -194,12 +184,8 @@ namespace TempoIQTest
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 11019.647));
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 5.090913));
             foreach(var device in devices)
-            {
                 foreach(var sensor in device.Sensors)
-                {
                     points.Add(device, sensor, lst);
-                }
-            }
             var written = Client.WriteDataPoints(points);
             
             //Read that data out with a pipeline

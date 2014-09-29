@@ -88,7 +88,7 @@ namespace TempoIQ.Queries
         {
             get
             {
-                return new List<string>(new string[] { Fold.ToString().ToLower(), Period.ToString(), Start.ToString() });
+                return new List<string>{ Fold.ToString().ToLower(), Period.ToString(), Start.ToString() };
             }
         }
 
@@ -128,7 +128,13 @@ namespace TempoIQ.Queries
         public string Name { get { return "aggregation"; } }
 
         [JsonProperty("arguments")]
-        public IList<string> Arguments { get { return new List<string>(new string[] { Fold.ToString().ToLower() }); } }
+        public IList<string> Arguments 
+        { 
+            get 
+            { 
+                return new List<string>{ Fold.ToString().ToLower() };
+            }
+        }
 
         public Aggregation(Fold fold)
         {

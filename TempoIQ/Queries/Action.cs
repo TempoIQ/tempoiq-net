@@ -29,10 +29,7 @@ namespace TempoIQ.Queries
         public string Quantifier { get { return "all"; } }
 
         [JsonConstructor]
-        public Find()
-        {
-            ;
-        }
+        public Find() { }
     }
 
     /// <summary>
@@ -57,5 +54,4 @@ namespace TempoIQ.Queries
             this.Stop = stop;
         }
     }
-
 }

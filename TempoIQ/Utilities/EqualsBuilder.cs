@@ -28,12 +28,10 @@ namespace TempoIQ.Utilities
         public EqualsBuilder Append(Object lhs, Object rhs)
         {
             if (isEqual == false)
-            {
                 return this;
-            } if (lhs == rhs)
-            {
+            if (lhs == rhs)
                 return this;
-            } if (lhs == null || rhs == null)
+            if (lhs == null || rhs == null)
             {
                 isEqual = false;
                 return this;

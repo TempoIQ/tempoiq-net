@@ -29,12 +29,8 @@ namespace TempoIQ.Results
         public IEnumerator<Tuple<string, string, double>> GetEnumerator()
         {
             foreach (var deviceSensorsPair in Data)
-            {
                 foreach (var sensorDataPair in deviceSensorsPair.Value)
-                {
                     yield return Tuple.Create(deviceSensorsPair.Key, sensorDataPair.Key, sensorDataPair.Value);
-                }
-            }
         }
 
         IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -49,15 +45,19 @@ namespace TempoIQ.Results
 
         public IDictionary<string, double> Get(string deviceKey)
         {
-            if (Data.ContainsKey(deviceKey)) return Data[deviceKey];
-            else return new Dictionary<string, double>();
+            if (Data.ContainsKey(deviceKey)) 
+                return Data[deviceKey];
+            else 
+                return new Dictionary<string, double>();
         }
 
         public double? Get(string deviceKey, string sensorKey)
         {
             var deviceData = Get(deviceKey);
-            if (deviceData.ContainsKey(sensorKey)) return deviceData[sensorKey];
-            else return null;
+            if (deviceData.ContainsKey(sensorKey))
+                return deviceData[sensorKey];
+            else 
+                return null;
         }
 
         public override bool Equals(object obj)
@@ -68,7 +68,8 @@ namespace TempoIQ.Results
                 return true;
             if (obj is Row)
                 return this.Equals(obj);
-            else return false;
+            else 
+                return false;
         }
 
         public bool Equals(Row obj)

@@ -30,10 +30,7 @@ namespace TempoIQ.Models
             return HashCodeHelper.Initialize();
         }
 
-        public Unit()
-        {
-            ;
-        }
+        public Unit() { }
     };
 
     /// <summary>
@@ -77,12 +74,9 @@ namespace TempoIQ.Models
         public override bool Equals(object obj)
         {
             if (obj is MultiDataPoint)
-            {
                 return this.Equals((MultiDataPoint)obj);
-            } else
-            {
+            else
                 return false;
-            }
         }
 
         public bool Equals(MultiDataPoint mdp)
