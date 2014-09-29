@@ -9,6 +9,10 @@ using TempoIQ.Utilities;
 
 namespace TempoIQ.Models
 {
+    /// <summary>
+    /// The TempoIQ notion of a device.
+    /// Devices have sensors.
+    /// </summary>
     [JsonObject]
     public class Device : Model
     {
@@ -79,6 +83,10 @@ namespace TempoIQ.Models
         }
     }
 
+    /// <summary>
+    /// The TempoIQ notion of a Sensor.
+    /// Sensors emit streams of numeric data.
+    /// </summary>
     [JsonObject]
     public class Sensor : Model
     {

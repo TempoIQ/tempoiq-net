@@ -9,6 +9,9 @@ using NodaTime;
 
 namespace TempoIQ.Querying
 {
+    /// <summary>
+    /// Defines the scope of a Query; limits it to a specific subset of all of sensors/devices
+    /// </summary>
     [JsonObject]
     public class Search
     {
@@ -25,8 +28,14 @@ namespace TempoIQ.Querying
         }
     }
 
+    /// <summary>
+    /// The various querying operations TempoIQ will perform
+    /// </summary>
     public interface Query { }
     
+    /// <summary>
+    /// A <code>Query</code> for reading data out of TempoIQ
+    /// </summary>
     [JsonObject]
     public class ReadQuery : Query
     {
@@ -38,11 +47,14 @@ namespace TempoIQ.Querying
 
         public ReadQuery(Search search, Read read)
         {
-            this.Search = Search;
+            this.Search = search;
             this.Read = read;
         }
     }
 
+    /// <summary>
+    /// A <code>Query</code> for finding specific domain objects
+    /// </summary>
     [JsonObject]
     public class FindQuery : Query
     {

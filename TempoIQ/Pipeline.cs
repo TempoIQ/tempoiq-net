@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NodaTime;
 
-namespace TempoIQ
+namespace TempoIQ.Models
 {
+    /// <summary>
+    /// Pipeline functions represent server-side transformations on data
+    /// </summary>
     public interface PipelineFunction
     {
         string Name { get; }
@@ -15,6 +18,9 @@ namespace TempoIQ
         IList<string> Arguments { get; }
     }
 
+    /// <summary>
+    /// A <code>Pipeline</code> represents a series of transformations on a stream of sensor data
+    /// </summary>
     public class Pipeline
     {
         public IList<PipelineFunction> Functions { get; private set; }
@@ -35,12 +41,24 @@ namespace TempoIQ
             this.Functions = new List<PipelineFunction>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="fold"></param>
+        /// <param name="start"></param>
+        /// <returns></returns>
         public Pipeline Rollup(Period period, Fold fold, ZonedDateTime start)
         {
             this.AddFunction(new Rollup(period, fold, start));
             return this;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fold"></param>
+        /// <returns></returns>
         public Pipeline Aggregate(Fold fold)
         {
             this.AddFunction(new Aggregation(fold));
@@ -48,6 +66,9 @@ namespace TempoIQ
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class Rollup : PipelineFunction
     { 
         [JsonProperty("period")]
@@ -99,7 +120,7 @@ namespace TempoIQ
     public class Aggregation : PipelineFunction
     {
         /// <summary>
-        /// The <c>Aggregation</c>'s underlying <c>Fold</c> function
+        /// The <code>Aggregation</code>'s underlying <code>Fold</code> function
         /// </summary>
         public Fold Fold { get; private set; }
 
@@ -115,7 +136,7 @@ namespace TempoIQ
         }
 
         /// <para>
-        /// <c>Aggregation aggregation = new Aggregation(Fold.SUM);</c>
+        /// <code>Aggregation aggregation = new Aggregation(Fold.SUM);</code>
         /// </para>
         public Aggregation()
         {

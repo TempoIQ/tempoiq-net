@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace TempoIQ.Models
 {
-    ///<summary>A request for writing multiple DataPoints to multiple Sensor.</summary>
+    ///<summary>A request for writing multiple DataPoints to multiple Sensors.</summary>
     ///<para>The request is created and datapoints are added for a Sensor.</para>
     
     //[JsonConverter(typeof(WriteRequestConverter))]
@@ -25,6 +25,9 @@ namespace TempoIQ.Models
             }
         }
 
+        /// <summary>
+        /// Base constructor; create a new WriteRequest
+        /// </summary>
         public WriteRequest() : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>())
         {
             ;

@@ -31,10 +31,10 @@ namespace TempoIQ.Models
     ///more information about which request failed.
     public class Result<T>
     {
-        public T Value { get; private set; }
-        public int Code { get; private set; }
-        public string Message { get; private set; }
-        public MultiStatus MultiStatus { get; private set; }
+        public T Value { get; set; }
+        public int Code { get; set; }
+        public string Message { get; set; }
+        public MultiStatus MultiStatus { get; set; }
         private Encoding DEFAULT_CHARSET = Encoding.Unicode;
 
         ///<summary> Base Constructor: usually created from REST responses </summary>

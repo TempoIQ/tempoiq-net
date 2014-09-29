@@ -27,12 +27,5 @@ namespace TempoIQ
             this.key = key;
             this.secret = secret;
         }
-
-        public string ToBase64()
-        {
-            var keySecret = key + ":" + secret;
-            var bytes = Encoding.ASCII.GetBytes(keySecret);
-            return Convert.ToBase64String(bytes);
-        }
     }
 }

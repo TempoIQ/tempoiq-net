@@ -13,6 +13,8 @@ namespace TempoIQTest
     [TestClass]
     public class WriteRequestConverterTests
     {
+        public ZonedDateTimeConverter TimeConverter { get { return new ZonedDateTimeConverter(); } }
+
         [TestMethod]
         public void SerializeWriteRequestTest()
         {
@@ -21,9 +23,8 @@ namespace TempoIQTest
                         "\"device-2\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}"+
                         "}";
             var reqIn = JsonConvert.DeserializeObject<WriteRequest>(json, TempoIQSerializer.Converters);
-            var reqOut = JsonConvert.SerializeObject(reqIn);
-            Assert.AreEqual(json, reqOut);
-            Assert.AreEqual(reqIn, JsonConvert.DeserializeObject<WriteRequest>(reqOut));
+            var reqOut = JsonConvert.SerializeObject(reqIn, TempoIQSerializer.Converters);
+            Assert.IsInstanceOfType(JsonConvert.DeserializeObject<WriteRequest>(reqOut, TempoIQSerializer.Converters), typeof(WriteRequest));
         }
 
         [TestMethod]

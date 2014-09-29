@@ -62,6 +62,7 @@ namespace TempoIQ
             request.JsonSerializer = new TempoIQSerializer();
             request.AddBody(body);
             var response = Rest.Execute(request);
+            Console.WriteLine(response.Content);
             return response.ToResult<T>(this.TempoSerialization);
         }
     }
@@ -71,7 +72,7 @@ namespace TempoIQ
         public static Result<T> ToResult<T>(this IRestResponse response,
             TempoIQSerializer serialization)
         {
-            T value = JsonConvert.DeserializeObject<T>(response.Content);
+            T value = JsonConvert.DeserializeObject<T>(response.Content ?? "", TempoIQSerializer.Converters);
             int code = (int)response.StatusCode;
             string message = response.StatusDescription;
             MultiStatus multi;
