@@ -45,11 +45,12 @@ namespace TempoIQ.Models
         {
             if (obj == null)
                 return false;
-            if (obj == this)
+            else if (obj == this)
                 return true;
-            if (obj is Sensor)
+            else if (obj is Sensor)
                 return this.Equals((Sensor)obj);
-            else return false;
+            else
+                return false;
         }
 
         public bool Equals(Device that)

@@ -78,14 +78,9 @@ namespace TempoIQ
             string message = response.StatusDescription;
             MultiStatus multi;
             if (response.StatusCode == HttpStatusCode.OK)
-            {
-                multi = new MultiStatus();
-                multi.Statuses.Add(new Status(HttpStatusCode.OK, new List<string>()));
-            }
+                multi = new MultiStatus(new List<Status> { new Status(HttpStatusCode.OK, new List<string>()) });
             else if ((int)response.StatusCode == 207)
-            {
                 multi = JsonConvert.DeserializeObject<MultiStatus>(response.Content);
-            }
             else
             {
                 multi = new MultiStatus();

@@ -124,10 +124,7 @@ namespace TempoIQ
         {
             var writeRequest = new WriteRequest();
             foreach(var pair in data.vs)
-            {
-                var dp = new DataPoint(data.t, pair.Value);
-                writeRequest.Add(device.Key, pair.Key, dp);
-            }
+                writeRequest.Add(device.Key, pair.Key, new DataPoint(data.t, pair.Value));
             return WriteDataPoints(writeRequest);
         }
 
@@ -243,15 +240,9 @@ namespace TempoIQ
         {
             Cursor<T> cursor;
             if (result.Value == null)
-            {
                 cursor = new Cursor<T>(new List<Segment<T>>());
-            }
             else
-            {
-                var lst = new List<Segment<T>>();
-                lst.Add(result.Value);
-                cursor = new Cursor<T>(lst);
-            }
+                cursor = new Cursor<T>(new List<Segment<T>> { result.Value });
             return new Result<Cursor<T>>(cursor, result.Code, result.Message, result.MultiStatus);
         }
     }

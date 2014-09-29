@@ -57,9 +57,7 @@ namespace TempoIQ.Json
             var selection = (Selection)value;
             writer.WriteStartObject();
             foreach(var pair in selection.Selectors)
-            {
                 writer.WriteRaw(JsonUtil.RawJsonField(pair));
-            }
             writer.WriteEndObject();
         }
 
@@ -76,24 +74,20 @@ namespace TempoIQ.Json
         {
             Select.Type type = (Select.Type)value;
             if (type == Select.Type.Devices)
-            {
                 writer.WriteValue("devices");
-            } else
-            {
+            else
                 writer.WriteValue("sensors");
-            }
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var stringVal = ((string)reader.Value);
-            if (stringVal.Equals("sensors")) {
+            if (stringVal.Equals("sensors"))
                 return Select.Type.Sensors;
-            } else if (stringVal.Equals("devices")) {
+            else if (stringVal.Equals("devices"))
                 return Select.Type.Devices;
-            } else {
+            else
                 throw new ArgumentException(String.Format("%s is not a valid selector type", stringVal));
-            }
         }
 
         public override bool CanConvert(Type objectType)
@@ -109,19 +103,18 @@ namespace TempoIQ.Json
             string json = (string)reader.Value;
             var dict = Newtonsoft.Json.JsonConvert.DeserializeObject(json) as Dictionary<string, object>;
             dynamic val = null;
-            if (dict.TryGetValue("attributes", val)) {
+            if (dict.TryGetValue("attributes", val))
                 return new AttributesSelector(val);
-            } else if (dict.TryGetValue("key", val)) {
+            else if (dict.TryGetValue("key", val))
                 return new KeySelector(val);
-            } else if (dict.TryGetValue("attribute_key", val)) {
+            else if (dict.TryGetValue("attribute_key", val))
                 return new AttributeKeySelector(val);
-            } else if (dict.TryGetValue("or", val)) {
+            else if (dict.TryGetValue("or", val))
                 return JsonConvert.DeserializeObject<OrSelector>(json);
-            } else if (dict.TryGetValue("and", val)) {
+            else if (dict.TryGetValue("and", val))
                 return JsonConvert.DeserializeObject<AndSelector>(json);
-            } else {
+            else
                 throw new JsonException("Invalid selector object");
-            }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -147,12 +140,9 @@ namespace TempoIQ.Json
         {
             string[] allKeywords = {"all", "*", "any"};
             if (allKeywords.Any((string s) => s == (string)reader.Value))
-            {
                 return new AllSelector();
-            } else 
-            {
+            else 
                 throw new JsonException(String.Format("cannot deserialize an AllSelector from %s", (string)reader.Value));
-            }
         }
 
         public override bool CanConvert(Type objectType)
@@ -192,14 +182,10 @@ namespace TempoIQ.Json
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
             if (value == null)
-            {
                 throw new ArgumentNullException("value");
-            }
-
-            if (!(value is ZonedDateTime))
-            {
+            else if (!(value is ZonedDateTime))
                 throw new ArgumentException(string.Format("Unexpected value when converting. Expected {0}, got {1}.", typeof(ZonedDateTime).FullName, value.GetType().FullName));
-            }
+
             var datetime = (ZonedDateTime)value;
             writer.WriteValue(ZonedDateTimeConverter.ToString(datetime));
         }
@@ -207,12 +193,10 @@ namespace TempoIQ.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
-            {
                 if (objectType != typeof(ZonedDateTime?))
                     throw new Exception(string.Format("Cannot convert null value to {0}.", objectType));
-
-                return null;
-            }
+                else
+                    return null;
 
             var offsetDateTimeText = reader.Value.ToString();
             if (string.IsNullOrEmpty(offsetDateTimeText) && objectType == typeof(ZonedDateTime?))

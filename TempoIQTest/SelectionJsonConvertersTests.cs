@@ -56,7 +56,6 @@ namespace TempoIQTest
             string[] anyWords = {"\"any\"", "\"all\"", "\"*\""};
             var allSelectors = from word in anyWords select JsonConvert.DeserializeObject<AllSelector>(word);
             foreach (var all in allSelectors);
-            //force evaluation of lazy sequence. This will throw an exception if something is amiss
         }
 
         [TestMethod]
@@ -76,17 +75,6 @@ namespace TempoIQTest
             Assert.AreEqual(expected, serialized);
         }
 
-/*
-        [TestMethod]
-        public void DeserializeAndSelector()
-        {
-            string andIn = "{\"and\":[{\"attributes\":{\"attrKey\":\"value\"}},{\"attribute_key\":\"otherKey\"},{\"key\":\"someKey\"}]}";
-            var expected = Selectors.And(Selectors.Attribute("attrKey", "value"), Selectors.AttributeKey("otherKey"), Selectors.Key("someKey"));
-            var andOut = JsonConvert.DeserializeObject<AndSelector>(andIn);
-            Assert.AreEqual(expected, andOut);
-        }
-*/
-
         [TestMethod]
         public void SerializeOrSelector()
         {
@@ -95,16 +83,5 @@ namespace TempoIQTest
             string expected = "{\"or\":[{\"attributes\":{\"attrKey\":\"value\"}},{\"attribute_key\":\"otherKey\"},{\"key\":\"someKey\"}]}";
             Assert.AreEqual(expected, serialized);
         }
-
-/*
-        [TestMethod]
-        public void DeserializeOrSelector()
-        {
-            string orIn = "{\"or\":[{\"attributes\":{\"attrKey\":\"value\"}},{\"attribute_key\":\"otherKey\"},{\"key\":\"someKey\"}]}";
-            var expected = Selectors.And(Selectors.Attribute("attrKey", "value"), Selectors.AttributeKey("otherKey"), Selectors.Key("someKey"));
-            var orOut = JsonConvert.DeserializeObject<OrSelector>(orIn);
-            Assert.AreEqual(expected, orOut);
-        }
-*/
     }
 }

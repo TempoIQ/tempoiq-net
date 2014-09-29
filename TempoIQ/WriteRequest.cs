@@ -20,18 +20,13 @@ namespace TempoIQ.Models
             : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>())
         {
             foreach(var pair in data)
-            {
                 this.Add(pair.Key, pair.Value);
-            }
         }
 
         /// <summary>
         /// Base constructor; create a new WriteRequest
         /// </summary>
-        public WriteRequest() : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>())
-        {
-            ;
-        }
+        public WriteRequest() : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>()) { }
 
         ///<summary>Adds a DataPoint to the request for a Device and Sensor.</summary>
         ///<param name="device">the Device to write to</param>
@@ -54,19 +49,14 @@ namespace TempoIQ.Models
             {
                 var innerDict = this[deviceKey];
                 if (innerDict.ContainsKey(sensorKey))
-                {
                     innerDict[sensorKey].Add(datapoint);
-                }
-                else 
-                {
-                    innerDict[sensorKey] = new List<DataPoint>();
-                    innerDict[sensorKey].Add(datapoint);
-                }
+                else
+                    innerDict[sensorKey] = new List<DataPoint>{ datapoint };
             }
             else
             {
                 var map = new Dictionary<string, IList<DataPoint>>();
-                map.Add(sensorKey, new List<DataPoint>(new DataPoint[]{datapoint}));
+                map.Add(sensorKey, new List<DataPoint>{ datapoint });
                 this.Add(deviceKey, map);
             }
             return this;
@@ -83,16 +73,10 @@ namespace TempoIQ.Models
             {
                 var innerDict = this[deviceKey];
                 if (innerDict.ContainsKey(sensorKey))
-                {
                     foreach (var dp in datapoints)
-                    {
                         innerDict[sensorKey].Add(dp);
-                    }
-                }
                 else 
-                {
                     innerDict[sensorKey] = datapoints;
-                }
             }
             else
             {

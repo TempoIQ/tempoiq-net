@@ -58,13 +58,12 @@ namespace TempoIQ.Results
 
         private static State CodeToState(int code)
         {
-            if (code == 200) {
+            if (code == 200)
                 return State.Success;
-            } else if (code == 207) {
+            else if (code == 207)
                 return State.PartialSuccess;
-            } else {
+            else
                 return State.Failure;
-            }
         }
 
         public override bool Equals(object obj)
@@ -75,24 +74,28 @@ namespace TempoIQ.Results
                 return true;
             if (obj is Result<T>)
                 return this.Equals((Result<T>)obj);
-            else return false;
+            else 
+                return false;
         }
 
         public bool Equals(Result<T> that)
         {
-            bool values = false;
+            bool values, states, multiStatuses;
+            states = this.State.Equals(that.State);
+
             if ((this.Value == null) && (that.Value == null))
                 values = true;
             else if (this.Value == null)
                 values = false;
             else values = this.Value.Equals(that.Value);
-            bool states = this.State.Equals(that.State);
-            bool multiStatuses = false;
+
             if ((this.MultiStatus == null) && (that.MultiStatus == null))
                 multiStatuses = true;
             else if ((this.MultiStatus == null) || (that.MultiStatus == null))
                 multiStatuses = false;
-            else multiStatuses = this.MultiStatus.Equals(that.MultiStatus);
+            else 
+                multiStatuses = this.MultiStatus.Equals(that.MultiStatus);
+
             bool codes = this.Code.Equals(that.Code);
             return values && states && multiStatuses && codes;
         }

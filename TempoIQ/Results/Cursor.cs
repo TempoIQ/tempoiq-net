@@ -27,12 +27,8 @@ namespace TempoIQ.Results
         public IEnumerator<T> GetEnumerator()
         {
             foreach (var segment in Segments)
-            {
                 foreach (var item in segment)
-                {
                     yield return item;
-                }
-            }
         }
 
         IEnumerator System.Collections.IEnumerable.GetEnumerator()

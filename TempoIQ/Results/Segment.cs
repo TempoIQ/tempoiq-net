@@ -33,9 +33,7 @@ namespace TempoIQ.Results
         public IEnumerator<T> GetEnumerator()
         {
             foreach(var item in this.Data)
-            {
                 yield return item;
-            }
         }
 
         IEnumerator System.Collections.IEnumerable.GetEnumerator()
