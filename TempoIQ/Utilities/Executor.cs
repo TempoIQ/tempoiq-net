@@ -12,28 +12,29 @@ using TempoIQ.Models;
 using TempoIQ.Results;
 using TempoIQ.Json;
 
-namespace TempoIQ
+namespace TempoIQ.Utilities
 {    
     public class Executor
     {
         public int Port { get; set; }
 
-        public TempoIQSerializer TempoSerialization { get { return new TempoIQSerializer(); } }
-
-        protected RestClient Rest { get; set; }
+        private RestClient Rest { get; set; }
+        
+        private TempoIQSerializer Serialization { get; set; }
 
         public Executor(string baseUrl, Credentials credentials, int port = 443, int timeout = 50000)
         {
-            this.Port = port; 
-            var rest = new RestClient(String.Format("https://{0}:{1}/", baseUrl, port.ToString()));
+            this.Port = port;
+            this.Serialization = new TempoIQSerializer();
+            var rest = new RestClient(String.Format("https://{0}:{1}/", baseUrl, port));
             rest.Authenticator = new HttpBasicAuthenticator(credentials.key, credentials.secret);
             rest.Timeout = timeout;
             this.Rest = rest;
         }
 
-        public Result<T> Get<T>(string resource, object body = null)
+        public Result<T> Get<T>(string resource)
         {
-            return Execute<T>(Method.GET, resource, body);
+            return Execute<T>(Method.GET, resource, null);
         }
 
         public Result<T> Post<T>(string resource, object body)
@@ -60,18 +61,17 @@ namespace TempoIQ
         {
             var request = new RestRequest(resource, method);
             request.RequestFormat = DataFormat.Json;
-            request.JsonSerializer = new TempoIQSerializer();
+            request.JsonSerializer = this.Serialization;
             request.AddBody(body);
             var response = Rest.Execute(request);
             Console.WriteLine(response.Content);
-            return response.ToResult<T>(this.TempoSerialization);
+            return response.ToResult<T>();
         }
     }
 
     public static class ResponseResultExtension
     {
-        public static Result<T> ToResult<T>(this IRestResponse response,
-            TempoIQSerializer serialization)
+        public static Result<T> ToResult<T>(this IRestResponse response)
         {
             T value = JsonConvert.DeserializeObject<T>(response.Content ?? "", TempoIQSerializer.Converters);
             int code = (int)response.StatusCode;

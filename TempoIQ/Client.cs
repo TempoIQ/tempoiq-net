@@ -8,6 +8,7 @@ using TempoIQ.Json;
 using TempoIQ.Models;
 using TempoIQ.Results;
 using TempoIQ.Queries;
+using TempoIQ.Utilities;
 using Newtonsoft.Json;
 using NodaTime;
 
@@ -19,7 +20,7 @@ namespace TempoIQ
     public class Client
     {
         /// <summary> Handles the actual network operations </summary>
-        public Executor Runner { get; set; }
+        private Executor Runner { get; set; }
         
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
