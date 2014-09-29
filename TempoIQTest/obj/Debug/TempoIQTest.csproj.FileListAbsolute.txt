@@ -16,3 +16,21 @@ C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\obj\Debug\TempoIQTest.csprojResolveAssemblyReference.cache
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\obj\Debug\TempoIQTest.dll
 C:\Users\cleme_000\Documents\Visual Studio 2013\Projects\TempoIQ-Net\TempoIQ-NET\TempoIQ\TempoIQTest\obj\Debug\TempoIQTest.pdb
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\TempoIQTest.dll.config
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\TempoIQTest.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\TempoIQTest.pdb
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\Newtonsoft.Json.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\NodaTime.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\NodaTime.Serialization.JsonNet.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\NodaTime.Testing.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\RestSharp.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\TempoIQ.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\TempoIQ.pdb
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\Newtonsoft.Json.xml
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\NodaTime.xml
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\NodaTime.Serialization.JsonNet.xml
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\NodaTime.Testing.xml
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\bin\Debug\RestSharp.xml
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\obj\Debug\TempoIQTest.csprojResolveAssemblyReference.cache
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\obj\Debug\TempoIQTest.dll
+C:\Users\cleme_000\Documents\GitHub\TempoIQ-Net\TempoIQTest\obj\Debug\TempoIQTest.pdb

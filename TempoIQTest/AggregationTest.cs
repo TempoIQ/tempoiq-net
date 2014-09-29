@@ -1,6 +1,6 @@
 ﻿using System;
 using TempoIQ;
-using TempoIQ.Models;
+using TempoIQ.Queries;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TempoIQTest

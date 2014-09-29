@@ -9,7 +9,8 @@ using System.Xml.Linq;
 using TempoIQ;
 using TempoIQ.Json;
 using TempoIQ.Models;
-using TempoIQ.Querying;
+using TempoIQ.Queries;
+using TempoIQ.Results;
 using NodaTime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -82,7 +83,7 @@ namespace TempoIQTest
         {
             MakeDevices(10);
             var result = Client.DeleteAllDevices();
-            var devices = Client.ListDevics(new Selection(Selectors.Type.Devices, Selectors.All()));
+            var devices = Client.ListDevics(new Selection(Select.Type.Devices, Select.All()));
             Assert.IsFalse(devices.Value.Any());
         }
 
@@ -107,7 +108,7 @@ namespace TempoIQTest
         public void TestListDevices()
         {
             MakeDevices(10);
-            var selection = new Selection().AddSelector(Selectors.Type.Devices, Selectors.All());
+            var selection = new Selection().AddSelector(Select.Type.Devices, Select.All());
             var result = Client.ListDevics(selection);
             Assert.AreEqual(200, result.Code);
             Assert.IsTrue(result.Value.Any());
@@ -129,7 +130,7 @@ namespace TempoIQTest
         public void TestWriteDataPointsWithWriteRequest()
         {
             var devices = MakeDevices(10);
-            var selection = new Selection().AddSelector(Selectors.Type.Devices, Selectors.All());
+            var selection = new Selection().AddSelector(Select.Type.Devices, Select.All());
             var points = new WriteRequest();
             var lst = new List<DataPoint>();
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 19.667));
@@ -171,8 +172,8 @@ namespace TempoIQTest
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
             var selection = new Selection().AddSelector(
-                Selectors.Type.Devices,
-                Selectors.Or(devices.Select(d => Selectors.Key(d.Key)).ToArray()));
+                Select.Type.Devices,
+                Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
             var result = Client.Read(selection, start, stop);
             var cursor = result.Value;
 
@@ -205,8 +206,8 @@ namespace TempoIQTest
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
             var selection = new Selection().AddSelector(
-                Selectors.Type.Devices,
-                Selectors.Or(devices.Select(d => Selectors.Key(d.Key)).ToArray()));
+                Select.Type.Devices,
+                Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
             var function = new Rollup(Period.FromDays(4), Fold.Count, start);
             var pipeline = new Pipeline().AddFunction(function);
             var result = Client.Read(selection, start, stop);

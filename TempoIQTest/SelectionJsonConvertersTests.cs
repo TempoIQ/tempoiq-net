@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TempoIQ.Querying;
+using TempoIQ.Queries;
 using TempoIQ.Json;
 using Newtonsoft.Json;
 
@@ -22,7 +22,7 @@ namespace TempoIQTest
         public void SerializeSensorsTypeJsonConverterTest()
         {
             string sensors = "\"sensors\"";
-            string serialized = JsonConvert.SerializeObject(Selectors.Type.Sensors);
+            string serialized = JsonConvert.SerializeObject(Select.Type.Sensors);
             Assert.AreEqual(sensors, serialized);
         }
 
@@ -30,15 +30,15 @@ namespace TempoIQTest
         public void DeserializeSensorsTypeJsonConverterTest()
         {
             string sensors = "\"sensors\"";
-            var deserialized = JsonConvert.DeserializeObject<Selectors.Type>(sensors);
-            Assert.AreEqual(Selectors.Type.Sensors, deserialized);
+            var deserialized = JsonConvert.DeserializeObject<Select.Type>(sensors);
+            Assert.AreEqual(Select.Type.Sensors, deserialized);
         }
 
         [TestMethod]
         public void SerializeDevicesTypeJsonConverterTest()
         {
             string devices = "\"devices\"";
-            string serialized = JsonConvert.SerializeObject(Selectors.Type.Devices);
+            string serialized = JsonConvert.SerializeObject(Select.Type.Devices);
             Assert.AreEqual(devices, serialized);
         }
 
@@ -46,8 +46,8 @@ namespace TempoIQTest
         public void DeserializeDevicesTypeJsonConverterTest()
         {
             string devices = "\"devices\"";
-            var deserialized = JsonConvert.DeserializeObject<Selectors.Type>(devices);
-            Assert.AreEqual(Selectors.Type.Devices, deserialized);
+            var deserialized = JsonConvert.DeserializeObject<Select.Type>(devices);
+            Assert.AreEqual(Select.Type.Devices, deserialized);
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@ namespace TempoIQTest
         [TestMethod]
         public void SerializeAndSelector()
         {
-            var and = Selectors.And(Selectors.Attribute("attrKey", "value"), Selectors.AttributeKey("otherKey"), Selectors.Key("someKey"));
+            var and = Select.And(Select.Attribute("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));
             string serialized = JsonConvert.SerializeObject(and);
             string expected = "{\"and\":[{\"attributes\":{\"attrKey\":\"value\"}},{\"attribute_key\":\"otherKey\"},{\"key\":\"someKey\"}]}";
             Assert.AreEqual(expected, serialized);
@@ -90,7 +90,7 @@ namespace TempoIQTest
         [TestMethod]
         public void SerializeOrSelector()
         {
-            var or = Selectors.Or(Selectors.Attribute("attrKey", "value"), Selectors.AttributeKey("otherKey"), Selectors.Key("someKey"));
+            var or = Select.Or(Select.Attribute("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));
             string serialized = JsonConvert.SerializeObject(or);
             string expected = "{\"or\":[{\"attributes\":{\"attrKey\":\"value\"}},{\"attribute_key\":\"otherKey\"},{\"key\":\"someKey\"}]}";
             Assert.AreEqual(expected, serialized);

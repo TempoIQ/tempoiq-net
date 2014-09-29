@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using System.Web;
 using TempoIQ.Json;
 using TempoIQ.Models;
-using TempoIQ.Models.Collections;
-using TempoIQ.Querying;
+using TempoIQ.Results;
+using TempoIQ.Queries;
 using Newtonsoft.Json;
 using NodaTime;
 
@@ -74,7 +74,7 @@ namespace TempoIQ
         public Result<Cursor<Device>> ListDevics(Selection selection)
         {
             var query = new FindQuery(
-                new Search(Selectors.Type.Devices, selection),
+                new Search(Select.Type.Devices, selection),
                 new Find());
             var prelim = Runner.Post<Segment<Device>>("v2/devices/query/", query);
             return prelim.ToCursorResult<Device>();
@@ -100,7 +100,7 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
         public Result<DeleteSummary> DeleteDevices(Selection selection)
         {
-            var query = new FindQuery(new Search(Selectors.Type.Devices, selection), new Find());
+            var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find());
             return Runner.Delete<DeleteSummary>("v2/devices/", query);
         }
 
@@ -110,7 +110,7 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
         public Result<DeleteSummary> DeleteAllDevices()
         {
-            var allSelection = new Selection().AddSelector(Selectors.Type.Devices, new AllSelector());
+            var allSelection = new Selection().AddSelector(Select.Type.Devices, new AllSelector());
             return DeleteDevices(allSelection);
         }
 
@@ -213,7 +213,7 @@ namespace TempoIQ
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
         public Result<Cursor<Row>> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
         {
-            var query = new ReadQuery(new Search(Selectors.Type.Sensors, selection), new Read(start, stop));
+            var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop));
             return Read(query);
         }
 

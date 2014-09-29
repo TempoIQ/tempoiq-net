@@ -1,5 +1,5 @@
 ﻿using System;
-using TempoIQ.Models.Collections;
+using TempoIQ.Results;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TempoIQTest

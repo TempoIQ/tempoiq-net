@@ -6,9 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
-using TempoIQ.Querying;
+using TempoIQ.Queries;
 using TempoIQ.Utilities;
 using TempoIQ.Models;
+using TempoIQ.Results;
 using TempoIQ.Json;
 
 namespace TempoIQ
