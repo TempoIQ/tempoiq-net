@@ -32,8 +32,8 @@ namespace TempoIQTest
         [TestInitialize]
         public void InitCredentials()
         {
-            string key = "2ab2bd61c9c7417c8161dbeb0d9a4f76";
-            string secret = "97832ebfb1d749639f442826c6d6902b";
+            string key = "your_key";
+            string secret = "your_secret";
             string domain = "txedly-james.backend.tempoiq.com";
             InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
             Client = new Client(new Credentials(key, secret), domain);
