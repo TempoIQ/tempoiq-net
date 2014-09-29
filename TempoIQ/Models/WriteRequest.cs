@@ -14,8 +14,7 @@ namespace TempoIQ.Models
     public class WriteRequest : Dictionary<String, IDictionary<String, IList<DataPoint>>>
     {
         [JsonConstructor]
-        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data) 
-            : base()
+        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data) : base()
         {
             foreach(var pair in data)
                 this.Add(pair.Key, pair.Value);
