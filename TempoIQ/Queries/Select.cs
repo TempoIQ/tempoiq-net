@@ -14,6 +14,10 @@ namespace TempoIQ.Queries
     /// </summary>
     public static class Select
     {
+        /// <summary>
+        /// All <code>Selector</code>s work over <code>Sensor</code>s or <code>Device</code>s
+        /// <code>Select.Type</code> specifies which domain object a <code>Selector</code> applies to.
+        /// </summary>
         [JsonConverter(typeof(SelectorTypeConverter))]
         public enum Type
         {
@@ -22,7 +26,7 @@ namespace TempoIQ.Queries
         }
 
         /// <summary>
-        /// An <code>AllSelector</code> selects all objects within its scope
+        /// An <code>AllSelector</code> selects all objects within its scope (i.e. all <code>Devices</code>, for instance)
         /// </summary>
         public static AllSelector All()
         {
@@ -30,23 +34,12 @@ namespace TempoIQ.Queries
         }
 
         /// <summary>
-        /// Combines multiple selectors, and yields only their intersection
+        /// Combines multiple selectors, and yields the intersect of all of their evaluations
         /// </summary>
         /// <param name="children"></param>
         public static AndSelector And(params Selector[] children)
         {
             return new AndSelector(children);
-        }
-
-        /// <summary>
-        /// Selects <code>Device</code>s or <code>Sensor</code>s with the
-        /// appropriate attribute key/value pairs
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public static AttributesSelector Attribute(string key, string value)
-        {
-            return new AttributesSelector(key, value);
         }
 
         /// <summary>
@@ -58,6 +51,17 @@ namespace TempoIQ.Queries
         public static AttributeKeySelector AttributeKey(string key)
         {
             return new AttributeKeySelector(key);
+        }
+
+        /// <summary>
+        /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+        /// appropriate attribute key/value pairs
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static AttributesSelector Attribute(string key, string value)
+        {
+            return new AttributesSelector(key, value);
         }
 
         /// <summary>

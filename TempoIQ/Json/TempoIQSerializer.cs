@@ -10,8 +10,15 @@ using RestSharp.Serializers;
 
 namespace TempoIQ.Json
 {
+    /// <summary>
+    /// Compatibility between <code>Newtonsoft.Json</code> and <code>RestSharp</code>
+    /// </summary>
     public class TempoIQSerializer : ISerializer
     {
+
+        /// <summary>
+        /// The <code>JsonConverter</code>s for the TempoIQ API
+        /// </summary>
         public static JsonConverter[] Converters
         {
             get 
@@ -27,6 +34,11 @@ namespace TempoIQ.Json
             }
         }
 
+        /// <summary>
+        /// Serialize the object to a <code>string</code> for <code>RestSharp</code>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public string Serialize(object obj)
         {
             this.ContentType = "application/json";

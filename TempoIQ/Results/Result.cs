@@ -11,6 +11,9 @@ using TempoIQ.Models;
 
 namespace TempoIQ.Results
 {
+    /// <summary>
+    /// Coarse-grain information regarding the success of a TempoIQ operation
+    /// </summary>
     public enum State
     {
         Failure,
@@ -112,16 +115,16 @@ namespace TempoIQ.Results
         }
     }
 
+    /// <summary>
+    /// Information regarding the result of a deletion
+    /// </summary>
     public class DeleteSummary : Model
     {
-        private int deleted;
-
+        /// <summary>
+        /// The number of objects deleted
+        /// </summary>
         [JsonProperty(PropertyName = "deleted")]
-        public int Deleted
-        {
-            get { return deleted; }
-            private set { this.deleted = value; }
-        }
+        public int Deleted { get; set; }
 
         public DeleteSummary(int deleted)
         {

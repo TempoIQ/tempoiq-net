@@ -110,7 +110,7 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
         public Result<DeleteSummary> DeleteAllDevices()
         {
-            var allSelection = new Selection().AddSelector(Select.Type.Devices, new AllSelector());
+            var allSelection = new Selection().Add(Select.Type.Devices, new AllSelector());
             return DeleteDevices(allSelection);
         }
 

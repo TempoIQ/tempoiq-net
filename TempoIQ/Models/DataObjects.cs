@@ -14,7 +14,9 @@ namespace TempoIQ.Models
     public interface Model { };
 
     /// <summary>
-    /// Represents the empty set, more or less
+    /// Represents the empty set of values.
+    /// Used in cases where the <code>Result</code> of a 
+    /// query does not provide any other value
     /// </summary>
     public class Unit : Model {
         public override bool Equals(object obj)
@@ -58,12 +60,23 @@ namespace TempoIQ.Models
     /// </summary>
     public struct MultiDataPoint : Model
     {
+        /// <summary>
+        /// The timestamp of the sensors' readings
+        /// </summary>
         [JsonProperty("t")]
         public ZonedDateTime t;
 
+        /// <summary>
+        /// A <code>Dictionary</code> from sensor keys to data values
+        /// </summary>
         [JsonProperty("vs")]
         public IDictionary<string, double> vs;
 
+        /// <summary>
+        /// Preferred constructor
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="vs"></param>
         [JsonConstructor]
         public MultiDataPoint(ZonedDateTime t, IDictionary<string, double> vs)
         {

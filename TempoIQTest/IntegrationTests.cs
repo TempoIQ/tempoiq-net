@@ -106,7 +106,7 @@ namespace TempoIQTest
         public void TestListDevices()
         {
             MakeDevices(10);
-            var selection = new Selection().AddSelector(Select.Type.Devices, Select.All());
+            var selection = new Selection().Add(Select.Type.Devices, Select.All());
             var result = Client.ListDevics(selection);
             Assert.AreEqual(200, result.Code);
             Assert.IsTrue(result.Value.Any());
@@ -128,7 +128,7 @@ namespace TempoIQTest
         public void TestWriteDataPointsWithWriteRequest()
         {
             var devices = MakeDevices(10);
-            var selection = new Selection().AddSelector(Select.Type.Devices, Select.All());
+            var selection = new Selection().Add(Select.Type.Devices, Select.All());
             var points = new WriteRequest();
             var lst = new List<DataPoint>();
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 19.667));
@@ -161,7 +161,7 @@ namespace TempoIQTest
             //Read that data out
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
-            var selection = new Selection().AddSelector(
+            var selection = new Selection().Add(
                 Select.Type.Devices,
                 Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
             var result = Client.Read(selection, start, stop);
@@ -191,7 +191,7 @@ namespace TempoIQTest
             //Read that data out with a pipeline
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
-            var selection = new Selection().AddSelector(
+            var selection = new Selection().Add(
                 Select.Type.Devices,
                 Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
             var function = new Rollup(Period.FromDays(4), Fold.Count, start);

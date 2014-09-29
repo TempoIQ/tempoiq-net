@@ -25,26 +25,6 @@ namespace TempoIQ.Json
         }
     }
 
-    public class WriteRequestConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType.Equals(typeof(WriteRequest));
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            writer.WriteRaw(JsonConvert.SerializeObject(((Dictionary<String, Dictionary<String, List<DataPoint>>>)value)));
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            string json = (string)reader.Value;
-            var dict = Newtonsoft.Json.JsonConvert.DeserializeObject(json) as IDictionary<string, IDictionary<string, IList<DataPoint>>>;
-            return new WriteRequest(dict);
-        }
-    }
-
     public class SelectionConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)

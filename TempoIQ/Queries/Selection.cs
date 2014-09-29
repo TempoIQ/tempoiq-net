@@ -22,7 +22,13 @@ namespace TempoIQ.Queries
     {
         public IDictionary<Select.Type, Selector> Selectors { get; private set; }
 
-        public Selection AddSelector(Select.Type type, Selector selector)
+        /// <summary>
+        /// Add an additional <code>Selector</code> to a <code>Selection</code>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public Selection Add(Select.Type type, Selector selector)
         {
             this.Selectors[type] = selector;
             return this;
@@ -47,9 +53,16 @@ namespace TempoIQ.Queries
         }
     }
 
+    /// <summary>
+    /// An <code>AllSelector</code> selects all objects within its scope (i.e. all <code>Devices</code>, for instance)
+    /// </summary>
     [JsonConverter(typeof(AllSelectorConverter))]
     public struct AllSelector : Selector { };
 
+    /// <summary>
+    /// Combines multiple selectors, and yields the intersect of all of their evaluations
+    /// </summary>
+    /// <param name="children"></param>
     [JsonObject]
     public class AndSelector : Selector
     {
@@ -63,19 +76,12 @@ namespace TempoIQ.Queries
         }
     }
 
-    [JsonObject]
-    public class OrSelector : Selector
-    {
-        [JsonProperty("or")]
-        public IList<Selector> Selectors { get; set; }
-
-        [JsonConstructor]
-        public OrSelector(IList<Selector> Selectors)
-        {
-            this.Selectors = Selectors;
-        }
-    }
-
+    /// <summary>
+    /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+    /// any value for the given attribute key
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
     [JsonObject]
     public class AttributeKeySelector : Selector
     {
@@ -89,6 +95,12 @@ namespace TempoIQ.Queries
         }
     }
 
+    /// <summary>
+    /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+    /// appropriate attribute key/value pairs
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
     [JsonObject]
     public class AttributesSelector : Selector
     {
@@ -109,6 +121,12 @@ namespace TempoIQ.Queries
         }
     }
 
+    /// <summary>
+    /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+    /// correct unique key
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
     [JsonObject]
     public class KeySelector : Selector
     {
@@ -121,4 +139,22 @@ namespace TempoIQ.Queries
             this.Key = key;
         }
     }
+
+    /// <summary>
+    /// Combines several other selectors, and yields the union of all of their evaluations
+    /// </summary>
+    /// <param name="children"></param>
+    [JsonObject]
+    public class OrSelector : Selector
+    {
+        [JsonProperty("or")]
+        public IList<Selector> Selectors { get; set; }
+
+        [JsonConstructor]
+        public OrSelector(IList<Selector> Selectors)
+        {
+            this.Selectors = Selectors;
+        }
+    }
+
 }

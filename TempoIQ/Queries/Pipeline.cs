@@ -67,13 +67,19 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// 
+    /// <code>Rollup</code>s represent a function application over a data stream broken into chunks of a provided period's duration
     /// </summary>
     public class Rollup : PipelineFunction
     { 
+        /// <summary>
+        /// The 'chunk-size' of the <code>Rollup</code>
+        /// </summary>
         [JsonProperty("period")]
         public Period Period { get; set; } 
 
+        /// <summary>
+        /// The folding function for the <code>Rollup</code>
+        /// </summary>
         [JsonIgnore]
         public Fold Fold { get; set; } 
 

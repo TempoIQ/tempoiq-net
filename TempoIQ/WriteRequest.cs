@@ -11,8 +11,6 @@ namespace TempoIQ.Models
 {
     ///<summary>A request for writing multiple DataPoints to multiple Sensors.</summary>
     ///<para>The request is created and datapoints are added for a Sensor.</para>
-    
-    //[JsonConverter(typeof(WriteRequestConverter))]
     public class WriteRequest : Dictionary<String, IDictionary<String, IList<DataPoint>>>
     {
         [JsonConstructor]

@@ -41,9 +41,15 @@ namespace TempoIQ.Queries
         [JsonIgnore]
         public string Name { get { return "read"; } }
 
+        /// <summary>
+        /// The start time of the <code>Read</code>
+        /// </summary>
         [JsonProperty("start")]
         public ZonedDateTime Start { get; private set; }
 
+        /// <summary>
+        /// The stop time of the <code>Read</code>
+        /// </summary>
         [JsonProperty("stop")]
         public ZonedDateTime Stop { get; private set; }
 

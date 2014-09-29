@@ -13,6 +13,9 @@ using TempoIQ.Models;
 
 namespace TempoIQ.Results
 {
+    /// <summary>
+    /// Fine-grain information regarding the status of a TempoIQ operation
+    /// </summary>
     [JsonObject]
     public class Status
     {
