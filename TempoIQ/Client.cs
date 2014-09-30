@@ -102,7 +102,6 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
             var result = Runner.Delete<Unit>(target);
-            result.Value = new Unit();
             return result;
         }
 
@@ -154,7 +153,6 @@ namespace TempoIQ
                 (acc, mdp) => mdp.vs.Aggregate(acc,
                     (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
             var result = WriteDataPoints(writeRequest);
-            result.Value = new Unit();
             return result;
         }
 
@@ -168,7 +166,6 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(Device device, Sensor sensor, IList<DataPoint> data)
         {
             var result = WriteDataPoints(device.Key, sensor.Key, data);
-            result.Value = new Unit();
             return result;
         }
 
@@ -184,7 +181,6 @@ namespace TempoIQ
             var writeRequest = data.Aggregate(new WriteRequest(),
                 (req, dp) => req.Add(deviceKey, sensorKey, dp));
             var result = WriteDataPoints(writeRequest);
-            result.Value = new Unit();
             return result;
         }
 
@@ -197,7 +193,6 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/write/", API_VERSION);
             var result =  Runner.Post<Unit>(target, writeRequest);
-            result.Value = new Unit();
             return result;
         }
 
