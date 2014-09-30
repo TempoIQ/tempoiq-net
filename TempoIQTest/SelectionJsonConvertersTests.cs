@@ -57,7 +57,7 @@ namespace TempoIQTest
             string[] anyWords = {"\"any\"", "\"all\"", "\"*\""};
             var allSelectors = from word in anyWords select JsonConvert.DeserializeObject<AllSelector>(word);
             var allSelector = new AllSelector();
-            allSelectors.Each((selector, i) => { Assert.AreEqual(allSelector, selector); });
+            allSelectors.Each((selector) => { Assert.AreEqual(allSelector, selector); });
         }
 
         [TestMethod]
