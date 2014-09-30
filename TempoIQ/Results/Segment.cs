@@ -16,7 +16,7 @@ namespace TempoIQ.Results
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [JsonObject]
-    public class Segment<T> : IEnumerable<T>, Model
+    public class Segment<T> : IEnumerable<T>, IModel
     {
         /// <summary>
         /// the underlying chunk of data

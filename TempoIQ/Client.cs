@@ -22,7 +22,9 @@ namespace TempoIQ
         /// <summary> Handles the actual network operations </summary>
         private Executor Runner { get; set; }
 
-        private const string API_VERSION = "v2";
+        public const string API_VERSION1 = "v1";
+        public const string API_VERSION2 = "v2";
+        public string API_VERSION { get; private set; }
 
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
@@ -33,11 +35,14 @@ namespace TempoIQ
         /// <param name="timeout"></param>
         public Client(Credentials credentials, string host, int port = 443, int timeout = 50000)
         {
-            var builder = new UriBuilder();
-            builder.Scheme = "https";
-            builder.Host = host;
-            builder.Port = port;
-            this.Runner = new Executor(builder.Uri, credentials, timeout);
+            API_VERSION = API_VERSION2;
+            var builder = new UriBuilder
+            {
+                Scheme = "https",
+                Host = host,
+                Port = port
+            };
+            Runner = new Executor(builder.Uri, credentials, timeout);
         }
 
         /// <summary>
@@ -47,7 +52,7 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the created <code>Device</code></returns>
         public Result<Device> CreateDevice(Device device)
         {
-            string target = String.Format("v2/devices/", device.Key);
+            string target = String.Format("{0}/devices/", API_VERSION);
             return Runner.Post<Device>(target, device);
         }
         
@@ -58,7 +63,7 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the device of that key, if any</returns>
         public Result<Device> GetDevice(string key)
         {
-            var target = String.Format("v2/devices/{0}/",  HttpUtility.UrlEncode(key));
+            var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(key));
             return Runner.Get<Device>(target);
         }
 
@@ -69,7 +74,7 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the updated <code>Device</code></returns>
         public Result<Device> UpdateDevice(Device device)
         {
-            var target = String.Format("v2/devices/{0}/", HttpUtility.UrlEncode(device.Key));
+            var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
             return Runner.Put<Device>(target, device);
         }
 
@@ -80,10 +85,11 @@ namespace TempoIQ
         /// <returns>a result with the selected <code>Device</code>s</returns>
         public Result<Cursor<Device>> ListDevics(Selection selection)
         {
+            var target = String.Format("{0}/devices/query/", API_VERSION);
             var query = new FindQuery(
                 new Search(Select.Type.Devices, selection),
                 new Find());
-            var prelim = Runner.Post<Segment<Device>>("v2/devices/query/", query);
+            var prelim = Runner.Post<Segment<Device>>(target, query);
             return prelim.ToCursorResult<Device>();
         }
 
@@ -94,7 +100,7 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
         public Result<Unit> DeleteDevice(Device device)
         {
-            var target = String.Format("v2/devices/{0}/", HttpUtility.UrlEncode(device.Key));
+            var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
             var result = Runner.Delete<Unit>(target);
             result.Value = new Unit();
             return result;
@@ -107,8 +113,9 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
         public Result<DeleteSummary> DeleteDevices(Selection selection)
         {
+            var target = String.Format("{0}/devices/", API_VERSION);
             var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find());
-            return Runner.Delete<DeleteSummary>("v2/devices/", query);
+            return Runner.Delete<DeleteSummary>(target, query);
         }
 
         /// <summary>
@@ -188,7 +195,8 @@ namespace TempoIQ
         /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(WriteRequest writeRequest)
         {
-            var result =  Runner.Post<Unit>("v2/write/", writeRequest);
+            var target = String.Format("{0}/write/", API_VERSION);
+            var result =  Runner.Post<Unit>(target, writeRequest);
             result.Value = new Unit();
             return result;
         }
@@ -229,7 +237,8 @@ namespace TempoIQ
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
         public Result<Cursor<Row>> Read(ReadQuery query)
         {
-            return Runner.Post<Segment<Row>>("v2/read/query", query).ToCursorResult<Row>();
+            var target = String.Format("{0}/read/query/", API_VERSION);
+            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
         }
     }
 

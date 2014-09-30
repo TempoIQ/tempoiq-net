@@ -14,7 +14,7 @@ namespace TempoIQ.Models
     /// Devices have sensors.
     /// </summary>
     [JsonObject]
-    public class Device : Model
+    public class Device : IModel
     {
         [JsonProperty("key")]
         public string Key { get; set; }
