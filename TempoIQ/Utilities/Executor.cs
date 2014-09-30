@@ -61,7 +61,6 @@ namespace TempoIQ.Utilities
             request.JsonSerializer = this.Serialization;
             request.AddBody(body);
             var response = Rest.Execute(request);
-            Console.WriteLine(response.Content);
             return response.ToResult<T>();
         }
     }
