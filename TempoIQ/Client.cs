@@ -118,16 +118,6 @@ namespace TempoIQ
         }
 
         /// <summary>
-        /// Delete all devices
-        /// </summary>
-        /// <returns>a Result with the success or failure of the operation only</returns>
-        public Result<DeleteSummary> DeleteAllDevices()
-        {
-            var allSelection = new Selection().Add(Select.Type.Devices, new AllSelector());
-            return DeleteDevices(allSelection);
-        }
-
-        /// <summary>
         /// Write datapoints with a MultiDataPoint
         /// </summary>
         /// <param name="device"></param>

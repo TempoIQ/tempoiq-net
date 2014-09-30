@@ -32,9 +32,9 @@ namespace TempoIQTest
         [TestInitialize]
         public void InitCredentials()
         {
-            string key = "2ab2bd61c9c7417c8161dbeb0d9a4f76";
-            string secret = "97832ebfb1d749639f442826c6d6902b";
-            string domain = "txedly-james.backend.tempoiq.com";
+            string key = "YOUR KEY";
+            string secret = "YOUR SECRET";
+            string domain = "YOUR DOMAIN";
             InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
             Client = new Client(new Credentials(key, secret), domain);
         }
@@ -42,7 +42,8 @@ namespace TempoIQTest
         [TestCleanup]
         public void Cleanup()
         {
-            Client.DeleteAllDevices();
+            var allSelection = new Selection().Add(Select.Type.Devices, new AllSelector());
+            Client.DeleteDevices(allSelection);
         }
 
         static public Device PostNewDevice()
@@ -80,7 +81,7 @@ namespace TempoIQTest
         public void TestDeleteDevices()
         {
             MakeDevices(10);
-            var result = Client.DeleteAllDevices();
+            var result = Client.DeleteDevices(new Selection(Select.Type.Devices, Select.All()));
             var devices = Client.ListDevics(new Selection(Select.Type.Devices, Select.All()));
             Assert.IsFalse(devices.Value.Any());
         }
