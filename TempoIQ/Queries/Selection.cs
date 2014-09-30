@@ -115,9 +115,15 @@ namespace TempoIQ.Queries
 
         public AttributesSelector(string key, string value)
         {
-            var pair = new Dictionary<string, string>(1);
-            pair.Add(key, value);
-            this.Attributes = pair;
+            var pairs = new Dictionary<string, string>();
+            pairs.Add(key, value);
+            this.Attributes = pairs;
+        }
+
+        public AttributesSelector Add(string key, string value)
+        {
+            this.Attributes.Add(key, value);
+            return this;
         }
     }
 

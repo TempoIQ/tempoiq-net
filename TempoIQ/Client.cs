@@ -211,7 +211,10 @@ namespace TempoIQ
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
         public Result<Cursor<Row>> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
         {
-            return Read(selection, new Pipeline(), start, stop);
+            var search = new Search(Select.Type.Sensors, selection);
+            var read = new Read(start, stop);
+            var query = new ReadQuery(search, read);
+            return Read(query);
         }
 
         /// <summary>
@@ -225,7 +228,7 @@ namespace TempoIQ
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
         public Result<Cursor<Row>> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
         {
-            var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop));
+            var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop), pipeline);
             return Read(query);
         }
 
