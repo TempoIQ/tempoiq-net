@@ -12,7 +12,7 @@ using TempoIQ.Models;
 namespace TempoIQ.Results
 {
     /// <summary>
-    /// The <code>Cursor</code> is the toplevel collection of TempoIQ data from a query
+    /// The Cursor is the toplevel collection of TempoIQ data from a query
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Cursor<T> : IEnumerable<T>, IModel
@@ -61,13 +61,13 @@ namespace TempoIQ.Results
     }
 
     /// <summary>
-    /// Extension methods for <code>Cursor<Row></code>
+    /// Extension methods for Cursor<Row>
     /// </summary>
     public static class CursorRowExtension
     {
         /// <summary>
-        /// exposes an enumeration of a <code>Cursor</code>'s data as a series of Tuples 
-        /// of strings (device, sensor keys) by <code>DataPoint</code>
+        /// exposes an enumeration of a Cursor's data as a series of Tuples 
+        /// of strings (device, sensor keys) by DataPoint
         /// </summary>
         /// <param name="cursor"></param>
         /// <returns></returns>

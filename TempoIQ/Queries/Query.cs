@@ -34,7 +34,7 @@ namespace TempoIQ.Queries
     public interface IQuery { }
     
     /// <summary>
-    /// A <code>Query</code> for reading data out of TempoIQ
+    /// A Query for reading data out of TempoIQ
     /// </summary>
     [JsonObject]
     public class ReadQuery : IQuery
@@ -58,7 +58,7 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// A <code>Query</code> for finding specific domain objects
+    /// A Query for finding specific domain objects
     /// </summary>
     [JsonObject]
     public class FindQuery : IQuery

@@ -15,7 +15,7 @@ namespace TempoIQ.Models
 
     /// <summary>
     /// Represents the empty set of values.
-    /// Used in cases where the <code>Result</code> of a 
+    /// Used in cases where the Result of a 
     /// query does not provide any other value
     /// </summary>
     public class Unit : IModel {
@@ -67,7 +67,7 @@ namespace TempoIQ.Models
         public ZonedDateTime t;
 
         /// <summary>
-        /// A <code>Dictionary</code> from sensor keys to data values
+        /// A Dictionary from sensor keys to data values
         /// </summary>
         [JsonProperty("vs")]
         public IDictionary<string, double> vs;

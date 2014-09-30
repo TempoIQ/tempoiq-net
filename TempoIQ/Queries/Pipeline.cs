@@ -19,7 +19,7 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// A <code>Pipeline</code> represents a series of transformations on a stream of sensor data
+    /// A Pipeline represents a series of transformations on a stream of sensor data
     /// </summary>
     public class Pipeline
     {
@@ -67,18 +67,18 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// <code>Rollup</code>s represent a function application over a data stream broken into chunks of a provided period's duration
+    /// Rollups represent a function application over a data stream broken into chunks of a provided period's duration
     /// </summary>
     public class Rollup : PipelineFunction
     { 
         /// <summary>
-        /// The 'chunk-size' of the <code>Rollup</code>
+        /// The 'chunk-size' of the Rollup
         /// </summary>
         [JsonProperty("period")]
         public Period Period { get; set; } 
 
         /// <summary>
-        /// The folding function for the <code>Rollup</code>
+        /// The folding function for the Rollup
         /// </summary>
         [JsonIgnore]
         public Fold Fold { get; set; } 
@@ -126,7 +126,7 @@ namespace TempoIQ.Queries
     public class Aggregation : PipelineFunction
     {
         /// <summary>
-        /// The <code>Aggregation</code>'s underlying <code>Fold</code> function
+        /// The Aggregation's underlying Fold function
         /// </summary>
         public Fold Fold { get; private set; }
 
@@ -148,7 +148,7 @@ namespace TempoIQ.Queries
         }
 
         /// <para>
-        /// <code>Aggregation aggregation = new Aggregation(Fold.SUM);</code>
+        /// Aggregation aggregation = new Aggregation(Fold.SUM);
         /// </para>
         public Aggregation()
         {

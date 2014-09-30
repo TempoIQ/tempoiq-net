@@ -15,7 +15,7 @@ using NodaTime;
 namespace TempoIQ
 {
     /// <summary>
-    /// The <code>Client</code> is the primary interface with TempoIQ
+    /// The Client is the primary interface with TempoIQ
     /// </summary>
     public class Client
     {
@@ -49,7 +49,7 @@ namespace TempoIQ
         /// Create a new device
         /// </summary>
         /// <param name="device"></param>
-        /// <returns>a <code>Result</code> with the created <code>Device</code></returns>
+        /// <returns>a Result with the created Device</returns>
         public Result<Device> CreateDevice(Device device)
         {
             string target = String.Format("{0}/devices/", API_VERSION);
@@ -60,7 +60,7 @@ namespace TempoIQ
         /// Retrieve a device of a given key
         /// </summary>
         /// <param name="key"></param>
-        /// <returns>a <code>Result</code> with the device of that key, if any</returns>
+        /// <returns>a Result with the device of that key, if any</returns>
         public Result<Device> GetDevice(string key)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(key));
@@ -71,7 +71,7 @@ namespace TempoIQ
         /// Replace a device
         /// </summary>
         /// <param name="device"></param>
-        /// <returns>a <code>Result</code> with the updated <code>Device</code></returns>
+        /// <returns>a Result with the updated Device</returns>
         public Result<Device> UpdateDevice(Device device)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
@@ -82,7 +82,7 @@ namespace TempoIQ
         /// List the devices which meet a given selection
         /// </summary>
         /// <param name="selection"></param>
-        /// <returns>a result with the selected <code>Device</code>s</returns>
+        /// <returns>a result with the selected Devices</returns>
         public Result<Cursor<Device>> ListDevics(Selection selection)
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
@@ -97,7 +97,7 @@ namespace TempoIQ
         /// Delete a device of a given key
         /// </summary>
         /// <param name="device"></param>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> DeleteDevice(Device device)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
@@ -109,7 +109,7 @@ namespace TempoIQ
         /// Delete the devices which meet a given selection
         /// </summary>
         /// <param name="selection"></param>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<DeleteSummary> DeleteDevices(Selection selection)
         {
             var target = String.Format("{0}/devices/", API_VERSION);
@@ -120,7 +120,7 @@ namespace TempoIQ
         /// <summary>
         /// Delete all devices
         /// </summary>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<DeleteSummary> DeleteAllDevices()
         {
             var allSelection = new Selection().Add(Select.Type.Devices, new AllSelector());
@@ -128,11 +128,11 @@ namespace TempoIQ
         }
 
         /// <summary>
-        /// Write datapoints with a <code>MultiDataPoint</code>
+        /// Write datapoints with a MultiDataPoint
         /// </summary>
         /// <param name="device"></param>
         /// <param name="data"></param>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(Device device, MultiDataPoint data)
         {
             var writeRequest = new WriteRequest();
@@ -142,11 +142,11 @@ namespace TempoIQ
         }
 
         /// <summary>
-        /// Write datapoints with a <code>List<MultiDataPoint></code>
+        /// Write datapoints with a List<MultiDataPoint>
         /// </summary>
         /// <param name="device"></param>
         /// <param name="data"></param>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(Device device, IList<MultiDataPoint> data)
         {
             var writeRequest = data.Aggregate(new WriteRequest(),
@@ -162,7 +162,7 @@ namespace TempoIQ
         /// <param name="device"></param>
         /// <param name="sensor"></param>
         /// <param name="data"></param>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(Device device, Sensor sensor, IList<DataPoint> data)
         {
             var result = WriteDataPoints(device.Key, sensor.Key, data);
@@ -175,7 +175,7 @@ namespace TempoIQ
         /// <param name="deviceKey"></param>
         /// <param name="sensorKey"></param>
         /// <param name="data"></param>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
         {
             var writeRequest = data.Aggregate(new WriteRequest(),
@@ -188,7 +188,7 @@ namespace TempoIQ
         /// Write data from a WriteRequest object
         /// </summary>
         /// <param name="writeRequest"></param>
-        /// <returns>a <code>Result</code> with the success or failure of the operation only</returns>
+        /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(WriteRequest writeRequest)
         {
             var target = String.Format("{0}/write/", API_VERSION);
@@ -213,7 +213,7 @@ namespace TempoIQ
         }
 
         /// <summary>
-        /// Read data from a <code>Selection</code>, function pipeline, start time and stop time
+        /// Read data from a Selection, function pipeline, start time and stop time
         /// </summary>
         /// <param name="selection"></param>
         /// <param name="pipeline"></param>
@@ -228,7 +228,7 @@ namespace TempoIQ
         }
 
         /// <summary>
-        /// Read data from a <code>ReadQuery</code>
+        /// Read data from a ReadQuery
         /// </summary>
         /// <param name="query"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
@@ -244,12 +244,12 @@ namespace TempoIQ
     {
         /// <summary>
         /// Extension method to transform Results 
-        /// to <code>Result<Cursor></code>s from <code>Result<Segment>/s
+        /// to Result<Cursor>s from Result<Segment>/s
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="result"></param>
-        /// <returns>An <code>Result</code> wrapping the cursor equivalent to the 
-        /// <code>Segment</code> in the original's <code>Value</code></returns>
+        /// <returns>An Result wrapping the cursor equivalent to the 
+        /// Segment in the original's Value</returns>
         public static Result<Cursor<T>> ToCursorResult<T>(this Result<Segment<T>> result)
         {
             Cursor<T> cursor;
