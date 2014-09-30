@@ -59,7 +59,7 @@ namespace TempoIQ.Queries
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public static AttributesSelector Attribute(string key, string value)
+        public static AttributesSelector Attributes(string key, string value)
         {
             return new AttributesSelector(key, value);
         }

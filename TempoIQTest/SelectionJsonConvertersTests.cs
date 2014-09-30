@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TempoIQ.Queries;
 using TempoIQ.Json;
 using Newtonsoft.Json;
+using TempoIQ.Utilities.Internal;
 
 namespace TempoIQTest
 {
@@ -55,7 +56,8 @@ namespace TempoIQTest
         {
             string[] anyWords = {"\"any\"", "\"all\"", "\"*\""};
             var allSelectors = from word in anyWords select JsonConvert.DeserializeObject<AllSelector>(word);
-            foreach (var all in allSelectors);
+            var allSelector = new AllSelector();
+            allSelectors.Each((selector) => { Assert.AreEqual(allSelector, selector); });
         }
 
         [TestMethod]
@@ -69,7 +71,7 @@ namespace TempoIQTest
         [TestMethod]
         public void SerializeAndSelector()
         {
-            var and = Select.And(Select.Attribute("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));
+            var and = Select.And(Select.Attributes("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));
             string serialized = JsonConvert.SerializeObject(and);
             string expected = "{\"and\":[{\"attributes\":{\"attrKey\":\"value\"}},{\"attribute_key\":\"otherKey\"},{\"key\":\"someKey\"}]}";
             Assert.AreEqual(expected, serialized);
@@ -78,7 +80,7 @@ namespace TempoIQTest
         [TestMethod]
         public void SerializeOrSelector()
         {
-            var or = Select.Or(Select.Attribute("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));
+            var or = Select.Or(Select.Attributes("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));
             string serialized = JsonConvert.SerializeObject(or);
             string expected = "{\"or\":[{\"attributes\":{\"attrKey\":\"value\"}},{\"attribute_key\":\"otherKey\"},{\"key\":\"someKey\"}]}";
             Assert.AreEqual(expected, serialized);

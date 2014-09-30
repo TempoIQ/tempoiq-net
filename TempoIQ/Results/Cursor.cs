@@ -15,7 +15,7 @@ namespace TempoIQ.Results
     /// The <code>Cursor</code> is the toplevel collection of TempoIQ data from a query
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Cursor<T> : IEnumerable<T>, Model
+    public class Cursor<T> : IEnumerable<T>, IModel
     {
         public IEnumerable<Segment<T>> Segments { get; private set; }
 

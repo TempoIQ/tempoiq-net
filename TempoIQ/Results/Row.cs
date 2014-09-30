@@ -18,7 +18,7 @@ namespace TempoIQ.Results
     /// <para>A Row returns the "cells" from "table" that a 
     /// <code>Cursor</code> of <code>Row</code>s implicitly defines </para>
     [JsonObject]
-    public class Row : IEnumerable<Tuple<string, string, double>>, Model
+    public class Row : IEnumerable<Tuple<string, string, double>>, IModel
     {
         [JsonProperty("t")]
         public ZonedDateTime Timestamp { get; set; }

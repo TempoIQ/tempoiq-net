@@ -86,12 +86,12 @@ namespace TempoIQ.Queries
     public class AttributeKeySelector : Selector
     {
         [JsonProperty("attribute_key")]
-        public string key;
+        public string Key { get; set; }
 
         [JsonConstructor]
-        public AttributeKeySelector(string k)
+        public AttributeKeySelector(string key)
         {
-            key = k;
+            Key = key;
         }
     }
 
