@@ -12,13 +12,13 @@ using TempoIQ.Models;
 namespace TempoIQ.Results
 {
     /// <summary>
-    /// A Row represents the <code>DataPoints</code> of several <code>Sensors</code> and/or <code>Devices</code>
+    /// A Row represents the DataPoints of several Sensors and/or Devices
     /// for a given time.
     /// </summary>
     /// <para>A Row returns the "cells" from "table" that a 
-    /// <code>Cursor</code> of <code>Row</code>s implicitly defines </para>
+    /// Cursor of Rows implicitly defines </para>
     [JsonObject]
-    public class Row : IEnumerable<Tuple<string, string, double>>, Model
+    public class Row : IEnumerable<Tuple<string, string, double>>, IModel
     {
         [JsonProperty("t")]
         public ZonedDateTime Timestamp { get; set; }

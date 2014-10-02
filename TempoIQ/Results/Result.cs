@@ -118,7 +118,7 @@ namespace TempoIQ.Results
     /// <summary>
     /// Information regarding the result of a deletion
     /// </summary>
-    public class DeleteSummary : Model
+    public class DeleteSummary : IModel
     {
         /// <summary>
         /// The number of objects deleted

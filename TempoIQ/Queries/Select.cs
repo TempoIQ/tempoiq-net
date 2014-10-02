@@ -10,13 +10,13 @@ using Newtonsoft.Json;
 namespace TempoIQ.Queries
 {
     /// <summary>
-    /// Some utilities for working with <code>Selector</code>s
+    /// Some utilities for working with Selectors
     /// </summary>
     public static class Select
     {
         /// <summary>
-        /// All <code>Selector</code>s work over <code>Sensor</code>s or <code>Device</code>s
-        /// <code>Select.Type</code> specifies which domain object a <code>Selector</code> applies to.
+        /// All Selectors work over Sensors or Devices
+        /// Select.Type specifies which domain object a Selector applies to.
         /// </summary>
         [JsonConverter(typeof(SelectorTypeConverter))]
         public enum Type
@@ -26,7 +26,7 @@ namespace TempoIQ.Queries
         }
 
         /// <summary>
-        /// An <code>AllSelector</code> selects all objects within its scope (i.e. all <code>Devices</code>, for instance)
+        /// An AllSelector selects all objects within its scope (i.e. all Devices, for instance)
         /// </summary>
         public static AllSelector All()
         {
@@ -43,7 +43,7 @@ namespace TempoIQ.Queries
         }
 
         /// <summary>
-        /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+        /// Selects Devices or Sensors with the
         /// any value for the given attribute key
         /// </summary>
         /// <param name="key"></param>
@@ -54,18 +54,18 @@ namespace TempoIQ.Queries
         }
 
         /// <summary>
-        /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+        /// Selects Devices or Sensors with the
         /// appropriate attribute key/value pairs
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public static AttributesSelector Attribute(string key, string value)
+        public static AttributesSelector Attributes(string key, string value)
         {
             return new AttributesSelector(key, value);
         }
 
         /// <summary>
-        /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+        /// Selects Devices or Sensors with the
         /// appropriate attribute key/value pairs
         /// </summary>
         /// <param name="key"></param>
@@ -76,7 +76,7 @@ namespace TempoIQ.Queries
         }
 
         /// <summary>
-        /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+        /// Selects Devices or Sensors with the
         /// correct unique key
         /// </summary>
         /// <param name="key"></param>

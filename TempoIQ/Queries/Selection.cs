@@ -23,7 +23,7 @@ namespace TempoIQ.Queries
         public IDictionary<Select.Type, Selector> Selectors { get; private set; }
 
         /// <summary>
-        /// Add an additional <code>Selector</code> to a <code>Selection</code>
+        /// Add an additional Selector to a Selection
         /// </summary>
         /// <param name="type"></param>
         /// <param name="selector"></param>
@@ -54,7 +54,7 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// An <code>AllSelector</code> selects all objects within its scope (i.e. all <code>Devices</code>, for instance)
+    /// An AllSelector selects all objects within its scope (i.e. all Devices, for instance)
     /// </summary>
     [JsonConverter(typeof(AllSelectorConverter))]
     public struct AllSelector : Selector { };
@@ -77,7 +77,7 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+    /// Selects Devices or Sensors with the
     /// any value for the given attribute key
     /// </summary>
     /// <param name="key"></param>
@@ -86,17 +86,17 @@ namespace TempoIQ.Queries
     public class AttributeKeySelector : Selector
     {
         [JsonProperty("attribute_key")]
-        public string key;
+        public string Key { get; set; }
 
         [JsonConstructor]
-        public AttributeKeySelector(string k)
+        public AttributeKeySelector(string key)
         {
-            key = k;
+            Key = key;
         }
     }
 
     /// <summary>
-    /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+    /// Selects Devices or Sensors with the
     /// appropriate attribute key/value pairs
     /// </summary>
     /// <param name="key"></param>
@@ -115,14 +115,20 @@ namespace TempoIQ.Queries
 
         public AttributesSelector(string key, string value)
         {
-            var pair = new Dictionary<string, string>(1);
-            pair.Add(key, value);
-            this.Attributes = pair;
+            var pairs = new Dictionary<string, string>();
+            pairs.Add(key, value);
+            this.Attributes = pairs;
+        }
+
+        public AttributesSelector Add(string key, string value)
+        {
+            this.Attributes.Add(key, value);
+            return this;
         }
     }
 
     /// <summary>
-    /// Selects <code>Device</code>s or <code>Sensor</code>s with the
+    /// Selects Devices or Sensors with the
     /// correct unique key
     /// </summary>
     /// <param name="key"></param>

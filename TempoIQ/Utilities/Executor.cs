@@ -16,18 +16,15 @@ namespace TempoIQ.Utilities
 {    
     public class Executor
     {
-        public int Port { get; set; }
-
         private RestClient Rest { get; set; }
         
         private TempoIQSerializer Serialization { get; set; }
 
-        public Executor(string baseUrl, Credentials credentials, int port = 443, int timeout = 50000)
+        public Executor(Uri uri, Credentials credentials, int timeout = 50000)
         {
-            this.Port = port;
             this.Serialization = new TempoIQSerializer();
-            var rest = new RestClient(String.Format("https://{0}:{1}/", baseUrl, port));
-            rest.Authenticator = new HttpBasicAuthenticator(credentials.key, credentials.secret);
+            var rest = new RestClient(uri.AbsoluteUri);
+            rest.Authenticator = new HttpBasicAuthenticator(credentials.Key, credentials.secret);
             rest.Timeout = timeout;
             this.Rest = rest;
         }
@@ -64,7 +61,6 @@ namespace TempoIQ.Utilities
             request.JsonSerializer = this.Serialization;
             request.AddBody(body);
             var response = Rest.Execute(request);
-            Console.WriteLine(response.Content);
             return response.ToResult<T>();
         }
     }

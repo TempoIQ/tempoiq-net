@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\TempoIQ.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -79,6 +80,7 @@
     <Compile Include="Utilities\EqualsBuilder.cs" />
     <Compile Include="Utilities\HashCodeHelper.cs" />
     <Compile Include="Models\WriteRequest.cs" />
+    <Compile Include="Utilities\IEnumerableExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -14,7 +14,7 @@ namespace TempoIQ.Models
     /// Devices have sensors.
     /// </summary>
     [JsonObject]
-    public class Device : Model
+    public class Device : IModel
     {
         [JsonProperty("key")]
         public string Key { get; set; }
@@ -27,14 +27,6 @@ namespace TempoIQ.Models
 
         [JsonProperty("sensors")]
         public IList<Sensor> Sensors { get; set; }
-
-        public Device()
-        {
-            this.Key = "";
-            this.Name = "";
-            this.Sensors = new List<Sensor>();
-            this.Attributes = new Dictionary<string, string>();
-        }
 
         [JsonConstructor]
         public Device(string key, string name, IDictionary<string, string> attributes, IList<Sensor> sensors)

@@ -9,7 +9,7 @@ using NodaTime;
 namespace TempoIQ.Queries
 {
     /// <summary>
-    /// A <code>Search</code>'s behavior towards the objects it selects
+    /// A Search's behavior towards the objects it selects
     /// </summary>
     public interface Action
     {
@@ -17,7 +17,7 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// The behavior to find objects through a <code>Query</code>
+    /// The behavior to find objects through a Query
     /// </summary>
     [JsonObject]
     public class Find : Action
@@ -33,7 +33,7 @@ namespace TempoIQ.Queries
     }
 
     /// <summary>
-    /// The behavior to read from <code>Start</code> through <code>Stop</code>
+    /// The behavior to read from Start through Stop
     /// </summary>
     [JsonObject]
     public class Read : Action
@@ -42,13 +42,13 @@ namespace TempoIQ.Queries
         public string Name { get { return "read"; } }
 
         /// <summary>
-        /// The start time of the <code>Read</code>
+        /// The start time of the Read
         /// </summary>
         [JsonProperty("start")]
         public ZonedDateTime Start { get; private set; }
 
         /// <summary>
-        /// The stop time of the <code>Read</code>
+        /// The stop time of the Read
         /// </summary>
         [JsonProperty("stop")]
         public ZonedDateTime Stop { get; private set; }

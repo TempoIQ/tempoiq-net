@@ -14,8 +14,7 @@ namespace TempoIQ.Models
     public class WriteRequest : Dictionary<String, IDictionary<String, IList<DataPoint>>>
     {
         [JsonConstructor]
-        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data) 
-            : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>())
+        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data) : base()
         {
             foreach(var pair in data)
                 this.Add(pair.Key, pair.Value);
@@ -24,7 +23,7 @@ namespace TempoIQ.Models
         /// <summary>
         /// Base constructor; create a new WriteRequest
         /// </summary>
-        public WriteRequest() : base(new Dictionary<String, IDictionary<String, IList<DataPoint>>>()) { }
+        public WriteRequest() : base() { }
 
         ///<summary>Adds a DataPoint to the request for a Device and Sensor.</summary>
         ///<param name="device">the Device to write to</param>

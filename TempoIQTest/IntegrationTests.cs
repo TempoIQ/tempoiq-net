@@ -34,7 +34,7 @@ namespace TempoIQTest
         {
             string key = "YOUR KEY";
             string secret = "YOUR SECRET";
-            string domain = "YOUR BACKEND URL";
+            string domain = "YOUR DOMAIN";
             InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
             Client = new Client(new Credentials(key, secret), domain);
         }
@@ -42,7 +42,8 @@ namespace TempoIQTest
         [TestCleanup]
         public void Cleanup()
         {
-            Client.DeleteAllDevices();
+            var allSelection = new Selection().Add(Select.Type.Devices, new AllSelector());
+            Client.DeleteDevices(allSelection);
         }
 
         static public Device PostNewDevice()
@@ -80,7 +81,7 @@ namespace TempoIQTest
         public void TestDeleteDevices()
         {
             MakeDevices(10);
-            var result = Client.DeleteAllDevices();
+            var result = Client.DeleteDevices(new Selection(Select.Type.Devices, Select.All()));
             var devices = Client.ListDevics(new Selection(Select.Type.Devices, Select.All()));
             Assert.IsFalse(devices.Value.Any());
         }
@@ -149,10 +150,10 @@ namespace TempoIQTest
 
             //Write some data
             var points = new WriteRequest();
-            var lst = new List<DataPoint>();
-            lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 19.667));
-            lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 11019.647));
-            lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 5.090913));
+            var lst = (from i in Enumerable.Range(0, 10) 
+                       let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
+                       select new DataPoint(time, i)).ToList();
+
             foreach(var device in devices)
                 foreach(var sensor in device.Sensors)
                     points.Add(device, sensor, lst);
@@ -179,10 +180,10 @@ namespace TempoIQTest
 
             //Write some data
             var points = new WriteRequest();
-            var lst = new List<DataPoint>();
-            lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 19.667));
-            lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 11019.647));
-            lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 5.090913));
+            var lst = (from i in Enumerable.Range(0, 10) 
+                       let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
+                       select new DataPoint(time, i)).ToList();
+
             foreach(var device in devices)
                 foreach(var sensor in device.Sensors)
                     points.Add(device, sensor, lst);
@@ -194,7 +195,7 @@ namespace TempoIQTest
             var selection = new Selection().Add(
                 Select.Type.Devices,
                 Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
-            var function = new Rollup(Period.FromDays(4), Fold.Count, start);
+            var function = new Rollup(Period.FromSeconds(1), Fold.Count, start);
             var pipeline = new Pipeline().AddFunction(function);
             var result = Client.Read(selection, start, stop);
             var cursor = result.Value;

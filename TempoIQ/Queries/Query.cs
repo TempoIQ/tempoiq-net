@@ -31,13 +31,13 @@ namespace TempoIQ.Queries
     /// <summary>
     /// The various querying operations TempoIQ will perform
     /// </summary>
-    public interface Query { }
+    public interface IQuery { }
     
     /// <summary>
-    /// A <code>Query</code> for reading data out of TempoIQ
+    /// A Query for reading data out of TempoIQ
     /// </summary>
     [JsonObject]
-    public class ReadQuery : Query
+    public class ReadQuery : IQuery
     {
         [JsonProperty("search")]
         public Search Search { get; set; }
@@ -45,18 +45,23 @@ namespace TempoIQ.Queries
         [JsonProperty("read")]
         public Read Read { get; set; }
 
-        public ReadQuery(Search search, Read read)
+        [JsonProperty("pipeline", NullValueHandling = NullValueHandling.Ignore)]
+        public Pipeline Pipeline { get; set; }
+
+        public ReadQuery(Search search, Read read, Pipeline pipeline = null)
         {
+            this.Pipeline = pipeline;
             this.Search = search;
             this.Read = read;
         }
+
     }
 
     /// <summary>
-    /// A <code>Query</code> for finding specific domain objects
+    /// A Query for finding specific domain objects
     /// </summary>
     [JsonObject]
-    public class FindQuery : Query
+    public class FindQuery : IQuery
     {
         [JsonProperty("search")]
         public Search Search { get; set; }

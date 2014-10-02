@@ -11,14 +11,14 @@ namespace TempoIQ.Models
     /// <summary>
     /// a TempoIQ data model
     /// </summary>
-    public interface Model { };
+    public interface IModel { };
 
     /// <summary>
     /// Represents the empty set of values.
-    /// Used in cases where the <code>Result</code> of a 
+    /// Used in cases where the Result of a 
     /// query does not provide any other value
     /// </summary>
-    public class Unit : Model {
+    public class Unit : IModel {
         public override bool Equals(object obj)
         {
             if (obj is Unit) 
@@ -39,7 +39,7 @@ namespace TempoIQ.Models
     /// A pairing of timestamp to numeric value
     /// </summary>
     [JsonObject]
-    public struct DataPoint : Model
+    public struct DataPoint : IModel
     {
         [JsonProperty("t")]
         public ZonedDateTime t;
@@ -58,7 +58,7 @@ namespace TempoIQ.Models
     /// <summary>
     /// the values for several of a device's sensors at a given point in time
     /// </summary>
-    public struct MultiDataPoint : Model
+    public struct MultiDataPoint : IModel
     {
         /// <summary>
         /// The timestamp of the sensors' readings
@@ -67,7 +67,7 @@ namespace TempoIQ.Models
         public ZonedDateTime t;
 
         /// <summary>
-        /// A <code>Dictionary</code> from sensor keys to data values
+        /// A Dictionary from sensor keys to data values
         /// </summary>
         [JsonProperty("vs")]
         public IDictionary<string, double> vs;

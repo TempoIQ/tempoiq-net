@@ -15,7 +15,7 @@ namespace TempoIQ.Models
     /// Sensors emit streams of numeric data.
     /// </summary> 
     [JsonObject]
-    public class Sensor : Model
+    public class Sensor : IModel
     {
         [JsonProperty("key")]
         public string Key { get; set; }
