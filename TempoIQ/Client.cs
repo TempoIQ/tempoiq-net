@@ -22,9 +22,10 @@ namespace TempoIQ
         /// <summary> Handles the actual network operations </summary>
         private Executor Runner { get; set; }
 
-        public const string API_VERSION1 = "v1";
-        public const string API_VERSION2 = "v2";
-        public string API_VERSION { get; private set; }
+        private const string API_VERSION1 = "v1";
+        private const string API_VERSION2 = "v2";
+
+        private string API_VERSION { get; set; }
 
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
@@ -36,8 +37,7 @@ namespace TempoIQ
         public Client(Credentials credentials, string host, int port = 443, int timeout = 50000)
         {
             API_VERSION = API_VERSION2;
-            var builder = new UriBuilder
-            {
+            var builder = new UriBuilder {
                 Scheme = "https",
                 Host = host,
                 Port = port
@@ -55,7 +55,7 @@ namespace TempoIQ
             string target = String.Format("{0}/devices/", API_VERSION);
             return Runner.Post<Device>(target, device);
         }
-        
+
         /// <summary>
         /// Retrieve a device of a given key
         /// </summary>
@@ -83,12 +83,12 @@ namespace TempoIQ
         /// </summary>
         /// <param name="selection"></param>
         /// <returns>a result with the selected Devices</returns>
-        public Result<Cursor<Device>> ListDevics(Selection selection)
+        public Result<Cursor<Device>> ListDevices(Selection selection)
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
             var query = new FindQuery(
-                new Search(Select.Type.Devices, selection),
-                new Find());
+                            new Search(Select.Type.Devices, selection),
+                            new Find());
             var prelim = Runner.Post<Segment<Device>>(target, query);
             return prelim.ToCursorResult<Device>();
         }
@@ -126,7 +126,7 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(Device device, MultiDataPoint data)
         {
             var writeRequest = new WriteRequest();
-            foreach(var pair in data.vs)
+            foreach (var pair in data.vs)
                 writeRequest.Add(device.Key, pair.Key, new DataPoint(data.t, pair.Value));
             return WriteDataPoints(writeRequest);
         }
@@ -140,8 +140,8 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(Device device, IList<MultiDataPoint> data)
         {
             var writeRequest = data.Aggregate(new WriteRequest(),
-                (acc, mdp) => mdp.vs.Aggregate(acc,
-                    (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
+                                   (acc, mdp) => mdp.vs.Aggregate(acc,
+                                       (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
             var result = WriteDataPoints(writeRequest);
             return result;
         }
@@ -169,7 +169,7 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
         {
             var writeRequest = data.Aggregate(new WriteRequest(),
-                (req, dp) => req.Add(deviceKey, sensorKey, dp));
+                                   (req, dp) => req.Add(deviceKey, sensorKey, dp));
             var result = WriteDataPoints(writeRequest);
             return result;
         }
@@ -182,7 +182,7 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(WriteRequest writeRequest)
         {
             var target = String.Format("{0}/write/", API_VERSION);
-            var result =  Runner.Post<Unit>(target, writeRequest);
+            var result = Runner.Post<Unit>(target, writeRequest);
             return result;
         }
 
@@ -228,13 +228,52 @@ namespace TempoIQ
             var target = String.Format("{0}/read/query/", API_VERSION);
             return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
         }
+
+        /// <summary>
+        /// Read the latest datapoints for the items from a SingleValueQuery
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>The latest data from the devices and sensors which match your selection, 
+        /// as processed by the pipeline, and bookended by the start and stop times</returns>
+        public Result<Cursor<Row>> Latest(SingleValueQuery query)
+        {
+            var target = String.Format("{0}/read/single/", API_VERSION);
+            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+        }
+
+        /// <summary>
+        /// Read the latest datapoints for the items from a Selection
+        /// </summary>
+        /// <param name="selection"></param>
+        /// <param name="pipeline"></param>
+        /// <returns>The latest data from the devices and sensors which match your selection, 
+        /// as processed by the pipeline, and bookended by the start and stop times</returns>
+        public Result<Cursor<Row>> Latest(Selection selection, Pipeline pipeline = null)
+        {
+            var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), new SingleValueAction());
+            var target = String.Format("{0}/read/single/", API_VERSION);
+            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+        }
+
+        public Result<DeleteSummary> DeleteDataPoints(Device device, Sensor sensor, ZonedDateTime start, ZonedDateTime stop)
+        {
+            return DeleteDataPoints(device.Key, sensor.Key, start, stop);
+        }
+
+        public Result<DeleteSummary> DeleteDataPoints(String deviceKey, String sensorKey, ZonedDateTime start, ZonedDateTime stop)
+        {
+            var del = new Delete{ start = start, stop = stop };
+            var target = String.Format("{0}/devices/{1}/sensors/{2}/datapoints", API_VERSION, deviceKey, sensorKey);
+            return Runner.Delete<DeleteSummary>(target, del);
+        }
     }
+
 
     public static class SegmentCursorTableConversion
     {
         /// <summary>
-        /// Extension method to transform Results 
-        /// to Result<Cursor>s from Result<Segment>/s
+        /// Extension method to convert Results 
+        /// between Results of Cursors and Results of Segments
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="result"></param>

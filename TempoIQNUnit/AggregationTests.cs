@@ -1,17 +1,17 @@
 ﻿using System;
 using TempoIQ;
 using TempoIQ.Models;
-using TempoIQ.Querying;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TempoIQ.Queries;
+using NUnit.Framework;
 using NodaTime;
 
-namespace TempoIQTest
+namespace TempoIQNUnit
 {
 
-    [TestClass]
+    [TestFixture]
     public class AggregationTests
     {
-        [TestMethod]
+        [Test]
         public void Equality()
         {
             var aggregation1 = new Aggregation(Fold.Sum);
@@ -19,7 +19,7 @@ namespace TempoIQTest
             Assert.AreEqual(aggregation1, aggregation2);
         }
 
-        [TestMethod]
+        [Test]
         public void NotEquals()
         {
             var aggregation1 = new Aggregation(Fold.Sum);
@@ -28,21 +28,10 @@ namespace TempoIQTest
         }
     }
 
-    [TestClass]
+    [TestFixture]
     public class RollupTests
     {
-        [TestMethod]
-        public void Defaults()
-        {
-            var period = Period.FromMinutes(1);
-            var rollup = new Rollup(period, Fold.Sum);
-            var defaultRollup = new Rollup(period);
-            Assert.AreEqual(Fold.Sum, rollup.Fold);
-            Assert.AreEqual(period, rollup.Period);
-            Assert.AreEqual(defaultRollup.Period, rollup.Period);
-        }
-
-        [TestMethod]
+        [Test]
         public void Equality()
         {
             var timestamp = DateTimeZone.Utc.AtStrictly(LocalDateTime.FromDateTime(DateTime.Now));

@@ -1,14 +1,14 @@
 ﻿using System;
 using TempoIQ;
 using TempoIQ.Queries;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
-namespace TempoIQTest
+namespace TempoIQNUnit
 {
-    [TestClass]
+    [TestFixture]
     public class AggregationTest
     {
-        [TestMethod]
+        [Test]
         public void EqualsTest()
         {
             var max = new Aggregation(Fold.Max);
@@ -16,7 +16,7 @@ namespace TempoIQTest
             Assert.IsFalse(max.Equals(max2));
         }
 
-        [TestMethod]
+        [Test]
         public void NotEqualsFoldTest()
         {
             var max = new Aggregation(Fold.Max);
@@ -24,7 +24,7 @@ namespace TempoIQTest
             Assert.IsFalse(max.Equals(min));
         }
 
-        [TestMethod]
+        [Test]
         public void NotEqualsNullTest()
         {
             var agg = new Aggregation(Fold.Max);

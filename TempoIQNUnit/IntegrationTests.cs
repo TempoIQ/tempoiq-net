@@ -1,35 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using TempoIQ;
-using TempoIQ.Json;
 using TempoIQ.Models;
 using TempoIQ.Queries;
 using TempoIQ.Results;
 using NodaTime;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
-namespace TempoIQTest
+namespace TempoIQNUnit
 {
-    [TestClass]
+    [TestFixture]
     public class ClientIT
     {
         public static Client Client { get; set; }
+
         public static Client InvalidClient { get; set; }
+
         public static DateTimeZone UTC = DateTimeZone.Utc;
         public static ZonedDateTime start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 1));
         public static ZonedDateTime stop = UTC.AtStrictly(new LocalDateTime(2019, 1, 1, 0, 0, 1));
         public static Interval interval = new Interval(start.ToInstant(), stop.ToInstant());
         public static int SLEEP = 5000;
         public static int NextKeyNumber;
+
         public Credentials LoadedCredentials { get; private set; }
 
-        [TestInitialize]
+        [SetUp]
         public void InitCredentials()
         {
             string key = "YOUR KEY";
@@ -39,7 +36,7 @@ namespace TempoIQTest
             Client = new Client(new Credentials(key, secret), domain);
         }
 
-        [TestCleanup]
+        [TearDown]
         public void Cleanup()
         {
             var allSelection = new Selection().Add(Select.Type.Devices, new AllSelector());
@@ -61,7 +58,7 @@ namespace TempoIQTest
         static public List<Device> MakeDevices(int n)
         {
             var lst = new List<Device>();
-            for(int i=0; i<n; i++)
+            for (int i = 0; i < n; i++)
                 lst.Add(PostNewDevice());
             return lst;
         }
@@ -71,22 +68,22 @@ namespace TempoIQTest
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var random = new Random();
             var key = new string(
-                Enumerable.Repeat(chars, 8)
-                          .Select(s => s[random.Next(s.Length)])
+                          Enumerable.Repeat(chars, 8)
+                          .Select(s => s [random.Next(s.Length)])
                           .ToArray());
             return new Device(key, "device-name", new Dictionary<String, String>(), new List<Sensor>());
         }
 
-        [TestMethod]
+        [Test]
         public void TestDeleteDevices()
         {
             MakeDevices(10);
             var result = Client.DeleteDevices(new Selection(Select.Type.Devices, Select.All()));
-            var devices = Client.ListDevics(new Selection(Select.Type.Devices, Select.All()));
+            var devices = Client.ListDevices(new Selection(Select.Type.Devices, Select.All()));
             Assert.IsFalse(devices.Value.Any());
         }
 
-        [TestMethod]
+        [Test]
         public void TestInvalidCredentials()
         {
             var device = RandomKeyDevice();
@@ -94,7 +91,7 @@ namespace TempoIQTest
             Assert.AreEqual(403, result.Code);
         }
 
-        [TestMethod]
+        [Test]
         public void TestCreateDevices()
         {
             var device = RandomKeyDevice();
@@ -103,17 +100,17 @@ namespace TempoIQTest
             Assert.AreEqual(expected.Value, result.Value);
         }
 
-        [TestMethod]
+        [Test]
         public void TestListDevices()
         {
             MakeDevices(10);
             var selection = new Selection().Add(Select.Type.Devices, Select.All());
-            var result = Client.ListDevics(selection);
+            var result = Client.ListDevices(selection);
             Assert.AreEqual(200, result.Code);
             Assert.IsTrue(result.Value.Any());
         }
 
-        [TestMethod]
+        [Test]
         public void TestWriteDataPointBySensor()
         {
             Device device = PostNewDevice();
@@ -125,7 +122,7 @@ namespace TempoIQTest
             Assert.AreEqual(State.Success, result.State);
         }
 
-        [TestMethod]
+        [Test]
         public void TestWriteDataPointsWithWriteRequest()
         {
             var devices = MakeDevices(10);
@@ -135,14 +132,14 @@ namespace TempoIQTest
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 19.667));
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 11019.647));
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 5.090913));
-            foreach(var device in devices)
-                foreach(var sensor in device.Sensors)
+            foreach (var device in devices)
+                foreach (var sensor in device.Sensors)
                     points.Add(device, sensor, lst);
             var result = Client.WriteDataPoints(points);
             Assert.IsTrue(result.State.Equals(State.Success));
         }
 
-        [TestMethod]
+        [Test]
         public void TestReadDataPoints()
         {
             //Make some devices
@@ -150,12 +147,12 @@ namespace TempoIQTest
 
             //Write some data
             var points = new WriteRequest();
-            var lst = (from i in Enumerable.Range(0, 10) 
-                       let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
-                       select new DataPoint(time, i)).ToList();
+            var lst = (from i in Enumerable.Range(0, 10)
+                                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
+                                select new DataPoint(time, i)).ToList();
 
-            foreach(var device in devices)
-                foreach(var sensor in device.Sensors)
+            foreach (var device in devices)
+                foreach (var sensor in device.Sensors)
                     points.Add(device, sensor, lst);
             var written = Client.WriteDataPoints(points);
             
@@ -163,8 +160,8 @@ namespace TempoIQTest
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
             var selection = new Selection().Add(
-                Select.Type.Devices,
-                Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
+                                Select.Type.Devices,
+                                Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
             var result = Client.Read(selection, start, stop);
             var cursor = result.Value;
 
@@ -172,7 +169,7 @@ namespace TempoIQTest
             Assert.IsTrue(cursor.Any());
         }
 
-        [TestMethod]
+        [Test]
         public void TestReadWithPipeline()
         {
             //Make some devices
@@ -180,12 +177,12 @@ namespace TempoIQTest
 
             //Write some data
             var points = new WriteRequest();
-            var lst = (from i in Enumerable.Range(0, 10) 
-                       let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
-                       select new DataPoint(time, i)).ToList();
+            var lst = (from i in Enumerable.Range(0, 10)
+                                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
+                                select new DataPoint(time, i)).ToList();
 
-            foreach(var device in devices)
-                foreach(var sensor in device.Sensors)
+            foreach (var device in devices)
+                foreach (var sensor in device.Sensors)
                     points.Add(device, sensor, lst);
             var written = Client.WriteDataPoints(points);
             
@@ -193,8 +190,8 @@ namespace TempoIQTest
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
             var selection = new Selection().Add(
-                Select.Type.Devices,
-                Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
+                                Select.Type.Devices,
+                                Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
             var function = new Rollup(Period.FromSeconds(1), Fold.Count, start);
             var pipeline = new Pipeline().AddFunction(function);
             var result = Client.Read(selection, start, stop);
@@ -202,6 +199,84 @@ namespace TempoIQTest
 
             Assert.AreEqual(State.Success, result.State);
             Assert.IsTrue(cursor.Any());
+        }
+
+        [Test]
+        public void TestLatest()
+        {
+            var timezone = UTC;
+            Device device = PostNewDevice();
+
+            var points = new Dictionary<string, double>();
+            points.Add("sensor1", 4.0);
+            points.Add("sensor2", 2.0);
+            var mp = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 1, 0, 0, 0)), points);
+            var mp2 = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 2, 0, 0, 0)), points);
+
+            var allPoints = new List<MultiDataPoint>();
+            allPoints.Add(mp);
+            allPoints.Add(mp2);
+
+            var result = Client.WriteDataPoints(device, allPoints);
+            Assert.AreEqual(State.Success, result.State);
+
+            var sel = new Selection().Add(Select.Type.Devices, Select.Key(device.Key));
+
+            var cursor = Client.Latest(sel);
+            Assert.AreEqual(4.0, cursor.Value.First().Data [device.Key] ["sensor1"]);
+        }
+
+        [Test]
+        public void TestDelete()
+        {
+            var device = PostNewDevice();
+            var sensor1 = new Sensor("sensor1");
+            var sensor2 = new Sensor("sensor2");
+
+            var points1 = new Dictionary<String, double>();
+            points1.Add("sensor1", 1.0);
+            points1.Add("sensor2", 10.0);
+
+            var points2 = new Dictionary<String, double>();
+            points2.Add("sensor1", 2.0);
+            points2.Add("sensor2", 20.0);
+
+            var points3 = new Dictionary<String, double>();
+            points3.Add("sensor1", 3.0);
+            points3.Add("sensor2", 30.0);
+
+            MultiDataPoint mp = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 1, 0, 0, 0)), points1);
+            MultiDataPoint mp2 = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 2, 0, 0, 0)), points2);
+            MultiDataPoint mp3 = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 3, 0, 0, 0)), points3);
+
+            var allPoints = new List<MultiDataPoint>();
+            allPoints.Add(mp);
+            allPoints.Add(mp2);
+            allPoints.Add(mp3);
+
+            Result<Unit> result = Client.WriteDataPoints(device, allPoints);
+            Assert.AreEqual(State.Success, result.State);
+
+            var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 2, 0, 0, 0));
+            var stop = UTC.AtStrictly(new LocalDateTime(2012, 1, 4, 0, 0, 0, 0));
+
+            Result<DeleteSummary> delResult = Client.DeleteDataPoints(device.Key, sensor1.Key, start, stop);
+            Assert.AreEqual(State.Success, result.State);
+            Assert.AreEqual(delResult.Value.Deleted, 2);
+
+            Cursor<Row> cursor1 = Client.Read(new Selection().Add(Select.Type.Sensors, Select.Key("sensor1")),
+                                      UTC.AtStrictly(new LocalDateTime(2011, 1, 1, 0, 0, 0, 0)),
+                                      UTC.AtStrictly(new LocalDateTime(2013, 1, 1, 1, 0, 0, 0))).Value;
+
+            Cursor<Row> cursor2 = Client.Latest(new Selection().Add(Select.Type.Sensors, Select.Key("sensor2"))).Value;
+
+            Assert.IsTrue(cursor1.Any());
+            Assert.AreEqual(1.0, from tuple in cursor1.Flatten()
+                                          where tuple.Item2 == sensor1.Key
+                                          select tuple.Item3.v);
+            Assert.AreEqual(30.0, from tuple in cursor2.Flatten()
+                                           where tuple.Item2 == sensor2.Key
+                                           select tuple.Item3.v);
         }
     }
 }
