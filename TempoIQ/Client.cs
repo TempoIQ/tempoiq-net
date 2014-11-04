@@ -87,8 +87,7 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
             var query = new FindQuery(
-                            new Search(Select.Type.Devices, selection),
-                            new Find());
+                new Search(Select.Type.Devices, selection), new Find());
             var prelim = Runner.Post<Segment<Device>>(target, query);
             return prelim.ToCursorResult<Device>();
         }
@@ -168,8 +167,8 @@ namespace TempoIQ
         /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
         {
-            var writeRequest = data.Aggregate(new WriteRequest(),
-                                   (req, dp) => req.Add(deviceKey, sensorKey, dp));
+            var writeRequest = data.Aggregate(new WriteRequest(), 
+                (req, dp) => req.Add(deviceKey, sensorKey, dp));
             var result = WriteDataPoints(writeRequest);
             return result;
         }
