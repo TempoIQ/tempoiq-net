@@ -39,7 +39,9 @@ namespace TempoIQNUnit
         [TearDown]
         public void Cleanup()
         {
-            var allSelection = new Selection().Add(Select.Type.Devices, new AllSelector());
+            var allSelection = new Selection().Add(
+                Select.Type.Devices, 
+                Select.AttributeKey("tempoiq-net-test-device"));
             Client.DeleteDevices(allSelection);
         }
 
@@ -68,18 +70,20 @@ namespace TempoIQNUnit
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var random = new Random();
             var key = new string(
-                          Enumerable.Repeat(chars, 8)
+                          Enumerable.Repeat(chars, 64)
                           .Select(s => s [random.Next(s.Length)])
                           .ToArray());
-            return new Device(key, "device-name", new Dictionary<String, String>(), new List<Sensor>());
+            var attrs = new Dictionary<String, String>();
+            attrs.Add("tempoiq-net-test-device", "tempoiq-net-test-device");
+            return new Device(key, "device-name", attrs, new List<Sensor>());
         }
 
         [Test]
         public void TestDeleteDevices()
         {
             MakeDevices(10);
-            var result = Client.DeleteDevices(new Selection(Select.Type.Devices, Select.All()));
-            var devices = Client.ListDevices(new Selection(Select.Type.Devices, Select.All()));
+            var result = Client.DeleteDevices(new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device")));
+            var devices = Client.ListDevices(new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device")));
             Assert.IsFalse(devices.Value.Any());
         }
 

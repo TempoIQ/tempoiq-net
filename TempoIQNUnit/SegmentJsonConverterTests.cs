@@ -17,7 +17,7 @@ namespace TempoIQNUnit
             var segmentIn = new Segment<DataPoint>(new List<DataPoint>(), "no next");
             var segment = JsonConvert.SerializeObject(segmentIn);
             var segmentOut = JsonConvert.DeserializeObject<Segment<DataPoint>>(segment);
-            Assert.IsInstanceOfType(typeof(Segment<DataPoint>), segmentOut);
+            Assert.IsTrue(segmentOut is Segment<DataPoint>);
         }
 
         [Test]
@@ -25,7 +25,7 @@ namespace TempoIQNUnit
         {
             var segmentStr = "{\"data\":[]}";
             var segmentIn = JsonConvert.DeserializeObject<Segment<DataPoint>>(segmentStr);
-            Assert.IsInstanceOfType(typeof(Segment<DataPoint>), segmentIn);
+            Assert.IsTrue(segmentIn is Segment<DataPoint>);
         }
     }
 }
