@@ -44,9 +44,9 @@ namespace TempoIQ.Utilities
             return Execute<T>(Method.PUT, resource, body);
         }
 
-        public Result<Unit> Delete<Unit>(string resource, object body)
+        public Result<T> Delete<T>(string resource, object body)
         {
-            return Execute<Unit>(Method.DELETE, resource, body);
+            return Execute<T>(Method.DELETE, resource, body);
         }
 
         public Result<Unit> Delete<Unit>(string resource)

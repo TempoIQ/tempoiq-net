@@ -251,7 +251,7 @@ namespace TempoIQ
         public Result<Cursor<Row>> Latest(Selection selection, Pipeline pipeline = null)
         {
             var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), new SingleValueAction());
-            var target = String.Format("{0}/read/single/", API_VERSION);
+            var target = String.Format("{0}/single/query", API_VERSION);
             return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
         }
 
@@ -260,7 +260,7 @@ namespace TempoIQ
             return DeleteDataPoints(device.Key, sensor.Key, start, stop);
         }
 
-        public Result<DeleteSummary> DeleteDataPoints(String deviceKey, String sensorKey, ZonedDateTime start, ZonedDateTime stop)
+        public Result<DeleteSummary> DeleteDataPoints(string deviceKey, string sensorKey, ZonedDateTime start, ZonedDateTime stop)
         {
             var del = new Delete{ start = start, stop = stop };
             var target = String.Format("{0}/devices/{1}/sensors/{2}/datapoints", API_VERSION, deviceKey, sensorKey);

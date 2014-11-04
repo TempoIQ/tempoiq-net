@@ -205,7 +205,7 @@ namespace TempoIQNUnit
         public void TestLatest()
         {
             var timezone = UTC;
-            Device device = PostNewDevice();
+            var device = PostNewDevice();
 
             var points = new Dictionary<string, double>();
             points.Add("sensor1", 4.0);
@@ -223,60 +223,46 @@ namespace TempoIQNUnit
             var sel = new Selection().Add(Select.Type.Devices, Select.Key(device.Key));
 
             var cursor = Client.Latest(sel);
-            Assert.AreEqual(4.0, cursor.Value.First().Data [device.Key] ["sensor1"]);
+            Assert.AreEqual(4.0, cursor.Value.First().Data[device.Key]["sensor1"]);
         }
 
         [Test]
-        public void TestDelete()
+        public void TestDeleteDataPoints()
         {
             var device = PostNewDevice();
             var sensor1 = new Sensor("sensor1");
-            var sensor2 = new Sensor("sensor2");
+            var deviceKey = device.Key;
+
+            var sensorKey1 = device.Sensors[0].Key;
+            var sensorKey2 = device.Sensors[1].Key;
+            var ts = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
 
             var points1 = new Dictionary<String, double>();
             points1.Add("sensor1", 1.0);
-            points1.Add("sensor2", 10.0);
-
             var points2 = new Dictionary<String, double>();
             points2.Add("sensor1", 2.0);
-            points2.Add("sensor2", 20.0);
 
-            var points3 = new Dictionary<String, double>();
-            points3.Add("sensor1", 3.0);
-            points3.Add("sensor2", 30.0);
+            var mp = new MultiDataPoint(ts, points1);
+            var mp2 = new MultiDataPoint(ts, points2);
 
-            MultiDataPoint mp = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 1, 0, 0, 0)), points1);
-            MultiDataPoint mp2 = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 2, 0, 0, 0)), points2);
-            MultiDataPoint mp3 = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 3, 0, 0, 0)), points3);
+            var allPoints = new List<MultiDataPoint> { mp, mp2 };
+            
+            var result = Client.WriteDataPoints(device, allPoints);
 
-            var allPoints = new List<MultiDataPoint>();
-            allPoints.Add(mp);
-            allPoints.Add(mp2);
-            allPoints.Add(mp3);
-
-            Result<Unit> result = Client.WriteDataPoints(device, allPoints);
             Assert.AreEqual(State.Success, result.State);
 
-            var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 2, 0, 0, 0));
-            var stop = UTC.AtStrictly(new LocalDateTime(2012, 1, 4, 0, 0, 0, 0));
+            var start = UTC.AtStrictly(new LocalDateTime(2011, 1, 1, 1, 1, 0, 0));
+            var stop = UTC.AtStrictly(new LocalDateTime(2013, 1, 3, 0, 0, 0, 0));
+       
+            var deleteResult = Client.DeleteDataPoints(device.Key, sensor1.Key, start, stop);
+            
+            Assert.AreEqual(State.Success, deleteResult.State);
+            Assert.AreEqual(1, deleteResult.Value.Deleted);
 
-            Result<DeleteSummary> delResult = Client.DeleteDataPoints(device.Key, sensor1.Key, start, stop);
-            Assert.AreEqual(State.Success, result.State);
-            Assert.AreEqual(delResult.Value.Deleted, 2);
-
-            Cursor<Row> cursor1 = Client.Read(new Selection().Add(Select.Type.Sensors, Select.Key("sensor1")),
+            var cursor1 = Client.Read(new Selection().Add(Select.Type.Devices, Select.Key("sensor1")),
                                       UTC.AtStrictly(new LocalDateTime(2011, 1, 1, 0, 0, 0, 0)),
                                       UTC.AtStrictly(new LocalDateTime(2013, 1, 1, 1, 0, 0, 0))).Value;
-
-            Cursor<Row> cursor2 = Client.Latest(new Selection().Add(Select.Type.Sensors, Select.Key("sensor2"))).Value;
-
-            Assert.IsTrue(cursor1.Any());
-            Assert.AreEqual(1.0, from tuple in cursor1.Flatten()
-                                          where tuple.Item2 == sensor1.Key
-                                          select tuple.Item3.v);
-            Assert.AreEqual(30.0, from tuple in cursor2.Flatten()
-                                           where tuple.Item2 == sensor2.Key
-                                           select tuple.Item3.v);
+            Assert.AreEqual(0, cursor1.Count());
         }
     }
 }
