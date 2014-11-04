@@ -34,6 +34,7 @@ namespace TempoIQNUnit
             var agg = new Aggregation(Fold.Max);
             Assert.IsFalse(agg == null);
         }
+
         [Test]
         public void Equality()
         {
