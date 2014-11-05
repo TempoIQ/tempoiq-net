@@ -6,7 +6,7 @@ using TempoIQ.Results;
 using TempoIQ.Json;
 using Newtonsoft.Json;
 
-namespace TempoIQNUnit
+namespace TempoIQTest
 {
     [TestFixture]
     public class SegmentJsonConverterTests

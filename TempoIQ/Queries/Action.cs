@@ -13,7 +13,7 @@ namespace TempoIQ.Queries
 	/// </summary>
 	public interface Action
 	{
-		string Name { get; }
+        string Name { get; }
 	}
 
 	/// <summary>

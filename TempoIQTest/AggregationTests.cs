@@ -6,7 +6,7 @@ using TempoIQ.Queries;
 using NUnit.Framework;
 using NodaTime;
 
-namespace TempoIQNUnit
+namespace TempoIQTest
 {
 
     [TestFixture]
