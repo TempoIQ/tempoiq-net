@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using TempoIQ.Models;
 using TempoIQ.Json;
 
-namespace TempoIQTest
+namespace TempoIQTests
 {
     [TestFixture]
     public class DatapointJsonConverterTests

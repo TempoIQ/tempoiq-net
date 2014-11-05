@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>TempoIQTest</RootNamespace>
+    <RootNamespace>TempoIQTests</RootNamespace>
     <AssemblyName>TempoIQNUnit</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>

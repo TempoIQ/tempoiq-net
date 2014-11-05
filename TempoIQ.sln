@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempoIQ", "TempoIQ\TempoIQ.csproj", "{D2C4B50E-4211-486C-8949-D17A214ABFFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempoIQTest", "TempoIQTest\TempoIQTest.csproj", "{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempoIQTests", "TempoIQTests\TempoIQTests.csproj", "{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

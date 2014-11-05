@@ -8,7 +8,7 @@ using TempoIQ.Results;
 using NodaTime;
 using NUnit.Framework;
 
-namespace TempoIQTest
+namespace TempoIQTests
 {
     [TestFixture]
     public class ClientIT
