@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregationTests.cs" />
+    <Compile Include="CursorRowExtensionTests.cs" />
     <Compile Include="DataPointJsonConverterTests.cs" />
     <Compile Include="IntegrationTests.cs" />
     <Compile Include="SegmentJsonConverterTests.cs" />

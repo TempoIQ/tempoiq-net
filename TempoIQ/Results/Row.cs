@@ -16,7 +16,8 @@ namespace TempoIQ.Results
     /// for a given time.
     /// </summary>
     /// <para>A Row returns the "cells" from "table" that a 
-    /// Cursor of Rows implicitly defines </para>
+    /// Cursor of Rows implicitly defines. Each cell denotes the 
+    /// DeviceKey, SensorKey, and Value of the sensor at the row's Timestamp</para>
     [JsonObject]
     public class Row : IEnumerable<Tuple<string, string, double>>, IModel
     {
@@ -25,6 +26,12 @@ namespace TempoIQ.Results
 
         [JsonProperty("data")]
         public IDictionary<string, IDictionary<string, double>> Data { get; set; }
+
+        [JsonIgnore]
+        public static string Resource
+        {
+            get { return "read"; }
+        }
 
         public IEnumerator<Tuple<string, string, double>> GetEnumerator()
         {

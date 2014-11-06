@@ -27,7 +27,6 @@ namespace TempoIQ.Results
         /// <summary>
         /// a pointer to the next segment
         /// </summary>
-        [JsonIgnore]
         public string Next { get; set; }
 
         public IEnumerator<T> GetEnumerator()

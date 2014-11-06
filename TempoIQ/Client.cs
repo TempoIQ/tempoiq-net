@@ -22,10 +22,7 @@ namespace TempoIQ
         /// <summary> Handles the actual network operations </summary>
         private Executor Runner { get; set; }
 
-        private const string API_VERSION1 = "v1";
-        private const string API_VERSION2 = "v2";
-
-        private string API_VERSION { get; set; }
+        public const string API_VERSION = "v2";
 
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
@@ -36,7 +33,6 @@ namespace TempoIQ
         /// <param name="timeout"></param>
         public Client(Credentials credentials, string host, int port = 443, int timeout = 50000)
         {
-            API_VERSION = API_VERSION2;
             var builder = new UriBuilder {
                 Scheme = "https",
                 Host = host,
@@ -83,13 +79,13 @@ namespace TempoIQ
         /// </summary>
         /// <param name="selection"></param>
         /// <returns>a result with the selected Devices</returns>
-        public Result<Cursor<Device>> ListDevices(Selection selection)
+        public Cursor<Device> ListDevices(Selection selection)
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
             var query = new FindQuery(
                 new Search(Select.Type.Devices, selection), new Find());
             var prelim = Runner.Post<Segment<Device>>(target, query);
-            return prelim.ToCursorResult<Device>();
+            return prelim.ToCursor<Device>(Runner);
         }
 
         /// <summary>
@@ -193,7 +189,7 @@ namespace TempoIQ
         /// <param name="stop"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
+        public Cursor<Row> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
         {
             var search = new Search(Select.Type.Sensors, selection);
             var read = new Read(start, stop);
@@ -210,7 +206,7 @@ namespace TempoIQ
         /// <param name="stop"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
+        public Cursor<Row> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
         {
             var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop), pipeline);
             return Read(query);
@@ -222,10 +218,10 @@ namespace TempoIQ
         /// <param name="query"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Read(ReadQuery query)
+        public Cursor<Row> Read(ReadQuery query)
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner);
         }
 
         /// <summary>
@@ -234,10 +230,10 @@ namespace TempoIQ
         /// <param name="query"></param>
         /// <returns>The latest data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Latest(SingleValueQuery query)
+        public Cursor<Row> Latest(SingleValueQuery query)
         {
             var target = String.Format("{0}/read/single/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner);
         }
 
         /// <summary>
@@ -247,11 +243,11 @@ namespace TempoIQ
         /// <param name="pipeline"></param>
         /// <returns>The latest data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Latest(Selection selection, Pipeline pipeline = null)
+        public Cursor<Row> Latest(Selection selection, Pipeline pipeline = null)
         {
             var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), new SingleValueAction());
             var target = String.Format("{0}/single/query", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner);
         }
 
         public Result<DeleteSummary> DeleteDataPoints(Device device, Sensor sensor, ZonedDateTime start, ZonedDateTime stop)
@@ -278,14 +274,12 @@ namespace TempoIQ
         /// <param name="result"></param>
         /// <returns>An Result wrapping the cursor equivalent to the 
         /// Segment in the original's Value</returns>
-        public static Result<Cursor<T>> ToCursorResult<T>(this Result<Segment<T>> result)
+        public static Cursor<T> ToCursor<T>(this Result<Segment<T>> result, Executor runner)
         {
-            Cursor<T> cursor;
-            if (result.Value == null)
-                cursor = new Cursor<T>(new List<Segment<T>>());
+            if (result.State == State.Success)
+                return new Cursor<T>(result.Value, runner);
             else
-                cursor = new Cursor<T>(new List<Segment<T>> { result.Value });
-            return new Result<Cursor<T>>(cursor, result.Code, result.Message, result.MultiStatus);
+                throw new TempoIQException(result.Message);
         }
     }
 }

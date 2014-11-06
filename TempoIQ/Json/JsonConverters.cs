@@ -25,6 +25,35 @@ namespace TempoIQ.Json
         }
     }
 
+    public class RawBodyWrapper
+    {
+        public string Body { get; set; }
+
+        public RawBodyWrapper(string body)
+        {
+            this.Body = body;
+        }
+    }
+
+    public class RawBodyWrapperConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.Equals(typeof(RawBodyWrapper));
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            writer.WriteRaw(((RawBodyWrapper)value).Body);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var selectors = JsonConvert.DeserializeObject<Dictionary<Select.Type, Selector>>((string)reader.Value);
+            return new Selection(selectors);
+        }
+    }
+
     public class SelectionConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
