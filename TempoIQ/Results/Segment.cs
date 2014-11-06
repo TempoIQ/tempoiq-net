@@ -67,5 +67,13 @@ namespace TempoIQ.Results
         {
             return obj.SequenceEqual(this);
         }
+
+        public override int GetHashCode ()
+        {
+            int hash = HashCodeHelper.Initialize();
+            hash = HashCodeHelper.Hash(hash, Data);
+            hash = HashCodeHelper.Hash(hash, Next);
+            return hash;
+        }
     }
 }

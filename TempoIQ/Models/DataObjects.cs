@@ -22,17 +22,14 @@ namespace TempoIQ.Models
         public override bool Equals(object obj)
         {
             if (obj is Unit) 
-                return true;
-            else 
-                return false;
+                return true; 
+            return false;
         }
 
         public override int GetHashCode()
         {
             return HashCodeHelper.Initialize();
         }
-
-        public Unit() { }
     };
 
     /// <summary>

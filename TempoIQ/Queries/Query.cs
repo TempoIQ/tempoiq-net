@@ -54,7 +54,6 @@ namespace TempoIQ.Queries
             this.Search = search;
             this.Read = read;
         }
-
     }
 
     /// <summary>
@@ -73,6 +72,29 @@ namespace TempoIQ.Queries
         {
             this.Search = search;
             this.Find = find;
+        }
+    }
+
+    /// <summary>
+    /// A Query for finding the latest values from a selection
+    /// </summary>
+    [JsonObject]
+    public class SingleValueQuery : IQuery
+    {
+        [JsonProperty("search")]
+        public Search Search { get; set; }
+
+        [JsonProperty("single")]
+        public SingleValueAction Single { get; set; }
+
+        [JsonProperty("pipeline", NullValueHandling = NullValueHandling.Ignore)]
+        public Pipeline Pipeline { get; set; }
+
+        public SingleValueQuery(Search search, SingleValueAction single, Pipeline pipeline = null)
+        {
+            this.Pipeline = pipeline;
+            this.Search = search;
+            this.Single = single;
         }
     }
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempoIQ", "TempoIQ\TempoIQ.csproj", "{D2C4B50E-4211-486C-8949-D17A214ABFFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempoIQTest", "TempoIQTest\TempoIQTest.csproj", "{FC18C99C-34C5-44CB-9031-015582A5B051}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempoIQ.Tests", "TempoIQ.Tests\TempoIQ.Tests.csproj", "{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +17,32 @@ Global
 		{D2C4B50E-4211-486C-8949-D17A214ABFFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2C4B50E-4211-486C-8949-D17A214ABFFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2C4B50E-4211-486C-8949-D17A214ABFFB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC18C99C-34C5-44CB-9031-015582A5B051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC18C99C-34C5-44CB-9031-015582A5B051}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC18C99C-34C5-44CB-9031-015582A5B051}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC18C99C-34C5-44CB-9031-015582A5B051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31FF9FC5-25C2-4EDD-99DD-34E32039CAA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = TempoIQ\TempoIQ.csproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.FileWidth = 120
+		$1.inheritsSet = VisualStudio
+		$1.inheritsScope = text/plain
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.BeforeMethodDeclarationParentheses = False
+		$2.BeforeMethodCallParentheses = False
+		$2.BeforeConstructorDeclarationParentheses = False
+		$2.BeforeIndexerDeclarationBracket = False
+		$2.BeforeDelegateDeclarationParentheses = False
+		$2.AfterDelegateDeclarationParameterComma = True
+		$2.NewParentheses = False
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/x-csharp
+		$2.scope = text/x-csharp
 	EndGlobalSection
 EndGlobal

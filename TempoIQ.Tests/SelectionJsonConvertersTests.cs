@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using TempoIQ.Queries;
 using TempoIQ.Json;
 using Newtonsoft.Json;
 using TempoIQ.Utilities.Internal;
 
-namespace TempoIQTest
+namespace TempoIQTests
 {
-    [TestClass]
+    [TestFixture]
     public class SelectionJsonConvertersTests 
     {
         JsonSerializerSettings settings = new JsonSerializerSettings();
-        [TestInitialize]
+
+        [SetUp]
         public void before()
         {
             settings.Converters.Add(new SelectorConverter());
         }
         
-        [TestMethod]
+        [Test]
         public void SerializeSensorsTypeJsonConverterTest()
         {
             string sensors = "\"sensors\"";
@@ -27,7 +28,7 @@ namespace TempoIQTest
             Assert.AreEqual(sensors, serialized);
         }
 
-        [TestMethod]
+        [Test]
         public void DeserializeSensorsTypeJsonConverterTest()
         {
             string sensors = "\"sensors\"";
@@ -35,7 +36,7 @@ namespace TempoIQTest
             Assert.AreEqual(Select.Type.Sensors, deserialized);
         }
 
-        [TestMethod]
+        [Test]
         public void SerializeDevicesTypeJsonConverterTest()
         {
             string devices = "\"devices\"";
@@ -43,7 +44,7 @@ namespace TempoIQTest
             Assert.AreEqual(devices, serialized);
         }
 
-        [TestMethod]
+        [Test]
         public void DeserializeDevicesTypeJsonConverterTest()
         {
             string devices = "\"devices\"";
@@ -51,7 +52,7 @@ namespace TempoIQTest
             Assert.AreEqual(Select.Type.Devices, deserialized);
         }
 
-        [TestMethod]
+        [Test]
         public void DeserializeAllSelector()
         {
             string[] anyWords = {"\"any\"", "\"all\"", "\"*\""};
@@ -60,7 +61,7 @@ namespace TempoIQTest
             allSelectors.Each((selector) => { Assert.AreEqual(allSelector, selector); });
         }
 
-        [TestMethod]
+        [Test]
         public void SerializeAllSelector()
         {
             var all = new AllSelector();
@@ -68,7 +69,7 @@ namespace TempoIQTest
             Assert.AreEqual("\"all\"", serialized);
         }
 
-        [TestMethod]
+        [Test]
         public void SerializeAndSelector()
         {
             var and = Select.And(Select.Attributes("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));
@@ -77,7 +78,7 @@ namespace TempoIQTest
             Assert.AreEqual(expected, serialized);
         }
 
-        [TestMethod]
+        [Test]
         public void SerializeOrSelector()
         {
             var or = Select.Or(Select.Attributes("attrKey", "value"), Select.AttributeKey("otherKey"), Select.Key("someKey"));

@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NodaTime;
 using NodaTime.Serialization.JsonNet;
+using NodaTime;
+using NUnit.Framework;
 using Newtonsoft.Json;
 using TempoIQ.Models;
 using TempoIQ.Json;
 
-namespace TempoIQTest.Json
+namespace TempoIQTests
 {
-    [TestClass]
+    [TestFixture]
     public class DatapointJsonConverterTests
     {
-        [TestMethod]
+        [Test]
         public void UtcTest()
         {
             var zone = DateTimeZone.Utc;
@@ -24,7 +23,7 @@ namespace TempoIQTest.Json
             Assert.AreEqual(expected, dataPoint);
         }
 
-        [TestMethod]
+        [Test]
         public void TimeZoneTest()
         {
             var zone = DateTimeZoneProviders.Tzdb["America/Chicago"];
@@ -35,7 +34,7 @@ namespace TempoIQTest.Json
             Assert.AreEqual(expected, dataPoint);
         }
 
-        [TestMethod]
+        [Test]
         public void UtcSerializeTest()
         {
             var zone = DateTimeZone.Utc;
@@ -47,7 +46,7 @@ namespace TempoIQTest.Json
             Assert.AreEqual(dataPointIn, dataPointOut);
         }
 
-        [TestMethod]
+        [Test]
         public void ZonedSerializeTest()
         {
             var zone = DateTimeZoneProviders.Tzdb["America/Chicago"];

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NodaTime;
+using TempoIQ.Utilities;
 
 namespace TempoIQ.Queries
 {
@@ -113,6 +114,32 @@ namespace TempoIQ.Queries
             var tz = DateTimeZone.Utc;
             this.Start = tz.AtStrictly(LocalDateTime.FromDateTime(DateTime.Now));
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            else if (obj is Rollup)
+                return ((Rollup)obj).Equals(this);
+            else 
+                return false;
+        }
+
+        public bool Equals(Rollup rollup)
+        {
+            return EqualsBuilder.Equals(this.Period, rollup.Period)
+                && EqualsBuilder.Equals(this.Fold, rollup.Fold)
+                && EqualsBuilder.Equals(this.Start, rollup.Start);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = HashCodeHelper.Initialize();
+            hash = HashCodeHelper.Hash(hash, this.Period);
+            hash = HashCodeHelper.Hash(hash, this.Fold);
+            hash = HashCodeHelper.Hash(hash, this.Start);
+            return hash;
+        }
     }
 
     /// <summary>
@@ -128,6 +155,7 @@ namespace TempoIQ.Queries
         /// <summary>
         /// The Aggregation's underlying Fold function
         /// </summary>
+        [JsonProperty("fold")]
         public Fold Fold { get; private set; }
 
         [JsonProperty("name")]
@@ -153,6 +181,21 @@ namespace TempoIQ.Queries
         public Aggregation()
         {
             this.Fold = Fold.Sum;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            else if (obj is Aggregation)
+                return ((Aggregation)obj).Equals(this);
+            else
+                return false;
+        }
+
+        public bool Equals(Aggregation obj)
+        {
+            return EqualsBuilder.Equals(this.Fold, obj.Fold);
         }
     }
 }
