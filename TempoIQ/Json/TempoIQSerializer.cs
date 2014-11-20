@@ -30,6 +30,7 @@ namespace TempoIQ.Json
                     new SelectorConverter(),
                     new SelectorTypeConverter(),
                     new ZonedDateTimeConverter()
+                    //new NextPageConverter()
                 };
             }
         }

@@ -33,15 +33,15 @@ namespace TempoIQ.Results
 
         public bool MoveNext()
         {
-            var result = Runner.Execute<Segment<T>>(RestSharp.Method.POST, EndPoint, Current.Next, MediaTypeVersion);
+            if (Current == null || Current.Next == null || Current.Next.Query == null)
+                return false;
+            var result = Runner.Execute<Segment<T>>(RestSharp.Method.POST, EndPoint, Current.Next.Query, MediaTypeVersion);
             if (result.State.Equals(State.Success))
             {
                 Current = result.Value;
                 return true;
-            } else
-            {
-                return false;
             }
+            return false;
         }
 
         public void Reset()
@@ -53,6 +53,5 @@ namespace TempoIQ.Results
         {
             ;
         }
-
     }
 }

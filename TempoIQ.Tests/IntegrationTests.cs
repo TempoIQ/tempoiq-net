@@ -29,9 +29,9 @@ namespace TempoIQTests
         [SetUp]
         public void InitCredentials()
         {
-            string key = "6c9e613fe2bb4a9381a1875da7c7661c";
-            string secret = "3300a522898843219417861848dcbbcb";
-            string domain = "tdj3l-blake.backend.tempoiq.com";
+            string key = "YOUR KEY";
+            string secret = "YOUR SECRET";
+            string domain = "YOUR DOMAIN";
             InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
             Client = new Client(new Credentials(key, secret), domain);
         }
@@ -200,14 +200,15 @@ namespace TempoIQTests
             Assert.AreEqual(6, cursor.First.Data.Count);
             cursor = Client.Read(query);
             Assert.AreEqual(10, cursor.Count());
+            cursor = Client.Read(query);
             Assert.AreEqual(20, cursor.Flatten().Count());
             foreach(var sensorKey in device.Sensors.Select((s) => s.Key))
             {
+                cursor = Client.Read(query);
                 Assert.AreEqual(10, cursor.PointsForDeviceAndSensor(device.Key, sensorKey).Count());
             }
             Assert.AreEqual(2, cursor.PointsByStream().Keys.Count());
         }
-
 
         [Test]
         public void TestReadWithPipeline()

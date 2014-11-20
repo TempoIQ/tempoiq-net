@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NodaTime;
 using TempoIQ.Utilities;
 using TempoIQ.Models;
@@ -12,22 +13,39 @@ using TempoIQ.Json;
 
 namespace TempoIQ.Results
 {
+
+    //[JsonConverter(typeof(NextPageConverter))]
+    [JsonObject]
+    public class NextPage
+    {
+        [JsonProperty("next_query")]
+        public object Query { get; set; }
+
+        [JsonConstructor]
+        public NextPage(JObject query)
+        {
+            this.Query = query;
+        }
+    }
+
     /// <summary>
     /// The Segment represents a Chunk of some object from TempoIQ
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [JsonConverter(typeof(SegmentConverter<T>))]
+    [JsonObject]
     public class Segment<T> : IEnumerable<T>, IModel
     {
         /// <summary>
         /// the underlying chunk of data
         /// </summary>
+        [JsonProperty("data")]
         public IList<T> Data{ get; set; }
 
         /// <summary>
         /// a pointer to the next segment
         /// </summary>
-        public string Next { get; set; }
+        [JsonProperty(PropertyName = "next_page", NullValueHandling = NullValueHandling.Ignore)]
+        public NextPage Next { get; private set; }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -45,7 +63,7 @@ namespace TempoIQ.Results
         /// </summary>
         /// <param name="data"></param>
         /// <param name="next"></param>
-        public Segment(IList<T> data, string next)
+        public Segment(IList<T> data, NextPage next)
         {
             this.Data = data;
             this.Next = next;
