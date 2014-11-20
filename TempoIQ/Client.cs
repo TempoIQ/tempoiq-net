@@ -23,6 +23,10 @@ namespace TempoIQ
         private Executor Runner { get; set; }
 
         public const string API_VERSION = "v2";
+        private const string PAGINATED_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v2";
+        private const string SIMPLE_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v1";
+        private const string PAGINATED_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v2";
+        private const string SIMPLE_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v1";
 
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
@@ -84,7 +88,7 @@ namespace TempoIQ
             var target = String.Format("{0}/devices/query/", API_VERSION);
             var query = new FindQuery(
                 new Search(Select.Type.Devices, selection), new Find());
-            var prelim = Runner.Post<Segment<Device>>(target, query);
+            var prelim = Runner.Post<Segment<Device>>(target, query, PAGINATED_READ_MEDIA_TYPE);
             return prelim.ToCursor<Device>(Runner);
         }
 
@@ -221,7 +225,7 @@ namespace TempoIQ
         public Cursor<Row> Read(ReadQuery query)
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner);
+            return Runner.Post<Segment<Row>>(target, query, PAGINATED_READ_MEDIA_TYPE).ToCursor<Row>(Runner);
         }
 
         /// <summary>
@@ -233,7 +237,7 @@ namespace TempoIQ
         public Cursor<Row> Latest(SingleValueQuery query)
         {
             var target = String.Format("{0}/read/single/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner);
+            return Runner.Post<Segment<Row>>(target, query, SIMPLE_READ_MEDIA_TYPE).ToCursor<Row>(Runner);
         }
 
         /// <summary>
@@ -246,8 +250,7 @@ namespace TempoIQ
         public Cursor<Row> Latest(Selection selection, Pipeline pipeline = null)
         {
             var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), new SingleValueAction());
-            var target = String.Format("{0}/single/query", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner);
+            return Latest(query);
         }
 
         public Result<DeleteSummary> DeleteDataPoints(Device device, Sensor sensor, ZonedDateTime start, ZonedDateTime stop)

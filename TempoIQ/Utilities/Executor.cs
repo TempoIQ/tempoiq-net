@@ -29,37 +29,39 @@ namespace TempoIQ.Utilities
             this.Rest = rest;
         }
 
-        public Result<T> Get<T>(string resource)
+        public Result<T> Get<T>(string resource, string mediaTypeVersion = "")
         {
-            return Execute<T>(Method.GET, resource, null);
+            return Execute<T>(Method.GET, resource, null, mediaTypeVersion);
         }
 
-        public Result<T> Post<T>(string resource, object body)
+        public Result<T> Post<T>(string resource, object body, string mediaTypeVersion = "")
         {
-            return Execute<T>(Method.POST, resource, body);
+            return Execute<T>(Method.POST, resource, body, mediaTypeVersion);
         }
 
-        public Result<T> Put<T>(string resource, object body)
+        public Result<T> Put<T>(string resource, object body, string mediaTypeVersion = "")
         {
-            return Execute<T>(Method.PUT, resource, body);
+            return Execute<T>(Method.PUT, resource, body, mediaTypeVersion);
         }
 
-        public Result<T> Delete<T>(string resource, object body)
+        public Result<T> Delete<T>(string resource, object body, string mediaTypeVersion = "")
         {
-            return Execute<T>(Method.DELETE, resource, body);
+            return Execute<T>(Method.DELETE, resource, body, mediaTypeVersion);
         }
 
-        public Result<Unit> Delete<Unit>(string resource)
+        public Result<Unit> Delete<Unit>(string resource, string mediaTypeVersion = "")
         {
-            return Execute<Unit>(Method.DELETE, resource, null);
+            return Execute<Unit>(Method.DELETE, resource, null, mediaTypeVersion);
         }
 
-        public Result<T> Execute<T>(Method method, string resource, object body)
+        public Result<T> Execute<T>(Method method, string resource, object body, string mediaTypeVersion)
         {
             var request = new RestRequest(resource, method);
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = this.Serialization;
             request.AddBody(body);
+            if (!mediaTypeVersion.Equals(""))
+                request.AddHeader("Accept", mediaTypeVersion);
             var response = Rest.Execute(request);
             return response.ToResult<T>();
         }

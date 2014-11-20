@@ -14,6 +14,7 @@ namespace TempoIQ.Queries
 	public interface Action
 	{
         string Name { get; }
+        int Limit { get; }
 	}
 
 	/// <summary>
@@ -27,6 +28,13 @@ namespace TempoIQ.Queries
 
 		[JsonProperty ("quantifier")]
 		public string Quantifier { get { return "all"; } }
+
+    /// <summary>
+    /// The maximum number of items to return per network-loaded page of data. 
+    /// If left untouched, Limit defaults to 5000
+    /// </summary>
+    [JsonProperty ("limit")]
+    public int Limit { get; set; }
 
 		[JsonConstructor]
 		public Find ()
@@ -53,6 +61,13 @@ namespace TempoIQ.Queries
 		[JsonProperty ("start")]
 		public ZonedDateTime Start { get; private set; }
 
+    /// <summary>
+    /// The maximum number of items to return per network-loaded page of data. 
+    /// If left untouched, Limit defaults to 5000
+    /// </summary>
+    [JsonProperty ("limit")]
+    public int Limit { get; set; }
+
 		/// <summary>
 		/// The stop time of the Read
 		/// </summary>
@@ -78,17 +93,25 @@ namespace TempoIQ.Queries
 	[JsonObject]
 	public class SingleValueAction : Action
 	{
-        /// <summary>
-        /// Gets the name of the action-type.
-        /// </summary>
-        /// <value>The name.</value>
+    /// <summary>
+    /// Gets the name of the action-type.
+    /// </summary>
+    /// <value>The name.</value>
 		[JsonIgnore]
 		public string Name { get { return "single"; } }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the single value query <see cref="TempoIQ.Queries.SingleValueAction"/> includes the devices selected as well as the data.
-        /// </summary>
-        /// <value><c>true</c> if include selection; otherwise, <c>false</c>.</value>
+    /// <summary>
+    /// The maximum number of items to return per network-loaded page of data. 
+    /// If left untouched, Limit defaults to 5000
+    /// </summary>
+    [JsonProperty ("limit")]
+    public int Limit { get; set; }
+
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the single value query <see cref="TempoIQ.Queries.SingleValueAction"/> includes the devices selected as well as the data.
+    /// </summary>
+    /// <value><c>true</c> if include selection; otherwise, <c>false</c>.</value>
 		[JsonProperty ("include_selection")]
 		public bool IncludeSelection { get; set; }
 
