@@ -16,19 +16,17 @@ namespace TempoIQ.Results
     /// The Segment represents a Chunk of some object from TempoIQ
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [JsonObject]
+    [JsonConverter(typeof(SegmentConverter<T>))]
     public class Segment<T> : IEnumerable<T>, IModel
     {
         /// <summary>
         /// the underlying chunk of data
         /// </summary>
-        [JsonProperty("data")]
         public IList<T> Data{ get; set; }
 
         /// <summary>
         /// a pointer to the next segment
         /// </summary>
-        [JsonConverter(typeof(RawBodyWrapperConverter))]
         public string Next { get; set; }
 
         public IEnumerator<T> GetEnumerator()

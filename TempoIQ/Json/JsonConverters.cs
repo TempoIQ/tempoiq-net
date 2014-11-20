@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using TempoIQ.Models;
 using TempoIQ.Queries;
+using TempoIQ.Results;
 
 namespace TempoIQ.Json
 {
@@ -51,6 +52,52 @@ namespace TempoIQ.Json
         {
             var selectors = JsonConvert.DeserializeObject<Dictionary<Select.Type, Selector>>((string)reader.Value);
             return new Selection(selectors);
+        }
+    }
+
+    public class SegmentConverter<T> : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.Equals(typeof(Segment<T>));
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var segment = (Segment<T>)value;
+            writer.WriteStartObject();
+            writer.WriteRaw(JsonUtil.RawJsonField("data", segment.Data));
+            serializer.Serialize(writer, segment.Data);
+            if (segment.Next != null)
+            {
+                writer.WritePropertyName("next_page");
+                writer.WriteStartObject();
+                writer.WritePropertyName("next_query");
+                writer.WriteRaw(segment.Next);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndObject();
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var json = serializer.Deserialize<Dictionary<string, object>>(reader);
+            List<T> data = null;
+            object dataObject;
+            if (json.TryGetValue("data", out dataObject))
+                data = dataObject as List<T>;
+            else
+                throw new JsonException("The incoming json is missing a 'data' field, which is necessary for a Segment");
+            string next = null;
+            object nextPage;
+            if (json.TryGetValue("next_page", out nextPage))
+            {
+                var nextPageDict = json["next_page"] as Dictionary<string, object>;
+                object nextQuery;
+                if (nextPageDict.TryGetValue("next_query", out nextQuery))
+                    next = JsonConvert.SerializeObject(nextQuery);
+            }
+            return new Segment<T>(data, next);
         }
     }
 
