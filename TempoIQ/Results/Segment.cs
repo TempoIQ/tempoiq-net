@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using NodaTime;
 using TempoIQ.Utilities;
 using TempoIQ.Models;
+using TempoIQ.Json;
 
 namespace TempoIQ.Results
 {
@@ -27,6 +28,7 @@ namespace TempoIQ.Results
         /// <summary>
         /// a pointer to the next segment
         /// </summary>
+        [JsonConverter(typeof(RawBodyWrapperConverter))]
         public string Next { get; set; }
 
         public IEnumerator<T> GetEnumerator()

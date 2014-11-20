@@ -12,15 +12,18 @@ namespace TempoIQ.Results
     class PageLoader<T> : IEnumerator<Segment<T>>
     {
         public Segment<T> Current { get; private set; }
-
         private Executor Runner { get; set; }
-
         private Segment<T> First { get; set; }
+        private string EndPoint { get; set; }
+        private string MediaTypeVersion { get; set; }
 
-        public PageLoader(Segment<T> first)
+        public PageLoader(Executor runner, Segment<T> first, string endPoint, string mediaTypeVersion)
         {
-            Current = first;
-            First = first;
+            this.Runner = runner;
+            this.Current = first;
+            this.First = first;
+            this.EndPoint = endPoint;
+            this.MediaTypeVersion = mediaTypeVersion;
         }
 
         object System.Collections.IEnumerator.Current
@@ -30,9 +33,7 @@ namespace TempoIQ.Results
 
         public bool MoveNext()
         {
-            string resource = (String)(typeof(T).GetProperty("Resource").GetValue(null, null));
-            string endpoint = String.Format("{0}/{1}/query", Client.API_VERSION, resource);
-            var result = Runner.Execute<Segment<T>>(RestSharp.Method.POST, endpoint, new RawBodyWrapper(Current.Next));
+            var result = Runner.Execute<Segment<T>>(RestSharp.Method.POST, EndPoint, Current.Next, MediaTypeVersion);
             if (result.State.Equals(State.Success))
             {
                 Current = result.Value;

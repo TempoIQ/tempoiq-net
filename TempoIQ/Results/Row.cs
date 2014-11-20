@@ -28,9 +28,9 @@ namespace TempoIQ.Results
         public IDictionary<string, IDictionary<string, double>> Data { get; set; }
 
         [JsonIgnore]
-        public static string Resource
+        public static string CursoredMediaTypeVersion
         {
-            get { return "read"; }
+            get { return "application/prs.tempoiq.datapoint-collection.v2"; }
         }
 
         public IEnumerator<Tuple<string, string, double>> GetEnumerator()

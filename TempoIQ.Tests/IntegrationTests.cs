@@ -82,8 +82,9 @@ namespace TempoIQTests
         public void TestDeleteDevices()
         {
             MakeDevices(10);
-            var result = Client.DeleteDevices(new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device")));
-            var devices = Client.ListDevices(new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device")));
+            var selection = new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device"));
+            var result = Client.DeleteDevices(selection);
+            var devices = Client.ListDevices(selection);
             Assert.IsFalse(devices.Any());
         }
 
@@ -108,9 +109,12 @@ namespace TempoIQTests
         public void TestListDevices()
         {
             MakeDevices(10);
-            var selection = new Selection().Add(Select.Type.Devices, Select.All());
-            var result = Client.ListDevices(selection);
-            Assert.IsTrue(result.Any());
+            var selection = new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device"));
+            var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find(6));
+            var cursor = Client.ListDevices(query);
+            Assert.AreEqual(6, cursor.First.Data.Count);
+            cursor = Client.ListDevices(query);
+            Assert.AreEqual(10, cursor.Count());
         }
 
         [Test]
@@ -168,6 +172,42 @@ namespace TempoIQTests
             var cursor = Client.Read(selection, start, stop);
             Assert.IsTrue(cursor.Any());
         }
+        
+        [Test]
+        public void TestPagingReadDataPoints()
+        {
+            //Make some devices
+            var device = PostNewDevice();
+
+            //Write some data
+            var points = new WriteRequest();
+            var lst = (from i in Enumerable.Range(0, 10)
+                                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
+                                select new DataPoint(time, i)).ToList();
+
+            foreach (var sensor in device.Sensors)
+                points.Add(device, sensor, lst);
+            var written = Client.WriteDataPoints(points);
+            
+            //Read that data out
+            var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
+            var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
+            var selection = new Selection().Add(
+                                Select.Type.Devices,
+                                Select.Or(Select.Key(device.Key)));
+            var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop, 6));
+            var cursor = Client.Read(query);
+            Assert.AreEqual(6, cursor.First.Data.Count);
+            cursor = Client.Read(query);
+            Assert.AreEqual(10, cursor.Count());
+            Assert.AreEqual(20, cursor.Flatten().Count());
+            foreach(var sensorKey in device.Sensors.Select((s) => s.Key))
+            {
+                Assert.AreEqual(10, cursor.PointsForDeviceAndSensor(device.Key, sensorKey).Count());
+            }
+            Assert.AreEqual(2, cursor.PointsByStream().Keys.Count());
+        }
+
 
         [Test]
         public void TestReadWithPipeline()

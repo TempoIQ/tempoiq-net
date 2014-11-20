@@ -23,10 +23,12 @@ namespace TempoIQ
         private Executor Runner { get; set; }
 
         public const string API_VERSION = "v2";
-        private const string PAGINATED_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v2";
-        private const string SIMPLE_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v1";
-        private const string PAGINATED_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v2";
-        private const string SIMPLE_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v1";
+
+        private const string PAGINATED_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v2+json";
+        private const string SIMPLE_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v1+json";
+
+        private const string PAGINATED_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v2+json";
+        private const string SIMPLE_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v1+json";
 
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
@@ -85,11 +87,20 @@ namespace TempoIQ
         /// <returns>a result with the selected Devices</returns>
         public Cursor<Device> ListDevices(Selection selection)
         {
+            var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find());
+            return ListDevices(query);
+        }
+
+        /// <summary>
+        /// List the devices which meet the criteria for a given query
+        /// </summary>
+        /// <param name="selection"></param>
+        /// <returns>a result with the selected Devices</returns>
+        public Cursor<Device> ListDevices(FindQuery query)
+        {
             var target = String.Format("{0}/devices/query/", API_VERSION);
-            var query = new FindQuery(
-                new Search(Select.Type.Devices, selection), new Find());
-            var prelim = Runner.Post<Segment<Device>>(target, query, PAGINATED_READ_MEDIA_TYPE);
-            return prelim.ToCursor<Device>(Runner);
+            return Runner.Post<Segment<Device>>(target, query, PAGINATED_SEARCH_MEDIA_TYPE)
+                .ToCursor<Device>(Runner, target, PAGINATED_SEARCH_MEDIA_TYPE);
         }
 
         /// <summary>
@@ -225,7 +236,7 @@ namespace TempoIQ
         public Cursor<Row> Read(ReadQuery query)
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query, PAGINATED_READ_MEDIA_TYPE).ToCursor<Row>(Runner);
+            return Runner.Post<Segment<Row>>(target, query, PAGINATED_READ_MEDIA_TYPE).ToCursor<Row>(Runner, target, PAGINATED_READ_MEDIA_TYPE);
         }
 
         /// <summary>
@@ -236,8 +247,8 @@ namespace TempoIQ
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
         public Cursor<Row> Latest(SingleValueQuery query)
         {
-            var target = String.Format("{0}/read/single/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query, SIMPLE_READ_MEDIA_TYPE).ToCursor<Row>(Runner);
+            var target = String.Format("{0}/single/query", API_VERSION);
+            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner, target, SIMPLE_READ_MEDIA_TYPE);
         }
 
         /// <summary>
@@ -277,10 +288,10 @@ namespace TempoIQ
         /// <param name="result"></param>
         /// <returns>An Result wrapping the cursor equivalent to the 
         /// Segment in the original's Value</returns>
-        public static Cursor<T> ToCursor<T>(this Result<Segment<T>> result, Executor runner)
+        public static Cursor<T> ToCursor<T>(this Result<Segment<T>> result, Executor runner, string endPoint, string mediaTypeVersion)
         {
             if (result.State == State.Success)
-                return new Cursor<T>(result.Value, runner);
+                return new Cursor<T>(result.Value, runner, endPoint, mediaTypeVersion);
             else
                 throw new TempoIQException(result.Message);
         }

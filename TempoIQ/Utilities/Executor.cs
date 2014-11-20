@@ -60,7 +60,7 @@ namespace TempoIQ.Utilities
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = this.Serialization;
             request.AddBody(body);
-            if (!mediaTypeVersion.Equals(""))
+            if (! mediaTypeVersion.Equals(""))
                 request.AddHeader("Accept", mediaTypeVersion);
             var response = Rest.Execute(request);
             return response.ToResult<T>();

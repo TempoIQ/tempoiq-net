@@ -30,9 +30,9 @@ namespace TempoIQ.Models
         public IList<Sensor> Sensors { get; set; }
 
         [JsonIgnore]
-        public static string Resource
+        public static string CursoredMediaTypeVersion
         {
-            get { return "devices"; }
+            get { return "application/prs.tempoiq.datapoint-collection.v2"; }
         }
 
         [JsonConstructor]
