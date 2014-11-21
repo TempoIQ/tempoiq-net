@@ -24,11 +24,10 @@ namespace TempoIQ
 
         public const string API_VERSION = "v2";
 
-        private const string PAGINATED_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v2+json";
-        private const string SIMPLE_READ_MEDIA_TYPE = "application/prs.tempoiq.datapoint-collection.v1+json";
-
-        private const string PAGINATED_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v2+json";
-        private const string SIMPLE_SEARCH_MEDIA_TYPE = "application/prs.tempoiq.device-collection.v1+json";
+        private static string MediaType(string entity, string version)
+        {
+            return String.Format("application/prs.tempoiq.{0}.{1}+json", entity, version);
+        }
 
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
@@ -99,8 +98,8 @@ namespace TempoIQ
         public Cursor<Device> ListDevices(FindQuery query)
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
-            return Runner.Post<Segment<Device>>(target, query, PAGINATED_SEARCH_MEDIA_TYPE)
-                .ToCursor<Device>(Runner, target, PAGINATED_SEARCH_MEDIA_TYPE);
+            string mediaType = MediaType("device-collection", "v2");
+            return Runner.Post<Segment<Device>>(target, query, mediaType).ToCursor<Device>(Runner, target, mediaType);
         }
 
         /// <summary>
@@ -236,7 +235,8 @@ namespace TempoIQ
         public Cursor<Row> Read(ReadQuery query)
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query, PAGINATED_READ_MEDIA_TYPE).ToCursor<Row>(Runner, target, PAGINATED_READ_MEDIA_TYPE);
+            string mediaType = MediaType("datapoint-collection", "v2");
+            return Runner.Post<Segment<Row>>(target, query, mediaType).ToCursor<Row>(Runner, target, mediaType);
         }
 
         /// <summary>
@@ -248,7 +248,8 @@ namespace TempoIQ
         public Cursor<Row> Latest(SingleValueQuery query)
         {
             var target = String.Format("{0}/single/query", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner, target, SIMPLE_READ_MEDIA_TYPE);
+            string mediaType = MediaType("datapoint-collection", "v1");
+            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner, target, mediaType);
         }
 
         /// <summary>
