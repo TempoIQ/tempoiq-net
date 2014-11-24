@@ -22,19 +22,21 @@ namespace TempoIQ.Results
         public Segment<T> First { get; private set; }
         private Executor Runner { get; set; }
         private string EndPoint { get; set; }
-        private string MediaTypeVersion { get; set; }
+        private string ContentType { get; set; }
+        private string[] MediaTypeVersions { get; set; }
 
-        public Cursor(Segment<T> segment, Executor runner, string endPoint, string mediaTypeVersion)
+        public Cursor(Segment<T> segment, Executor runner, string endPoint, string contentType, params string[] mediaTypeVersions)
         {
             this.First = segment;
             this.Runner = runner;
             this.EndPoint = endPoint;
-            this.MediaTypeVersion = mediaTypeVersion;
+            this.ContentType = contentType;
+            this.MediaTypeVersions = mediaTypeVersions;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            var pages = new PageLoader<T>(Runner, First, EndPoint, MediaTypeVersion);
+            var pages = new PageLoader<T>(Runner, First, EndPoint, ContentType, MediaTypeVersions);
             do
             {
                 foreach (var t in pages.Current)

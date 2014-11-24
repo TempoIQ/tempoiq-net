@@ -29,39 +29,41 @@ namespace TempoIQ.Utilities
             this.Rest = rest;
         }
 
-        public Result<T> Get<T>(string resource, string mediaTypeVersion = "")
+        public Result<T> Get<T>(string resource, string contentType, string[] mediaTypeVersions)
         {
-            return Execute<T>(Method.GET, resource, null, mediaTypeVersion);
+            return Execute<T>(Method.GET, resource, null, contentType, mediaTypeVersions);
         }
 
-        public Result<T> Post<T>(string resource, object body, string mediaTypeVersion = "")
+        public Result<T> Post<T>(string resource, object body, string contentType, string[] mediaTypeVersions)
         {
-            return Execute<T>(Method.POST, resource, body, mediaTypeVersion);
+            return Execute<T>(Method.POST, resource, body, contentType, mediaTypeVersions);
         }
 
-        public Result<T> Put<T>(string resource, object body, string mediaTypeVersion = "")
+        public Result<T> Put<T>(string resource, object body, string contentType, string[] mediaTypeVersions)
         {
-            return Execute<T>(Method.PUT, resource, body, mediaTypeVersion);
+            return Execute<T>(Method.PUT, resource, body, contentType, mediaTypeVersions);
         }
 
-        public Result<T> Delete<T>(string resource, object body, string mediaTypeVersion = "")
+        public Result<T> Delete<T>(string resource, object body, string contentType, string[] mediaTypeVersions)
         {
-            return Execute<T>(Method.DELETE, resource, body, mediaTypeVersion);
+            return Execute<T>(Method.DELETE, resource, body, contentType, mediaTypeVersions);
         }
 
-        public Result<Unit> Delete<Unit>(string resource, string mediaTypeVersion = "")
+        public Result<Unit> Delete<Unit>(string resource, string contentType, string[] mediaTypeVersions)
         {
-            return Execute<Unit>(Method.DELETE, resource, null, mediaTypeVersion);
+            return Execute<Unit>(Method.DELETE, resource, null, contentType, mediaTypeVersions);
         }
 
-        public Result<T> Execute<T>(Method method, string resource, object body, string mediaTypeVersion)
+        public Result<T> Execute<T>(Method method, string resource, object body, string contentType, string[] mediaTypeVersions)
         {
             var request = new RestRequest(resource, method);
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = this.Serialization;
             request.AddBody(body);
-            if (! mediaTypeVersion.Equals(""))
-                request.AddHeader("Accept", mediaTypeVersion);
+            if (mediaTypeVersions.Any())
+                request.AddHeader("Accept", String.Join(",", mediaTypeVersions));
+            if (contentType != null && contentType != "")
+                request.AddHeader("Content-Type", contentType);
             var response = Rest.Execute(request);
             return response.ToResult<T>();
         }

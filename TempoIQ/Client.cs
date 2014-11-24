@@ -54,7 +54,8 @@ namespace TempoIQ
         public Result<Device> CreateDevice(Device device)
         {
             string target = String.Format("{0}/devices/", API_VERSION);
-            return Runner.Post<Device>(target, device);
+            return Runner.Post<Device>(target, device, MediaType("device", "v1"), 
+                new string[] { MediaType("device", "v1"), MediaType("error", "v1") });
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace TempoIQ
         public Result<Device> GetDevice(string key)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(key));
-            return Runner.Get<Device>(target);
+            return Runner.Get<Device>(target, "", new string[] { MediaType("device", "v1") });
         }
 
         /// <summary>
@@ -76,7 +77,8 @@ namespace TempoIQ
         public Result<Device> UpdateDevice(Device device)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
-            return Runner.Put<Device>(target, device);
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("device", "v1") };
+            return Runner.Put<Device>(target, device, "", mediaTypes);
         }
 
         /// <summary>
@@ -98,8 +100,10 @@ namespace TempoIQ
         public Cursor<Device> ListDevices(FindQuery query)
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
-            string mediaType = MediaType("device-collection", "v2");
-            return Runner.Post<Segment<Device>>(target, query, mediaType).ToCursor<Device>(Runner, target, mediaType);
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("device-collection", "v2") };
+            return Runner.Post<Segment<Device>>(target, query, contentType, mediaTypes)
+                .ToCursor<Device>(Runner, target, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -110,7 +114,9 @@ namespace TempoIQ
         public Result<Unit> DeleteDevice(Device device)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
-            var result = Runner.Delete<Unit>(target);
+            string contentType = "";
+            var mediaTypes = new string[] { MediaType("error", "v1") };
+            var result = Runner.Delete<Unit>(target, contentType, mediaTypes);
             return result;
         }
 
@@ -123,7 +129,9 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/devices/", API_VERSION);
             var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find());
-            return Runner.Delete<DeleteSummary>(target, query);
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("delete-summary", "v1") };
+            return Runner.Delete<DeleteSummary>(target, query, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -191,7 +199,9 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(WriteRequest writeRequest)
         {
             var target = String.Format("{0}/write/", API_VERSION);
-            var result = Runner.Post<Unit>(target, writeRequest);
+            string contentType = MediaType("write-request", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1") } ; 
+            var result = Runner.Post<Unit>(target, writeRequest, contentType, mediaTypes);
             return result;
         }
 
@@ -235,8 +245,10 @@ namespace TempoIQ
         public Cursor<Row> Read(ReadQuery query)
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
-            string mediaType = MediaType("datapoint-collection", "v2");
-            return Runner.Post<Segment<Row>>(target, query, mediaType).ToCursor<Row>(Runner, target, mediaType);
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v2") } ; 
+            return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
+                .ToCursor<Row>(Runner, target, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -248,8 +260,10 @@ namespace TempoIQ
         public Cursor<Row> Latest(SingleValueQuery query)
         {
             var target = String.Format("{0}/single/query", API_VERSION);
-            string mediaType = MediaType("datapoint-collection", "v1");
-            return Runner.Post<Segment<Row>>(target, query).ToCursor<Row>(Runner, target, mediaType);
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v1") } ; 
+            return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
+                .ToCursor<Row>(Runner, target, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -274,7 +288,9 @@ namespace TempoIQ
         {
             var del = new Delete{ start = start, stop = stop };
             var target = String.Format("{0}/devices/{1}/sensors/{2}/datapoints", API_VERSION, deviceKey, sensorKey);
-            return Runner.Delete<DeleteSummary>(target, del);
+            string contentType = MediaType("delete-interval", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("delete-summary", "v1") } ; 
+            return Runner.Delete<DeleteSummary>(target, del, contentType, mediaTypes);
         }
     }
 
@@ -289,10 +305,14 @@ namespace TempoIQ
         /// <param name="result"></param>
         /// <returns>An Result wrapping the cursor equivalent to the 
         /// Segment in the original's Value</returns>
-        public static Cursor<T> ToCursor<T>(this Result<Segment<T>> result, Executor runner, string endPoint, string mediaTypeVersion)
+        public static Cursor<T> ToCursor<T>(this Result<Segment<T>> result,
+            Executor runner,
+            string endPoint,
+            string contentType,
+            params string[] mediaTypeVersions)
         {
             if (result.State == State.Success)
-                return new Cursor<T>(result.Value, runner, endPoint, mediaTypeVersion);
+                return new Cursor<T>(result.Value, runner, endPoint, contentType, mediaTypeVersions);
             else
                 throw new TempoIQException(result.Message);
         }
