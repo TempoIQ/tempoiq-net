@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using NodaTime;
 using NodaTime.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using TempoIQ.Models;
 using TempoIQ.Queries;
+using TempoIQ.Results;
 
 namespace TempoIQ.Json
 {
@@ -24,6 +26,24 @@ namespace TempoIQ.Json
             return JsonUtil.RawJsonField(pair.Key, pair.Value);
         }
     }
+    /*
+    public class NextPageConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.Equals(typeof(NextPage));
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            writer.WriteValue(((NextPage)value).Query);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            return serializer.Deserialize(reader);
+        }
+    }*/
 
     public class SelectionConverter : JsonConverter
     {

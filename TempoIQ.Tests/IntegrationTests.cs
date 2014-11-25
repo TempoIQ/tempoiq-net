@@ -82,9 +82,10 @@ namespace TempoIQTests
         public void TestDeleteDevices()
         {
             MakeDevices(10);
-            var result = Client.DeleteDevices(new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device")));
-            var devices = Client.ListDevices(new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device")));
-            Assert.IsFalse(devices.Value.Any());
+            var selection = new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device"));
+            var result = Client.DeleteDevices(selection);
+            var devices = Client.ListDevices(selection);
+            Assert.IsFalse(devices.Any());
         }
 
         [Test]
@@ -108,10 +109,11 @@ namespace TempoIQTests
         public void TestListDevices()
         {
             MakeDevices(10);
-            var selection = new Selection().Add(Select.Type.Devices, Select.All());
-            var result = Client.ListDevices(selection);
-            Assert.AreEqual(200, result.Code);
-            Assert.IsTrue(result.Value.Any());
+            var selection = new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device"));
+            var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find(6));
+            var cursor = Client.ListDevices(query) as Cursor<Device>;
+            Assert.AreEqual(6, cursor.First.Data.Count);
+            Assert.AreEqual(10, cursor.Count());
         }
 
         [Test]
@@ -166,11 +168,42 @@ namespace TempoIQTests
             var selection = new Selection().Add(
                                 Select.Type.Devices,
                                 Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
-            var result = Client.Read(selection, start, stop);
-            var cursor = result.Value;
-
-            Assert.AreEqual(State.Success, result.State);
+            var cursor = Client.Read(selection, start, stop);
             Assert.IsTrue(cursor.Any());
+        }
+        
+        [Test]
+        public void TestPagingReadDataPoints()
+        {
+            //Make some devices
+            var device = PostNewDevice();
+
+            //Write some data
+            var points = new WriteRequest();
+            var lst = (from i in Enumerable.Range(0, 10)
+                                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
+                                select new DataPoint(time, i)).ToList();
+
+            foreach (var sensor in device.Sensors)
+                points.Add(device, sensor, lst);
+            var written = Client.WriteDataPoints(points);
+            
+            //Read that data out
+            var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
+            var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
+            var selection = new Selection().Add(
+                                Select.Type.Devices,
+                                Select.Or(Select.Key(device.Key)));
+            var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop, 6));
+            var cursor = Client.Read(query) as Cursor<Row>;
+            Assert.AreEqual(6, cursor.First.Data.Count);
+            Assert.AreEqual(10, cursor.Count());
+            Assert.AreEqual(20, cursor.Flatten().Count());
+            foreach(var sensorKey in device.Sensors.Select((s) => s.Key))
+            {
+                Assert.AreEqual(10, cursor.StreamForDeviceAndSensor(device.Key, sensorKey).Count());
+            }
+            Assert.AreEqual(2, cursor.PointsByStream().Keys.Count());
         }
 
         [Test]
@@ -198,10 +231,8 @@ namespace TempoIQTests
                                 Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
             var function = new Rollup(Period.FromSeconds(1), Fold.Count, start);
             var pipeline = new Pipeline().AddFunction(function);
-            var result = Client.Read(selection, start, stop);
-            var cursor = result.Value;
+            var cursor = Client.Read(selection, start, stop);
 
-            Assert.AreEqual(State.Success, result.State);
             Assert.IsTrue(cursor.Any());
         }
 
@@ -227,7 +258,7 @@ namespace TempoIQTests
             var sel = new Selection().Add(Select.Type.Devices, Select.Key(device.Key));
 
             var cursor = Client.Latest(sel);
-            Assert.AreEqual(4.0, cursor.Value.First().Data[device.Key]["sensor1"]);
+            Assert.AreEqual(4.0, cursor.First().Data[device.Key]["sensor1"]);
         }
 
         [Test]
@@ -265,7 +296,8 @@ namespace TempoIQTests
 
             var cursor1 = Client.Read(new Selection().Add(Select.Type.Devices, Select.Key("sensor1")),
                                       UTC.AtStrictly(new LocalDateTime(2011, 1, 1, 0, 0, 0, 0)),
-                                      UTC.AtStrictly(new LocalDateTime(2013, 1, 1, 1, 0, 0, 0))).Value;
+                                      UTC.AtStrictly(new LocalDateTime(2013, 1, 1, 0, 0, 0, 0)));
+
             Assert.AreEqual(0, cursor1.Count());
         }
     }

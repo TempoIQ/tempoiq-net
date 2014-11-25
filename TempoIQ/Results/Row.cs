@@ -16,7 +16,8 @@ namespace TempoIQ.Results
     /// for a given time.
     /// </summary>
     /// <para>A Row returns the "cells" from "table" that a 
-    /// Cursor of Rows implicitly defines </para>
+    /// Cursor of Rows implicitly defines. Each cell denotes the 
+    /// DeviceKey, SensorKey, and Value of the sensor at the row's Timestamp</para>
     [JsonObject]
     public class Row : IEnumerable<Tuple<string, string, double>>, IModel
     {
@@ -25,6 +26,12 @@ namespace TempoIQ.Results
 
         [JsonProperty("data")]
         public IDictionary<string, IDictionary<string, double>> Data { get; set; }
+
+        [JsonIgnore]
+        public static string CursoredMediaTypeVersion
+        {
+            get { return "application/prs.tempoiq.datapoint-collection.v2"; }
+        }
 
         public IEnumerator<Tuple<string, string, double>> GetEnumerator()
         {
@@ -40,24 +47,26 @@ namespace TempoIQ.Results
 
         public bool HasSensor(string deviceKey, string sensorKey)
         {
-            return Data.ContainsKey(deviceKey) && (Data[deviceKey]).ContainsKey(sensorKey);
+            if (sensorKey == null)
+                return false;
+            IDictionary<string, double> deviceData;
+            return Data.TryGetValue(deviceKey, out deviceData) && deviceData.ContainsKey(sensorKey);
         }
 
         public IDictionary<string, double> Get(string deviceKey)
         {
-            if (Data.ContainsKey(deviceKey)) 
-                return Data[deviceKey];
-            else 
-                return new Dictionary<string, double>();
+            IDictionary<string, double> deviceData;
+            Data.TryGetValue(deviceKey, out deviceData);
+            return deviceData;
         }
 
         public double? Get(string deviceKey, string sensorKey)
         {
-            var deviceData = Get(deviceKey);
-            if (deviceData.ContainsKey(sensorKey))
-                return deviceData[sensorKey];
-            else 
-                return null;
+            IDictionary<string, double> deviceData;
+            if (Data.TryGetValue(deviceKey, out deviceData))
+                if (deviceData.ContainsKey(sensorKey))
+                    return deviceData[sensorKey];
+            return null;
         }
 
         public override bool Equals(object obj)

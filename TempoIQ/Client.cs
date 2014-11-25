@@ -22,10 +22,12 @@ namespace TempoIQ
         /// <summary> Handles the actual network operations </summary>
         private Executor Runner { get; set; }
 
-        private const string API_VERSION1 = "v1";
-        private const string API_VERSION2 = "v2";
+        public const string API_VERSION = "v2";
 
-        private string API_VERSION { get; set; }
+        private static string MediaType(string entity, string version)
+        {
+            return String.Format("application/prs.tempoiq.{0}.{1}+json", entity, version);
+        }
 
         /// <summary>
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
@@ -36,7 +38,6 @@ namespace TempoIQ
         /// <param name="timeout"></param>
         public Client(Credentials credentials, string host, int port = 443, int timeout = 50000)
         {
-            API_VERSION = API_VERSION2;
             var builder = new UriBuilder {
                 Scheme = "https",
                 Host = host,
@@ -53,7 +54,8 @@ namespace TempoIQ
         public Result<Device> CreateDevice(Device device)
         {
             string target = String.Format("{0}/devices/", API_VERSION);
-            return Runner.Post<Device>(target, device);
+            return Runner.Post<Device>(target, device, MediaType("device", "v1"), 
+                new string[] { MediaType("device", "v1"), MediaType("error", "v1") });
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace TempoIQ
         public Result<Device> GetDevice(string key)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(key));
-            return Runner.Get<Device>(target);
+            return Runner.Get<Device>(target, "", new string[] { MediaType("device", "v1") });
         }
 
         /// <summary>
@@ -75,7 +77,9 @@ namespace TempoIQ
         public Result<Device> UpdateDevice(Device device)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
-            return Runner.Put<Device>(target, device);
+            string contentType = MediaType("device", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("device", "v1") };
+            return Runner.Put<Device>(target, device, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -83,13 +87,24 @@ namespace TempoIQ
         /// </summary>
         /// <param name="selection"></param>
         /// <returns>a result with the selected Devices</returns>
-        public Result<Cursor<Device>> ListDevices(Selection selection)
+        public IEnumerable<Device> ListDevices(Selection selection)
+        {
+            var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find());
+            return ListDevices(query);
+        }
+
+        /// <summary>
+        /// List the devices which meet the criteria for a given query
+        /// </summary>
+        /// <param name="selection"></param>
+        /// <returns>a result with the selected Devices</returns>
+        public IEnumerable<Device> ListDevices(FindQuery query)
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
-            var query = new FindQuery(
-                new Search(Select.Type.Devices, selection), new Find());
-            var prelim = Runner.Post<Segment<Device>>(target, query);
-            return prelim.ToCursorResult<Device>();
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("device-collection", "v2") };
+            return Runner.Post<Segment<Device>>(target, query, contentType, mediaTypes)
+                .ToCursor<Device>(Runner, target, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -100,7 +115,9 @@ namespace TempoIQ
         public Result<Unit> DeleteDevice(Device device)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
-            var result = Runner.Delete<Unit>(target);
+            string contentType = "";
+            var mediaTypes = new string[] { MediaType("error", "v1") };
+            var result = Runner.Delete<Unit>(target, contentType, mediaTypes);
             return result;
         }
 
@@ -113,7 +130,9 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/devices/", API_VERSION);
             var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find());
-            return Runner.Delete<DeleteSummary>(target, query);
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("delete-summary", "v1") };
+            return Runner.Delete<DeleteSummary>(target, query, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -181,7 +200,9 @@ namespace TempoIQ
         public Result<Unit> WriteDataPoints(WriteRequest writeRequest)
         {
             var target = String.Format("{0}/write/", API_VERSION);
-            var result = Runner.Post<Unit>(target, writeRequest);
+            string contentType = MediaType("write-request", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1") } ; 
+            var result = Runner.Post<Unit>(target, writeRequest, contentType, mediaTypes);
             return result;
         }
 
@@ -193,7 +214,7 @@ namespace TempoIQ
         /// <param name="stop"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
+        public IEnumerable<Row> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
         {
             var search = new Search(Select.Type.Sensors, selection);
             var read = new Read(start, stop);
@@ -210,7 +231,7 @@ namespace TempoIQ
         /// <param name="stop"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
+        public IEnumerable<Row> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
         {
             var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop), pipeline);
             return Read(query);
@@ -222,10 +243,13 @@ namespace TempoIQ
         /// <param name="query"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Read(ReadQuery query)
+        public IEnumerable<Row> Read(ReadQuery query)
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v2") } ; 
+            return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
+                .ToCursor<Row>(Runner, target, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -234,10 +258,13 @@ namespace TempoIQ
         /// <param name="query"></param>
         /// <returns>The latest data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Latest(SingleValueQuery query)
+        public IEnumerable<Row> Latest(SingleValueQuery query)
         {
-            var target = String.Format("{0}/read/single/", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+            var target = String.Format("{0}/single/query", API_VERSION);
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v1") } ; 
+            return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
+                .ToCursor<Row>(Runner, target, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -247,11 +274,10 @@ namespace TempoIQ
         /// <param name="pipeline"></param>
         /// <returns>The latest data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Result<Cursor<Row>> Latest(Selection selection, Pipeline pipeline = null)
+        public IEnumerable<Row> Latest(Selection selection, Pipeline pipeline = null)
         {
             var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), new SingleValueAction());
-            var target = String.Format("{0}/single/query", API_VERSION);
-            return Runner.Post<Segment<Row>>(target, query).ToCursorResult<Row>();
+            return Latest(query);
         }
 
         public Result<DeleteSummary> DeleteDataPoints(Device device, Sensor sensor, ZonedDateTime start, ZonedDateTime stop)
@@ -263,7 +289,9 @@ namespace TempoIQ
         {
             var del = new Delete{ start = start, stop = stop };
             var target = String.Format("{0}/devices/{1}/sensors/{2}/datapoints", API_VERSION, deviceKey, sensorKey);
-            return Runner.Delete<DeleteSummary>(target, del);
+            string contentType = MediaType("delete-interval", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("delete-summary", "v1") } ; 
+            return Runner.Delete<DeleteSummary>(target, del, contentType, mediaTypes);
         }
     }
 
@@ -278,14 +306,16 @@ namespace TempoIQ
         /// <param name="result"></param>
         /// <returns>An Result wrapping the cursor equivalent to the 
         /// Segment in the original's Value</returns>
-        public static Result<Cursor<T>> ToCursorResult<T>(this Result<Segment<T>> result)
+        public static IEnumerable<T> ToCursor<T>(this Result<Segment<T>> result,
+            Executor runner,
+            string endPoint,
+            string contentType,
+            params string[] mediaTypeVersions)
         {
-            Cursor<T> cursor;
-            if (result.Value == null)
-                cursor = new Cursor<T>(new List<Segment<T>>());
+            if (result.State == State.Success)
+                return new Cursor<T>(result.Value, runner, endPoint, contentType, mediaTypeVersions);
             else
-                cursor = new Cursor<T>(new List<Segment<T>> { result.Value });
-            return new Result<Cursor<T>>(cursor, result.Code, result.Message, result.MultiStatus);
+                throw new TempoIQException(result.Message);
         }
     }
 }

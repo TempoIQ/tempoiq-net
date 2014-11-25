@@ -60,6 +60,7 @@
     <Compile Include="Results\Cursor.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="Models\Device.cs" />
+    <Compile Include="Results\PageLoader.cs" />
     <Compile Include="Utilities\Executor.cs" />
     <Compile Include="Queries\Fold.cs" />
     <Compile Include="Models\DataObjects.cs" />

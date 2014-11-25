@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TempoIQ.Json;
+using TempoIQ.Results;
 using TempoIQ.Utilities;
 
 namespace TempoIQ.Models
@@ -27,6 +28,12 @@ namespace TempoIQ.Models
 
         [JsonProperty("sensors")]
         public IList<Sensor> Sensors { get; set; }
+
+        [JsonIgnore]
+        public static string CursoredMediaTypeVersion
+        {
+            get { return "application/prs.tempoiq.datapoint-collection.v2"; }
+        }
 
         [JsonConstructor]
         public Device(string key, string name, IDictionary<string, string> attributes, IList<Sensor> sensors)

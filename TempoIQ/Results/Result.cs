@@ -131,4 +131,10 @@ namespace TempoIQ.Results
             Deleted = deleted;
         }
     }
+
+    [Serializable]
+    public class TempoIQException : Exception
+    {
+        public TempoIQException(string message) : base(message) { }
+    }
 } 
