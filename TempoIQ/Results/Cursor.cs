@@ -85,7 +85,7 @@ namespace TempoIQ.Results
         /// </summary>
         /// <param name="cursor"></param>
         /// <returns>The flattened version of the cursor</returns>
-        public static IEnumerable<Tuple<string, string, DataPoint>> Flatten(this Cursor<Row> cursor)
+        public static IEnumerable<Tuple<string, string, DataPoint>> Flatten(this IEnumerable<Row> cursor)
         {
             return from row in cursor
                    from cell in row
@@ -99,7 +99,7 @@ namespace TempoIQ.Results
         /// <param name="deviceKey"></param>
         /// <param name="sensorKey"></param>
         /// <returns>The Cursor's data for a given device/sensor pair</returns>
-        public static IEnumerable<DataPoint> PointsForDeviceAndSensor(this Cursor<Row> cursor, string deviceKey, string sensorKey)
+        public static IEnumerable<DataPoint> StreamForDeviceAndSensor(this IEnumerable<Row> cursor, string deviceKey, string sensorKey)
         {
             return from row in cursor
                    from cell in row
@@ -113,14 +113,14 @@ namespace TempoIQ.Results
         /// <param name="cursor"></param>
         /// <param name="deviceKey"></param>
         /// <returns>The Cursor's data for a given device</returns>
-        public static IDictionary<string, IEnumerable<DataPoint>> PointsForDevice(this Cursor<Row> cursor, string deviceKey)
+        public static IDictionary<string, IEnumerable<DataPoint>> StreamsForDevice(this IEnumerable<Row> cursor, string deviceKey)
         {
             var sensors = from row in cursor
                           from cell in row
                           where cell.Item1 == deviceKey
                           select cell.Item2;
 
-            return sensors.Distinct().ToDictionary(s => s, s => cursor.PointsForDeviceAndSensor(deviceKey, s));
+            return sensors.Distinct().ToDictionary(s => s, s => cursor.StreamForDeviceAndSensor(deviceKey, s));
         }
 
         /// <summary>
@@ -128,13 +128,13 @@ namespace TempoIQ.Results
         /// </summary>
         /// <param name="cursor"></param>
         /// <returns>The Cursor's data indexed by device and sensor, sorted by timestamp</returns>
-        public static IDictionary<string, IDictionary<string, IEnumerable<DataPoint>>> PointsByStream(this Cursor<Row> cursor)
+        public static IDictionary<string, IDictionary<string, IEnumerable<DataPoint>>> PointsByStream(this IEnumerable<Row> cursor)
         {
             var devices = from row in cursor
                           from cell in row
-                          select cell.Item2;
+                          select cell.Item1;
 
-            return devices.Distinct().ToDictionary(d => d, d => cursor.PointsForDevice(d));
+            return devices.Distinct().ToDictionary(d => d, d => cursor.StreamsForDevice(d));
         }
     }
 }

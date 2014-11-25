@@ -23,10 +23,9 @@ namespace TempoIQ.Utilities
         public Executor(Uri uri, Credentials credentials, int timeout = 50000)
         {
             this.Serialization = new TempoIQSerializer();
-            var rest = new RestClient(uri.AbsoluteUri);
-            rest.Authenticator = new HttpBasicAuthenticator(credentials.Key, credentials.secret);
-            rest.Timeout = timeout;
-            this.Rest = rest;
+            this.Rest = new RestClient(uri.AbsoluteUri);
+            this.Rest.Authenticator = new HttpBasicAuthenticator(credentials.Key, credentials.secret);
+            this.Rest.Timeout = timeout;
         }
 
         public Result<T> Get<T>(string resource, string contentType, string[] mediaTypeVersions)

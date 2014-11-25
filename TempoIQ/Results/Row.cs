@@ -47,24 +47,26 @@ namespace TempoIQ.Results
 
         public bool HasSensor(string deviceKey, string sensorKey)
         {
-            return Data.ContainsKey(deviceKey) && (Data[deviceKey]).ContainsKey(sensorKey);
+            if (sensorKey == null)
+                return false;
+            IDictionary<string, double> deviceData;
+            return Data.TryGetValue(deviceKey, out deviceData) && deviceData.ContainsKey(sensorKey);
         }
 
         public IDictionary<string, double> Get(string deviceKey)
         {
-            if (Data.ContainsKey(deviceKey)) 
-                return Data[deviceKey];
-            else 
-                return new Dictionary<string, double>();
+            IDictionary<string, double> deviceData;
+            Data.TryGetValue(deviceKey, out deviceData);
+            return deviceData;
         }
 
         public double? Get(string deviceKey, string sensorKey)
         {
-            var deviceData = Get(deviceKey);
-            if (deviceData.ContainsKey(sensorKey))
-                return deviceData[sensorKey];
-            else 
-                return null;
+            IDictionary<string, double> deviceData;
+            if (Data.TryGetValue(deviceKey, out deviceData))
+                if (deviceData.ContainsKey(sensorKey))
+                    return deviceData[sensorKey];
+            return null;
         }
 
         public override bool Equals(object obj)

@@ -132,7 +132,8 @@ namespace TempoIQ.Results
         }
     }
 
-    public class TempoIQException : Exception 
+    [Serializable]
+    public class TempoIQException : Exception
     {
         public TempoIQException(string message) : base(message) { }
     }

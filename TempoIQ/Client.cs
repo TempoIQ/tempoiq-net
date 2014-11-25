@@ -77,8 +77,9 @@ namespace TempoIQ
         public Result<Device> UpdateDevice(Device device)
         {
             var target = String.Format("{0}/devices/{1}/", API_VERSION, HttpUtility.UrlEncode(device.Key));
+            string contentType = MediaType("device", "v1");
             var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("device", "v1") };
-            return Runner.Put<Device>(target, device, "", mediaTypes);
+            return Runner.Put<Device>(target, device, contentType, mediaTypes);
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace TempoIQ
         /// </summary>
         /// <param name="selection"></param>
         /// <returns>a result with the selected Devices</returns>
-        public Cursor<Device> ListDevices(Selection selection)
+        public IEnumerable<Device> ListDevices(Selection selection)
         {
             var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find());
             return ListDevices(query);
@@ -97,7 +98,7 @@ namespace TempoIQ
         /// </summary>
         /// <param name="selection"></param>
         /// <returns>a result with the selected Devices</returns>
-        public Cursor<Device> ListDevices(FindQuery query)
+        public IEnumerable<Device> ListDevices(FindQuery query)
         {
             var target = String.Format("{0}/devices/query/", API_VERSION);
             string contentType = MediaType("query", "v1");
@@ -213,7 +214,7 @@ namespace TempoIQ
         /// <param name="stop"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Cursor<Row> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
+        public IEnumerable<Row> Read(Selection selection, ZonedDateTime start, ZonedDateTime stop)
         {
             var search = new Search(Select.Type.Sensors, selection);
             var read = new Read(start, stop);
@@ -230,7 +231,7 @@ namespace TempoIQ
         /// <param name="stop"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Cursor<Row> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
+        public IEnumerable<Row> Read(Selection selection, Pipeline pipeline, ZonedDateTime start, ZonedDateTime stop)
         {
             var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop), pipeline);
             return Read(query);
@@ -242,7 +243,7 @@ namespace TempoIQ
         /// <param name="query"></param>
         /// <returns>The data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Cursor<Row> Read(ReadQuery query)
+        public IEnumerable<Row> Read(ReadQuery query)
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
             string contentType = MediaType("query", "v1");
@@ -257,7 +258,7 @@ namespace TempoIQ
         /// <param name="query"></param>
         /// <returns>The latest data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Cursor<Row> Latest(SingleValueQuery query)
+        public IEnumerable<Row> Latest(SingleValueQuery query)
         {
             var target = String.Format("{0}/single/query", API_VERSION);
             string contentType = MediaType("query", "v1");
@@ -273,7 +274,7 @@ namespace TempoIQ
         /// <param name="pipeline"></param>
         /// <returns>The latest data from the devices and sensors which match your selection, 
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
-        public Cursor<Row> Latest(Selection selection, Pipeline pipeline = null)
+        public IEnumerable<Row> Latest(Selection selection, Pipeline pipeline = null)
         {
             var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), new SingleValueAction());
             return Latest(query);
@@ -305,7 +306,7 @@ namespace TempoIQ
         /// <param name="result"></param>
         /// <returns>An Result wrapping the cursor equivalent to the 
         /// Segment in the original's Value</returns>
-        public static Cursor<T> ToCursor<T>(this Result<Segment<T>> result,
+        public static IEnumerable<T> ToCursor<T>(this Result<Segment<T>> result,
             Executor runner,
             string endPoint,
             string contentType,

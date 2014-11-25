@@ -111,9 +111,8 @@ namespace TempoIQTests
             MakeDevices(10);
             var selection = new Selection(Select.Type.Devices, Select.AttributeKey("tempoiq-net-test-device"));
             var query = new FindQuery(new Search(Select.Type.Devices, selection), new Find(6));
-            var cursor = Client.ListDevices(query);
+            var cursor = Client.ListDevices(query) as Cursor<Device>;
             Assert.AreEqual(6, cursor.First.Data.Count);
-            cursor = Client.ListDevices(query);
             Assert.AreEqual(10, cursor.Count());
         }
 
@@ -196,16 +195,13 @@ namespace TempoIQTests
                                 Select.Type.Devices,
                                 Select.Or(Select.Key(device.Key)));
             var query = new ReadQuery(new Search(Select.Type.Sensors, selection), new Read(start, stop, 6));
-            var cursor = Client.Read(query);
+            var cursor = Client.Read(query) as Cursor<Row>;
             Assert.AreEqual(6, cursor.First.Data.Count);
-            cursor = Client.Read(query);
             Assert.AreEqual(10, cursor.Count());
-            cursor = Client.Read(query);
             Assert.AreEqual(20, cursor.Flatten().Count());
             foreach(var sensorKey in device.Sensors.Select((s) => s.Key))
             {
-                cursor = Client.Read(query);
-                Assert.AreEqual(10, cursor.PointsForDeviceAndSensor(device.Key, sensorKey).Count());
+                Assert.AreEqual(10, cursor.StreamForDeviceAndSensor(device.Key, sensorKey).Count());
             }
             Assert.AreEqual(2, cursor.PointsByStream().Keys.Count());
         }
