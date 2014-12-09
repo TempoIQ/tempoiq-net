@@ -29,7 +29,8 @@ namespace TempoIQ.Json
                     new SelectionConverter(),
                     new SelectorConverter(),
                     new SelectorTypeConverter(),
-                    new ZonedDateTimeConverter()
+                    new ZonedDateTimeConverter(),
+                    new NullableZonedDateTimeConverter()
                 };
             }
         }

@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Queries\Action.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="Queries\DirectionFunction.cs" />
     <Compile Include="Results\Cursor.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="Models\Device.cs" />

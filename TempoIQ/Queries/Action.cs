@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NodaTime;
+using TempoIQ.Json;
 
 namespace TempoIQ.Queries
 {
@@ -93,7 +94,7 @@ namespace TempoIQ.Queries
     /// The Action object for specifying latest-value queries 
     /// </summary>
 	[JsonObject]
-	public class SingleValueAction : Action
+	public class SingleValueAction
 	{
         /// <summary>
         /// Gets the name of the action-type.
@@ -109,22 +110,37 @@ namespace TempoIQ.Queries
         [JsonProperty(PropertyName = "limit", NullValueHandling = NullValueHandling.Ignore)]
         public int? Limit { get; set; }
 
+        /// <summary>
+        /// The function which determines which single value the query yields
+        /// </summary>
+        [JsonConverter(typeof(DirectionFunctionConverter))]
+        [JsonProperty(PropertyName = "function", NullValueHandling = NullValueHandling.Ignore)]
+        public DirectionFunction Function { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the single value query <see cref="TempoIQ.Queries.SingleValueAction"/> includes the devices selected as well as the data.
         /// </summary>
         /// <value><c>true</c> if include selection; otherwise, <c>false</c>.</value>
-        [JsonProperty("include_selection")]
+        [JsonProperty(PropertyName = "include_selection", NullValueHandling = NullValueHandling.Ignore)]
         public bool IncludeSelection { get; set; }
+
+        /// <summary>
+        /// The timestamp, if any, passed to the direction function to determine which single value is returned
+        /// </summary>
+        /// <value><c>null</c> if <c>Latest</c> or <c>Earliest</c>, some <c>ZonedDateTime</c> otherwise</value>
+        [JsonProperty(PropertyName = "timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public ZonedDateTime? Timestamp { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TempoIQ.Queries.SingleValueAction"/> class.
         /// </summary>
         /// <param name="includeSelection">If set to <c>true</c> include selection.</param>
-        public SingleValueAction(bool includeSelection = false, int? limit = null)
+        public SingleValueAction(DirectionFunction function = DirectionFunction.Latest, ZonedDateTime? timestamp = null, bool includeSelection = false, int? limit = null)
         {
             this.IncludeSelection = includeSelection;
             this.Limit = limit;
+            this.Function = function;
+            this.Timestamp = timestamp;
         }
     }
 }
