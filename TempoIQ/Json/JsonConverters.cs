@@ -26,30 +26,73 @@ namespace TempoIQ.Json
             return JsonUtil.RawJsonField(pair.Key, pair.Value);
         }
     }
-    /*
-    public class NextPageConverter : JsonConverter
+
+    public class DirectionFunctionConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType.Equals(typeof(NextPage));
+            return typeof(DirectionFunction).IsAssignableFrom(objectType);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(((NextPage)value).Query);
+            var direction = (DirectionFunction)value;
+            string directionString;
+            switch (direction)
+            {
+                case DirectionFunction.Latest:
+                    directionString = "latest";
+                    break;
+                case DirectionFunction.Earliest:
+                    directionString = "earliest";
+                    break;
+                case DirectionFunction.Before:
+                    directionString = "before";
+                    break;
+                case DirectionFunction.After:
+                    directionString = "after";
+                    break;
+                case DirectionFunction.Exact:
+                    directionString = "exact";
+                    break;
+                case DirectionFunction.Nearest:
+                    directionString = "nearest";
+                    break;
+                default:
+                    throw new ArgumentException(String.Format("Unrecognized DirectionFunction value: {0}", direction));
+                    break;
+            }
+            writer.WriteValue(directionString);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return serializer.Deserialize(reader);
+            string valStr = (string)reader.Value;
+            switch (valStr)
+            {
+                case "latest":
+                    return DirectionFunction.Latest;
+                case "earliest":
+                    return DirectionFunction.Earliest;
+                case "before":
+                    return DirectionFunction.Before;
+                case "after":
+                    return DirectionFunction.After;
+                case "nearest":
+                    return DirectionFunction.Nearest;
+                case "exact":
+                    return DirectionFunction.Exact;
+                default:
+                    throw new JsonException(String.Format("Unrecognized direction function {0}", valStr));
+            }
         }
-    }*/
+    }
 
     public class SelectionConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType.Equals(typeof(Selection));
+            return typeof(Selection).IsAssignableFrom(objectType);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -70,6 +113,11 @@ namespace TempoIQ.Json
 
     public class SelectorTypeConverter : JsonConverter
     {
+        public override bool CanConvert(Type objectType)
+        {
+          return typeof(Select.Type).IsAssignableFrom(objectType);
+        }
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             Select.Type type = (Select.Type)value;
@@ -88,11 +136,6 @@ namespace TempoIQ.Json
                 return Select.Type.Devices;
             else
                 throw new ArgumentException(String.Format("%s is not a valid selector type", stringVal));
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-          return objectType.Equals(typeof(Select.Type));
         }
     }
 
@@ -147,24 +190,24 @@ namespace TempoIQ.Json
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType.Equals(typeof(Selection));
+            return typeof(Selection).IsAssignableFrom(objectType);
         }
     }
 
     public class ZonedDateTimeConverter : JsonConverter
     {
-        private DateTimeZone zone;
+        private DateTimeZone Zone { get; set; }
         private static LocalDateTimePattern datetimePattern = LocalDateTimePattern.CreateWithInvariantCulture("yyyy-MM-ddTHH:mm:ss.FFF");
         private static OffsetPattern offsetPattern = OffsetPattern.CreateWithInvariantCulture("+HH:mm");
 
         public ZonedDateTimeConverter()
         {
-            this.zone = DateTimeZone.Utc;
+            this.Zone = DateTimeZone.Utc;
         }
 
         public ZonedDateTimeConverter(DateTimeZone zone)
         {
-            this.zone = zone;
+            this.Zone = zone;
         }
 
         public static string ToString(ZonedDateTime datetime)
@@ -203,7 +246,62 @@ namespace TempoIQ.Json
                 return null;
 
             var offsetDateTime = OffsetDateTime.FromDateTimeOffset(DateTimeOffset.Parse(offsetDateTimeText));
-            var datetime = new ZonedDateTime(offsetDateTime.ToInstant(), zone);
+            var datetime = new ZonedDateTime(offsetDateTime.ToInstant(), Zone);
+            return datetime;
+        }
+    }
+
+    public class NullableZonedDateTimeConverter : JsonConverter
+    {
+        private DateTimeZone Zone { get; set; }
+        private static LocalDateTimePattern datetimePattern = LocalDateTimePattern.CreateWithInvariantCulture("yyyy-MM-ddTHH:mm:ss.FFF");
+        private static OffsetPattern offsetPattern = OffsetPattern.CreateWithInvariantCulture("+HH:mm");
+
+        public NullableZonedDateTimeConverter()
+        {
+            this.Zone = DateTimeZone.Utc;
+        }
+
+        public NullableZonedDateTimeConverter(DateTimeZone zone)
+        {
+            this.Zone = zone;
+        }
+
+        public static string ToString(ZonedDateTime datetime)
+        {
+            var localdatetime = datetime.LocalDateTime;
+            var offset = datetime.Offset;
+            return String.Format("{0}{1}", datetimePattern.Format(localdatetime), offsetPattern.Format(offset));
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(ZonedDateTime?).IsAssignableFrom(objectType);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+        {
+            if (!(value is ZonedDateTime?))
+                throw new ArgumentException(string.Format("Unexpected value when converting. Expected {0}, got {1}.", typeof(ZonedDateTime).FullName, value.GetType().FullName));
+            var datetime = (ZonedDateTime?)value;
+            if (datetime.HasValue)
+                writer.WriteValue(ZonedDateTimeConverter.ToString(datetime.Value));
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null)
+                if (objectType != typeof(ZonedDateTime?))
+                    throw new Exception(string.Format("Cannot convert null value to {0}.", objectType));
+                else
+                    return null;
+
+            var offsetDateTimeText = reader.Value.ToString();
+            if (string.IsNullOrEmpty(offsetDateTimeText) && objectType == typeof(ZonedDateTime?))
+                return null;
+
+            var offsetDateTime = OffsetDateTime.FromDateTimeOffset(DateTimeOffset.Parse(offsetDateTimeText));
+            var datetime = new ZonedDateTime(offsetDateTime.ToInstant(), Zone);
             return datetime;
         }
     }

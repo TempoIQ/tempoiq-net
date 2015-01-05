@@ -17,6 +17,8 @@ namespace TempoIQ.Results
         private string EndPoint { get; set; }
         private string ContentType { get; set; }
         private string[] MediaTypeVersion { get; set; }
+        private Segment<T> OnDeck { get; set; }
+        private bool HasBench { get; set; }
 
         public PageLoader(Executor runner, Segment<T> first, string endPoint, string contentType, params string[] mediaTypeVersion)
         {
@@ -26,6 +28,7 @@ namespace TempoIQ.Results
             this.EndPoint = endPoint;
             this.ContentType = contentType;
             this.MediaTypeVersion = mediaTypeVersion;
+            this.HasBench = true;
         }
 
         object System.Collections.IEnumerator.Current

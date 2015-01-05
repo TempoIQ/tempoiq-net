@@ -253,6 +253,49 @@ namespace TempoIQ
         }
 
         /// <summary>
+        /// Read the datapoints for the items from a SingleValueQuery
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>The latest data from the devices and sensors which match your selection, 
+        /// as processed by the pipeline, and bookended by the start and stop times</returns>
+        public IEnumerable<Row> Single(SingleValueQuery query)
+        {
+            var target = String.Format("{0}/single/query", API_VERSION);
+            string contentType = MediaType("query", "v1");
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v1") } ; 
+            return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
+                .ToCursor<Row>(Runner, target, contentType, mediaTypes);
+        }
+
+        /// <summary>
+        /// Read the datapoints for the items from a SingleValueQuery
+        /// </summary>
+        /// <param name="selection">the relevant selection</param>
+        /// <param name="pipeline">the pipeline. note: only "convert_tz" makes sense here</param>
+        /// <param name="single">the single value action specifying function, timestamp etc. for the query</param>
+        /// <returns>The latest data from the devices and sensors which match your selection, 
+        /// as processed by the pipeline, and bookended by the start and stop times</returns>
+        public IEnumerable<Row> Single(Selection selection, SingleValueAction single, Pipeline pipeline = null)
+        {
+            var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), single, pipeline);
+            return this.Single(query);
+        }
+        
+        /// <summary>
+        /// Read the datapoints for the items from a SingleValueQuery
+        /// </summary>
+        /// <param name="selection">the relevant selection</param>
+        /// <param name="pipeline">the pipeline. note: only "convert_tz" makes sense here</param>
+        /// <returns>The latest data from the devices and sensors which match your selection, 
+        /// as processed by the pipeline, and bookended by the start and stop times</returns>
+        public IEnumerable<Row> Single(Selection selection, Pipeline pipeline = null)
+        {
+            var single = new SingleValueAction();
+            var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), single);
+            return this.Single(query);
+        }
+
+        /// <summary>
         /// Read the latest datapoints for the items from a SingleValueQuery
         /// </summary>
         /// <param name="query"></param>
@@ -260,11 +303,10 @@ namespace TempoIQ
         /// as processed by the pipeline, and bookended by the start and stop times</returns>
         public IEnumerable<Row> Latest(SingleValueQuery query)
         {
-            var target = String.Format("{0}/single/query", API_VERSION);
-            string contentType = MediaType("query", "v1");
-            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v1") } ; 
-            return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
-                .ToCursor<Row>(Runner, target, contentType, mediaTypes);
+            if (query.Single.Function == DirectionFunction.Latest)
+                return this.Single(query);
+            else
+                throw new ArgumentException("Cannot call `Latest` with a direction function other than `Latest`");
         }
 
         /// <summary>
@@ -277,7 +319,7 @@ namespace TempoIQ
         public IEnumerable<Row> Latest(Selection selection, Pipeline pipeline = null)
         {
             var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), new SingleValueAction());
-            return Latest(query);
+            return Single(query);
         }
 
         public Result<DeleteSummary> DeleteDataPoints(Device device, Sensor sensor, ZonedDateTime start, ZonedDateTime stop)

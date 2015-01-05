@@ -21,7 +21,6 @@ namespace TempoIQTests
         public static ZonedDateTime start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 1));
         public static ZonedDateTime stop = UTC.AtStrictly(new LocalDateTime(2019, 1, 1, 0, 0, 1));
         public static Interval interval = new Interval(start.ToInstant(), stop.ToInstant());
-        public static int SLEEP = 5000;
         public static int NextKeyNumber;
 
         public Credentials LoadedCredentials { get; private set; }
@@ -200,10 +199,10 @@ namespace TempoIQTests
             Assert.AreEqual(10, cursor.Count());
             Assert.AreEqual(20, cursor.Flatten().Count());
             foreach(var sensorKey in device.Sensors.Select((s) => s.Key))
-            {
                 Assert.AreEqual(10, cursor.StreamForDeviceAndSensor(device.Key, sensorKey).Count());
-            }
-            Assert.AreEqual(2, cursor.PointsByStream().Keys.Count());
+
+            var byStream = cursor.PointsByStream();
+            Assert.AreEqual(2, byStream.Values.ElementAt(0).Values.Count);
         }
 
         [Test]
@@ -259,6 +258,62 @@ namespace TempoIQTests
 
             var cursor = Client.Latest(sel);
             Assert.AreEqual(4.0, cursor.First().Data[device.Key]["sensor1"]);
+        }
+
+        [Test]
+        public void TestBefore()
+        {
+            var timezone = UTC;
+            var device = PostNewDevice();
+
+            var points = new Dictionary<string, double>();
+            points.Add("sensor1", 4.0);
+            points.Add("sensor2", 2.0);
+            var mp = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 1, 0, 0, 0)), points);
+            var mp2 = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 2, 0, 0, 0)), points);
+
+            var allPoints = new List<MultiDataPoint>();
+            allPoints.Add(mp);
+            allPoints.Add(mp2);
+
+            var result = Client.WriteDataPoints(device, allPoints);
+            Assert.AreEqual(State.Success, result.State);
+
+            var sel = new Selection().Add(Select.Type.Devices, Select.Key(device.Key));
+            var single = new SingleValueAction(DirectionFunction.Before, UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 4, 0, 0, 0)));
+            var cursor = Client.Single(sel, single);
+            Assert.AreEqual(4.0, cursor.First().Data[device.Key]["sensor1"]);
+        }
+        
+        [Ignore]
+        public void TestEarliest()
+        {
+            var timezone = UTC;
+            var device = PostNewDevice();
+
+            var points1 = new Dictionary<string, double>();
+            points1.Add("sensor1", 1.0);
+            points1.Add("sensor2", 2.0);
+
+            var points2 = new Dictionary<string, double>();
+            points2.Add("sensor1", 3.0);
+            points2.Add("sensor2", 4.0);
+
+            var mp = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 1, 0, 0, 0)), points1);
+            var mp2 = new MultiDataPoint(UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 2, 0, 0, 0)), points2);
+
+            var allPoints = new List<MultiDataPoint>();
+            allPoints.Add(mp);
+            allPoints.Add(mp2);
+
+            var result = Client.WriteDataPoints(device, allPoints);
+            Assert.AreEqual(State.Success, result.State);
+
+            var sel = new Selection().Add(Select.Type.Devices, Select.Key(device.Key));
+            var single = new SingleValueAction(DirectionFunction.Earliest);
+            var cursor = Client.Single(sel, single);
+
+            Assert.AreEqual(1.0, cursor.First().Data[device.Key]["sensor1"]);
         }
 
         [Test]
