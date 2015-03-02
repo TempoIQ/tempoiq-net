@@ -170,6 +170,36 @@ namespace TempoIQTests
             var cursor = Client.Read(selection, start, stop);
             Assert.IsTrue(cursor.Any());
         }
+
+        [Test]
+        public void TestDeviceAndSensorSelectionReadPoints()
+        {
+            //Make some devices
+            var devices = MakeDevices(10);
+
+            //Write some data
+            var points = new WriteRequest();
+            var lst = (from i in Enumerable.Range(0, 10)
+                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
+                select new DataPoint(time, i)).ToList();
+
+            foreach (var device in devices)
+                foreach (var sensor in device.Sensors)
+                    points.Add(device, sensor, lst);
+            var written = Client.WriteDataPoints(points);
+
+            //Read that data out
+            var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
+            var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
+            var selection = new Selection().Add(
+                Select.Type.Devices,
+                Select.Or(devices.Select(d => Select.Key(d.Key)).ToArray()));
+            selection.Add(
+                Select.Type.Sensors, 
+                Select.Or(Select.Key("sensor1")));
+            var cursor = Client.Read(selection, start, stop);
+            Assert.IsTrue(cursor.Any());
+        }
         
         [Test]
         public void TestPagingReadDataPoints()
