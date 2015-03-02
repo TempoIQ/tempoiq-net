@@ -99,8 +99,11 @@ namespace TempoIQ.Json
         {
             var selection = (Selection)value;
             writer.WriteStartObject();
-            foreach(var pair in selection.Selectors)
-                writer.WriteRaw(JsonUtil.RawJsonField(pair));
+            List<String> Fields = new List<String>();
+            foreach (var pair in selection.Selectors) {
+                Fields.Add(JsonUtil.RawJsonField(pair));
+            }
+            writer.WriteRaw(String.Join(",", Fields));
             writer.WriteEndObject();
         }
 
