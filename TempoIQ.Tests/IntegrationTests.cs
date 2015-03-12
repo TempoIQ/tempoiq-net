@@ -30,7 +30,7 @@ namespace TempoIQTests
         {
             string key = "YOUR KEY";
             string secret = "YOUR SECRET";
-            string domain = "YOUR HOST";
+            string domain = "YOUR DOMAIN";
             InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
             Client = new Client(new Credentials(key, secret), domain);
         }
