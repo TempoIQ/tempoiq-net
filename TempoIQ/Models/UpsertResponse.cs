@@ -30,13 +30,6 @@ namespace TempoIQ.Models
                 this.Add(pair.Key, pair.Value);
         }
          
-        /*public UpsertResponse(Dictionary<String, DeviceStatus> statuses
-        {
-            if (statuses == null)
-                throw new BadImageFormatException("YOU SUCK");
-            this.statuses = statuses;
-        }*/
-
         public bool Success
         {
             get
