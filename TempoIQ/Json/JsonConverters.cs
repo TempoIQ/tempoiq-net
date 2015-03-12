@@ -27,27 +27,6 @@ namespace TempoIQ.Json
         }
     }
 
-    /*public class UpsertResponseConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(UpsertResponse).IsAssignableFrom(objectType);
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            var response = (UpsertResponse)value;
-            writer.WriteValue(JsonConvert.SerializeObject(response.statuses));
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            string valStr = (string)reader.Value;
-            IDictionary<String, DeviceStatus> statuses = JsonConvert.DeserializeObject<IDictionary<String, DeviceStatus>>(valStr);
-            return new UpsertResponse(statuses);
-        }
-    }*/
-
     public class DeviceStateConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
