@@ -35,38 +35,51 @@ namespace TempoIQ.Results
         public T Value { get; set; }
         public int Code { get; set; }
         public string Message { get; set; }
-        public MultiStatus MultiStatus { get; set; }
+        public UpsertResponse UpsertStatus { get; set; }
         private Encoding DEFAULT_CHARSET = Encoding.Unicode;
 
         ///<summary> Base Constructor: usually created from REST responses </summary>
-        ///<param name="Value"> The returned value.</param>
-        ///<param name="Code"> The status code of the entire result.</param>
-        ///<param name="Message"> Message providing information about the state of the result.</param>
-        ///<param name="Multistatus"> Provides information about partially successful result.</param>
-        public Result(T value, int code, String message = "", MultiStatus multistatus = null)
+        ///<param name="value"> The returned value.</param>
+        ///<param name="code"> The status code of the entire result.</param>
+        ///<param name="message"> Message providing information about the state of the result.</param>
+        ///<param name="upsertStatus"> Provides information about upserts.</param>
+        public Result(T value, int code, String message = "", UpsertResponse upsertStatus = null)
         {
             this.Value = value;
             this.Code = code;
             this.Message = message;
-            this.MultiStatus = multistatus;
+            this.UpsertStatus = upsertStatus;
         }
 
-        public State State
+        public virtual State State
         {
-            get
+            get 
             {
-                return CodeToState(this.Code);
+                if (this.UpsertStatus != null) 
+                    return this.UpsertState;
+                else 
+                {
+                    if (this.Code == 200)
+                        return State.Success;
+                    else if (this.Code == 207)
+                        return State.PartialSuccess;
+                    else
+                        return State.Failure;
+                }
             }
         }
 
-        private static State CodeToState(int code)
+        private State UpsertState
         {
-            if (code == 200)
-                return State.Success;
-            else if (code == 207)
-                return State.PartialSuccess;
-            else
-                return State.Failure;
+            get 
+            {
+                if (this.UpsertStatus.Success == true)
+                    return State.Success;
+                else if (this.UpsertStatus.PartialSuccess == true)
+                    return State.PartialSuccess;
+                else
+                    return State.Failure;
+            }
         }
 
         public override bool Equals(object obj)
@@ -92,12 +105,12 @@ namespace TempoIQ.Results
                 values = false;
             else values = this.Value.Equals(that.Value);
 
-            if ((this.MultiStatus == null) && (that.MultiStatus == null))
+            if ((this.UpsertStatus == null) && (that.UpsertStatus == null))
                 multiStatuses = true;
-            else if ((this.MultiStatus == null) || (that.MultiStatus == null))
+            else if ((this.UpsertStatus == null) || (that.UpsertStatus == null))
                 multiStatuses = false;
             else 
-                multiStatuses = this.MultiStatus.Equals(that.MultiStatus);
+                multiStatuses = this.UpsertStatus.Equals(that.UpsertStatus);
 
             bool codes = this.Code.Equals(that.Code);
             return values && states && multiStatuses && codes;
@@ -110,7 +123,7 @@ namespace TempoIQ.Results
             hash = HashCodeHelper.Hash(hash, Code);
             hash = HashCodeHelper.Hash(hash, Message);
             hash = HashCodeHelper.Hash(hash, State);
-            hash = HashCodeHelper.Hash(hash, MultiStatus);
+            hash = HashCodeHelper.Hash(hash, UpsertStatus);
             return hash; 
         }
     }
