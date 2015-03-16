@@ -141,7 +141,7 @@ namespace TempoIQ
         /// <param name="device"></param>
         /// <param name="data"></param>
         /// <returns>a Result with the success or failure of the operation only</returns>
-        public Result<Unit> WriteDataPoints(Device device, MultiDataPoint data)
+        public Result<UpsertResponse> WriteDataPoints(Device device, MultiDataPoint data)
         {
             var writeRequest = new WriteRequest();
             foreach (var pair in data.vs)
@@ -155,7 +155,7 @@ namespace TempoIQ
         /// <param name="device"></param>
         /// <param name="data"></param>
         /// <returns>a Result with the success or failure of the operation only</returns>
-        public Result<Unit> WriteDataPoints(Device device, IList<MultiDataPoint> data)
+        public Result<UpsertResponse> WriteDataPoints(Device device, IList<MultiDataPoint> data)
         {
             var writeRequest = data.Aggregate(new WriteRequest(),
                                    (acc, mdp) => mdp.vs.Aggregate(acc,
@@ -171,7 +171,7 @@ namespace TempoIQ
         /// <param name="sensor"></param>
         /// <param name="data"></param>
         /// <returns>a Result with the success or failure of the operation only</returns>
-        public Result<Unit> WriteDataPoints(Device device, Sensor sensor, IList<DataPoint> data)
+        public Result<UpsertResponse> WriteDataPoints(Device device, Sensor sensor, IList<DataPoint> data)
         {
             var result = WriteDataPoints(device.Key, sensor.Key, data);
             return result;
@@ -184,7 +184,7 @@ namespace TempoIQ
         /// <param name="sensorKey"></param>
         /// <param name="data"></param>
         /// <returns>a Result with the success or failure of the operation only</returns>
-        public Result<Unit> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
+        public Result<UpsertResponse> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
         {
             var writeRequest = data.Aggregate(new WriteRequest(), 
                 (req, dp) => req.Add(deviceKey, sensorKey, dp));
@@ -197,12 +197,12 @@ namespace TempoIQ
         /// </summary>
         /// <param name="writeRequest"></param>
         /// <returns>a Result with the success or failure of the operation only</returns>
-        public Result<Unit> WriteDataPoints(WriteRequest writeRequest)
+        public Result<UpsertResponse> WriteDataPoints(WriteRequest writeRequest)
         {
             var target = String.Format("{0}/write/", API_VERSION);
             string contentType = MediaType("write-request", "v1");
             var mediaTypes = new string[] { MediaType("error", "v1") } ; 
-            var result = Runner.Post<Unit>(target, writeRequest, contentType, mediaTypes);
+            var result = Runner.Post<UpsertResponse>(target, writeRequest, contentType, mediaTypes);
             return result;
         }
 
