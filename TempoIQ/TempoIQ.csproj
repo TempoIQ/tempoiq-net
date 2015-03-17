@@ -80,6 +80,7 @@
     <Compile Include="Utilities\EqualsBuilder.cs" />
     <Compile Include="Utilities\HashCodeHelper.cs" />
     <Compile Include="Models\WriteRequest.cs" />
+    <Compile Include="Models\UpsertResponse.cs" />
     <Compile Include="Utilities\IEnumerableExtensions.cs" />
     <Compile Include="Models\Delete.cs" />
   </ItemGroup>
