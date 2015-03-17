@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using TempoIQ.Json;
 using TempoIQ.Models;
 using TempoIQ.Results;
 using TempoIQ.Queries;
 using TempoIQ.Utilities;
-using Newtonsoft.Json;
 using NodaTime;
 
 namespace TempoIQ
@@ -186,8 +182,9 @@ namespace TempoIQ
         /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
         {
-            var writeRequest = data.Aggregate(new WriteRequest(), 
-                (req, dp) => req.Add(deviceKey, sensorKey, dp));
+            var writeRequest = data.Aggregate(
+                    new WriteRequest(), 
+                    (req, dp) => req.Add(deviceKey, sensorKey, dp));
             var result = WriteDataPoints(writeRequest);
             return result;
         }

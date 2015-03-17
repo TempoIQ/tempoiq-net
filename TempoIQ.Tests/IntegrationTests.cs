@@ -46,9 +46,7 @@ namespace TempoIQTests
 
         static public Device PostNewDevice()
         {
-            List<Sensor> sensors = new List<Sensor>();
-            sensors.Add(new Sensor("sensor1"));
-            sensors.Add(new Sensor("sensor2"));
+            List<Sensor> sensors = new List<Sensor>() { new Sensor("sensor1"), new Sensor("sensor2") };
             var device = RandomKeyDevice();
             device.Name = "name";
             device.Sensors = sensors;
@@ -153,8 +151,9 @@ namespace TempoIQTests
             //Write some data
             var points = new WriteRequest();
             var lst = (from i in Enumerable.Range(0, 10)
-                                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
-                                select new DataPoint(time, i)).ToList();
+                        let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 
+                            Duration.FromMilliseconds(i))
+                        select new DataPoint(time, i)).ToList();
 
             foreach (var device in devices)
                 foreach (var sensor in device.Sensors)
@@ -210,8 +209,10 @@ namespace TempoIQTests
             //Write some data
             var points = new WriteRequest();
             var lst = (from i in Enumerable.Range(0, 10)
-                                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
-                                select new DataPoint(time, i)).ToList();
+                    let time = ZonedDateTime.Add(
+                        ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow),
+                        Duration.FromMilliseconds(i))
+                    select new DataPoint(time, i)).ToList();
 
             foreach (var sensor in device.Sensors)
                 points.Add(device, sensor, lst);
@@ -244,8 +245,10 @@ namespace TempoIQTests
             //Write some data
             var points = new WriteRequest();
             var lst = (from i in Enumerable.Range(0, 10)
-                                let time = ZonedDateTime.Add(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), Duration.FromMilliseconds(i))
-                                select new DataPoint(time, i)).ToList();
+                    let time = ZonedDateTime.Add(
+                        ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow),
+                        Duration.FromMilliseconds(i))
+                    select new DataPoint(time, i)).ToList();
 
             foreach (var device in devices)
                 foreach (var sensor in device.Sensors)

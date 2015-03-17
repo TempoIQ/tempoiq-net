@@ -5,6 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
+snippet-credentials.properties
 
 # Build results
 [Dd]ebug/
