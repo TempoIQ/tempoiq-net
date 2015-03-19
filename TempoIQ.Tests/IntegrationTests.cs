@@ -249,7 +249,7 @@ namespace TempoIQTests
                     ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow),
                     Duration.FromSeconds(i))
                 select new DataPoint(time, i);
-            
+
             foreach (var device in devices)
                 foreach (var sensor in device.Sensors)
                     req.Add(device, sensor, pts.ToList());
@@ -295,7 +295,7 @@ namespace TempoIQTests
         public void TestBefore()
         {
             var device = PostNewDevice();
-            var points = new Dictionary<string, double>{
+            var points = new Dictionary<string, double> {
                 { "sensor1", 4.0 },
                 { "sensor2", 2.0 }
             };
