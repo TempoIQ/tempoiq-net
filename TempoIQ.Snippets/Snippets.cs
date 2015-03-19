@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using TempoIQ;
 using NodaTime;
@@ -12,12 +13,20 @@ namespace TempoIQTests
     [TestFixture]
     public class Snippets
     {
-        public static string KEY = "YOUR KEY";
-        public static string SECRET = "YOUR SECRET";
-        public static string HOST = "YOUR HOST";
+        public static Client Client { get; set; }
 
-        public static Client Client = new Client(new Credentials(KEY, SECRET), HOST);
-        public static Interval Interval = new Interval(Start, End);
+        [SetUp]
+        public void InitSnippets()
+        {
+            var data = new Dictionary<string, string>();
+            foreach (var row in File.ReadLines("../../snippets.properties"))
+                data.Add(row.Split('=')[0], row.Split('=')[1]);
+            var key = data["key"];
+            var secret = data["secret"];
+            var host = data["host"];
+            var creds = new Credentials(key, secret);
+            Client = new Client(creds, host, "https", 443);
+        }
 
         [Test]
         public void TestCreateDevice()
@@ -42,13 +51,14 @@ namespace TempoIQTests
             var result = Client.CreateDevice(device);
 
             // Check that the request was successful
-            if(result.Value != State.Success) {
+            if(result.State != State.Success) {
                 Console.WriteLine(String.Format("Error creating device! {0}", result.Message));
             }
 
             // snippet-end
-            var expected = new Result<Device>(device, 200, "OK");
-            Assert.AreEqual(expected.Value, result.Value);
+            Assert.AreEqual(null, result.Message);
+            Assert.AreEqual(State.Success, result.State);
+            Assert.AreEqual(device, result.Value);
         }
 
         [Test]
@@ -62,8 +72,9 @@ namespace TempoIQTests
             // using TempoIQ.Results;
 
             // Set up the time range to read [2015-01-01, 2015-01-02)
-            var start = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 1, 0, 0, 0, 0)), Utc);
-            var end = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 2, 0, 0, 0, 0)), Utc);
+            var utc = DateTimeZone.Utc;
+            var start = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 1, 0, 0, 0, 0)), utc);
+            var end = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 2, 0, 0, 0, 0)), utc);
 
             var device = new Device("thermostat.0");
 
@@ -159,7 +170,7 @@ namespace TempoIQTests
         {
             
             var create = new Device("thermostat.5");
-            var createResult = Client.CreateDevice(create);
+            Client.CreateDevice(create);
 
             // snippet-begin delete-devices
             // using System;
@@ -286,6 +297,5 @@ namespace TempoIQTests
                     });
             // snippet-end
         }
- }
     }
 }

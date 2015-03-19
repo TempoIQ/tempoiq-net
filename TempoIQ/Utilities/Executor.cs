@@ -24,7 +24,7 @@ namespace TempoIQ.Utilities
         {
             this.Serialization = new TempoIQSerializer();
             this.Rest = new RestClient(uri.AbsoluteUri);
-            this.Rest.Authenticator = new HttpBasicAuthenticator(credentials.Key, credentials.secret);
+            this.Rest.Authenticator = new HttpBasicAuthenticator(credentials.Key, credentials.Secret);
             this.Rest.Timeout = timeout;
         }
 

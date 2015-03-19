@@ -24,12 +24,12 @@ namespace TempoIQ
         /// The credentials secret
         /// </summary>
         [JsonProperty("secret")]
-        public string secret;
+        public string Secret;
 
         public Credentials(string key, string secret)
         {
             this.Key = key;
-            this.secret = secret;
+            this.Secret = secret;
         }
 
         public override bool Equals(object obj)
@@ -46,14 +46,14 @@ namespace TempoIQ
 
         public bool Equals(Credentials credentials)
         {
-            return this.Key == credentials.Key && this.secret == credentials.secret;
+            return this.Key == credentials.Key && this.Secret == credentials.Secret;
         }
 
         public override int GetHashCode()
         {
             int hash = HashCodeHelper.Initialize();
             hash = HashCodeHelper.Hash<string>(hash, Key);
-            hash = HashCodeHelper.Hash<string>(hash, secret);
+            hash = HashCodeHelper.Hash<string>(hash, Secret);
             return hash;
         }
     }

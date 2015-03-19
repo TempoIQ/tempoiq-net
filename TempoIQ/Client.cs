@@ -29,13 +29,14 @@ namespace TempoIQ
         /// Create a new client from credentials, backend, port(optional) and timeout(optional, in milliseconds)
         /// </summary>
         /// <param name="credentials"></param>
+        /// <param name="scheme"></param>
         /// <param name="host"></param>
         /// <param name="port"></param>
         /// <param name="timeout"></param>
-        public Client(Credentials credentials, string host, int port = 443, int timeout = 50000)
+        public Client(Credentials credentials, string host, string scheme = "https", int port = 443, int timeout = 50000)
         {
             var builder = new UriBuilder {
-                Scheme = "https",
+                Scheme = scheme,
                 Host = host,
                 Port = port
             };
@@ -153,9 +154,11 @@ namespace TempoIQ
         /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<Unit> WriteDataPoints(Device device, IList<MultiDataPoint> data)
         {
-            var writeRequest = data.Aggregate(new WriteRequest(),
-                                   (acc, mdp) => mdp.vs.Aggregate(acc,
-                                       (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
+            var writeRequest = data.Aggregate(
+                new WriteRequest(),
+                (acc, mdp) => mdp.vs.Aggregate(
+                    acc,
+                    (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
             var result = WriteDataPoints(writeRequest);
             return result;
         }

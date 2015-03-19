@@ -45,7 +45,7 @@ namespace TempoIQ.Queries
         [JsonProperty("read")]
         public Read Read { get; set; }
 
-        [JsonProperty("pipeline", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("fold", NullValueHandling = NullValueHandling.Ignore)]
         public Pipeline Pipeline { get; set; }
 
         public ReadQuery(Search search, Read read, Pipeline pipeline = null)
