@@ -29,19 +29,12 @@ namespace TempoIQ.Models
             foreach(var pair in data)
                 this.Add(pair.Key, pair.Value);
         }
-         
+
         public bool Success
         {
             get
             {
-                foreach (DeviceStatus status in this.Values) 
-                {
-                    if (status.Success == false)
-                    {
-                        return false;
-                    }
-                }
-                return true;
+                return this.Values.All(status => status.Success);
             }
         }
 
@@ -49,18 +42,7 @@ namespace TempoIQ.Models
         {
             get
             {
-                int failures = 0;
-                foreach (DeviceStatus status in this.Values) 
-                {
-                    if (status.Success == false) {
-                        failures += 1;
-                    }
-                }
-                if (failures < this.Values.Count) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return this.Values.Count(status => ! status.Success) < this.Values.Count;
             }
         }
 
@@ -68,7 +50,7 @@ namespace TempoIQ.Models
         {
             get 
             {
-                return this.Where(kvp => kvp.Value.State == DeviceState.Existing).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                return this.Where(kvp => kvp.Value.State == DeviceState.Existing) as IDictionary<String, DeviceStatus>;
             }
         }
 
@@ -76,7 +58,7 @@ namespace TempoIQ.Models
         {
             get 
             {
-                return this.Where(kvp => kvp.Value.State == DeviceState.Created).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                return this.Where(kvp => kvp.Value.State == DeviceState.Created) as IDictionary<String, DeviceStatus>;
             }
         }
 
@@ -84,9 +66,8 @@ namespace TempoIQ.Models
         {
             get 
             {
-                return this.Where(kvp => kvp.Value.State == DeviceState.Modified).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                return this.Where(kvp => kvp.Value.State == DeviceState.Modified) as IDictionary<String, DeviceStatus>;
             }
         }
     }
 }
-
