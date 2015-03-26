@@ -114,7 +114,7 @@ namespace TempoIQTests
         [Test]
         public void TestGetDevices()
         {
-            // snippet-begin get-device
+            // snippet-begin get-devices
             // using System;
             // using TempoIQ;
             // using TempoIQ.Models;
