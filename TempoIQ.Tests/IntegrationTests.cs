@@ -131,7 +131,6 @@ namespace TempoIQTests
         public void TestWriteDataPointsWithWriteRequest()
         {
             var devices = MakeDevices(10);
-            var selection = new Selection().Add(Select.Type.Devices, Select.All());
             var points = new WriteRequest();
             var lst = new List<DataPoint>();
             lst.Add(new DataPoint(ZonedDateTime.FromDateTimeOffset(DateTimeOffset.UtcNow), 19.667));
@@ -142,6 +141,7 @@ namespace TempoIQTests
                     points.Add(device, sensor, lst);
             var result = Client.WriteDataPoints(points);
             Assert.IsTrue(result.State.Equals(State.Success));
+            Assert.AreEqual(result.Value.Existing.Keys.Count, 10);
         }
 
         [Test]

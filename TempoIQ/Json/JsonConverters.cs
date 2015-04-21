@@ -27,6 +27,52 @@ namespace TempoIQ.Json
         }
     }
 
+    public class DeviceStateConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(DeviceState).IsAssignableFrom(objectType);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var deviceState = (DeviceState)value;
+            string deviceStateString;
+            switch (deviceState)
+            {
+                case DeviceState.Existing:
+                    deviceStateString = "existing";
+                    break;
+                case DeviceState.Modified:
+                    deviceStateString = "modified";
+                    break;
+                case DeviceState.Created:
+                    deviceStateString = "created";
+                    break;
+                default:
+                    throw new ArgumentException(String.Format("Unrecognized DeviceStatee value: {0}", deviceState));
+                    break;
+            }
+            writer.WriteValue(deviceStateString);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            string valStr = (string)reader.Value;
+            switch (valStr)
+            {
+            case "existing":
+                return DeviceState.Existing;
+            case "mpdified":
+                return DeviceState.Modified;
+            case "created":
+                return DeviceState.Created;
+            default:
+                throw new JsonException(String.Format("Unrecognized device state {0}", valStr));
+            }
+        }
+    }
+
     public class DirectionFunctionConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)

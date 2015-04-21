@@ -30,7 +30,8 @@ namespace TempoIQ.Json
                     new SelectorConverter(),
                     new SelectorTypeConverter(),
                     new ZonedDateTimeConverter(),
-                    new NullableZonedDateTimeConverter()
+                    new NullableZonedDateTimeConverter(),
+                    new DeviceStateConverter()
                 };
             }
         }

@@ -61,7 +61,7 @@ namespace TempoIQ.Utilities
             request.AddBody(body);
             if (mediaTypeVersions.Any())
                 request.AddHeader("Accept", String.Join(",", mediaTypeVersions));
-            if (contentType != null && contentType != "")
+            if (!String.IsNullOrEmpty(contentType))
                 request.AddHeader("Content-Type", contentType);
             var response = Rest.Execute(request);
             return response.ToResult<T>();
@@ -75,19 +75,10 @@ namespace TempoIQ.Utilities
             T value = JsonConvert.DeserializeObject<T>(response.Content ?? "", TempoIQSerializer.Converters);
             int code = (int)response.StatusCode;
             string message = response.StatusDescription;
-            MultiStatus multi;
-            if (response.StatusCode == HttpStatusCode.OK)
-                multi = new MultiStatus(new List<Status> { new Status(HttpStatusCode.OK, new List<string>()) });
-            else if ((int)response.StatusCode == 207)
-                multi = JsonConvert.DeserializeObject<MultiStatus>(response.Content);
-            else
-            {
-                multi = new MultiStatus();
-                multi.Statuses.Add(
-                    new Status(response.StatusCode,
-                    new List<string>(new string[] { response.ErrorMessage })));
-                message = response.ErrorMessage;
-            }
+            UpsertResponse multi = null;
+            if ((int)response.StatusCode == 207)
+                multi = JsonConvert.DeserializeObject<UpsertResponse>(response.Content);
+
             return new Result<T>(value, code, message, multi);
         }
     }
