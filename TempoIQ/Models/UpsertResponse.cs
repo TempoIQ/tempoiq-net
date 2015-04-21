@@ -50,7 +50,8 @@ namespace TempoIQ.Models
         {
             get 
             {
-                return this.Where(kvp => kvp.Value.State == DeviceState.Existing) as IDictionary<String, DeviceStatus>;
+                return this.Where(kvp => kvp.Value.State == DeviceState.Existing)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
         }
 
@@ -58,7 +59,8 @@ namespace TempoIQ.Models
         {
             get 
             {
-                return this.Where(kvp => kvp.Value.State == DeviceState.Created) as IDictionary<String, DeviceStatus>;
+                return this.Where(kvp => kvp.Value.State == DeviceState.Created)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
         }
 
@@ -66,7 +68,8 @@ namespace TempoIQ.Models
         {
             get 
             {
-                return this.Where(kvp => kvp.Value.State == DeviceState.Modified) as IDictionary<String, DeviceStatus>;
+                return this.Where(kvp => kvp.Value.State == DeviceState.Modified)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
         }
     }
