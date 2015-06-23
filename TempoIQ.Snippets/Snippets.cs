@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using TempoIQ;
@@ -56,13 +57,15 @@ namespace TempoIQTests
             }
 
             // snippet-end
-            Assert.AreEqual(null, result.Message);
+            var expected = new Result<Device>(device, 200, "OK");
+            Assert.AreEqual(expected, result);
             Assert.AreEqual(State.Success, result.State);
             Assert.AreEqual(device, result.Value);
         }
 
         [Test]
-        public void TestReadRawDataPoints() {
+        public void TestReadRawDataPoints()
+        {
             // snippet-begin read-data-one-device
             // using System;
             // using TempoIQ;
@@ -72,11 +75,11 @@ namespace TempoIQTests
             // using TempoIQ.Results;
 
             // Set up the time range to read [2015-01-01, 2015-01-02)
+            var device = new Device("thermostat.0");
+
             var utc = DateTimeZone.Utc;
             var start = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 1, 0, 0, 0, 0)), utc);
             var end = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 2, 0, 0, 0, 0)), utc);
-
-            var device = new Device("thermostat.0");
 
             var selection = new Selection(
                                 Select.Type.Devices,
@@ -88,6 +91,7 @@ namespace TempoIQTests
                             row.Get("thermostat.0", "temperature"),
                             row.Get("thermostat.0", "humidity")));
             // snippet-end
+            Assert.IsTrue(cursor.Any());
         }
 
         [Test]
@@ -100,7 +104,7 @@ namespace TempoIQTests
             // using TempoIQ.Queries;
             // using TempoIQ.Results;
 
-            // get the device with key         "thermostat.1"
+            // get the device with key "thermostat.1"
             var result = Client.GetDevice("thermostat.1");
 
             // Check that the request was successful
@@ -110,7 +114,7 @@ namespace TempoIQTests
             // snippet-end
             Assert.AreEqual(State.Success, result.State);
         }
-        
+
         [Test]
         public void TestGetDevices()
         {
@@ -126,8 +130,7 @@ namespace TempoIQTests
                     Select.Attributes("region", "south"),
                     Select.Attributes("region", "east")));
             var cursor = Client.ListDevices(selection);
-            foreach (var device in cursor)
-            {
+            foreach (var device in cursor) {
                 Console.WriteLine(String.Format("device: {0}", device.Key));
                 foreach (var sensor in device.Sensors) {
                     Console.WriteLine(String.Format("\tsensor: {0}", sensor.Key));
@@ -148,9 +151,9 @@ namespace TempoIQTests
             var deviceResult = Client.GetDevice("thermostat.4");
 
             // Check that the request was successful
-            if (deviceResult.State != State.Success)
+            if (deviceResult.State != State.Success) {
                 Console.WriteLine(String.Format("Error getting device! {0}", deviceResult.Message));
-
+            }
             // mutate the device
             var device = deviceResult.Value;
             device.Attributes.Add("customer", "internal-test");
@@ -168,7 +171,6 @@ namespace TempoIQTests
         [Test]
         public void TestDeleteDevices()
         {
-            
             var create = new Device("thermostat.5");
             Client.CreateDevice(create);
 
@@ -278,7 +280,7 @@ namespace TempoIQTests
             }
             // snippet-end
         }
-    
+
         [Test]
         public void TestSearch()
         {
@@ -289,8 +291,8 @@ namespace TempoIQTests
             // using TempoIQ.Queries;
             // using TempoIQ.Results;
             // using NodaTime;
-        
-            var selection = new Selection(new Dictionary<Select.Type, Selector>() 
+
+            var selection = new Selection(new Dictionary<Select.Type, Selector>()
                     {
                         { Select.Type.Devices, Select.Attributes("building", "headquarters") },
                         { Select.Type.Sensors, Select.Key("temperature") }

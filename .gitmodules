@@ -1,3 +1,6 @@
 [submodule "src/integration-test/resources/example-data"]
 example-datapath = src/integration-test/resources/example-data
 example-dataurl = git@github.com:TempoIQ/example-data.git
+[submodule "example-data"]
+	path = example-data
+	url = https://github.com/TempoIQ/example-data

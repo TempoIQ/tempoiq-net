@@ -1,8 +1,7 @@
 #!/bin/bash
 
 DIR=$( cd "$( dirname "$0" )" && pwd )
-BASE_DIR=${DIR%%/}/../../
-INSTALL_DIR=${BASE_DIR%%/}/src/integration-test/resources/example-data/
+INSTALL_DIR=./example-data/
 INSTALL_SCRIPT=${INSTALL_DIR}initialize.py
 usage="Usage: $(basename "$0") -k <api-key> -s <api-secret> -n <hostname>
 
@@ -59,9 +58,8 @@ then
 fi
 
 echo "Loading example data"
-cd $INSTALL_DIR && python $INSTALL_SCRIPT -k $key -s $secret -n $host
+python $INSTALL_SCRIPT -k $key -s $secret -n $host
 
 echo "Running snippets tests"
 make clean
-make compile-snippets
-make check-snippets
+make snippets
