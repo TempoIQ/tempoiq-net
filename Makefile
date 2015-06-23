@@ -1,39 +1,33 @@
-.PHONY: compile compile-test update clean clean-build clean-test clean-packages
-
-install-deps:
-	EnableNuGetPackageRestore=true nuget install TempoIQ/packages.config -o packages & nuget install TempoIQ.Tests/packages.config -o packages
+.PHONY: compile compile-test update update-build update-test clean clean-build clean-test clean-packages
 
 compile:
-	xbuild TempoIQ/TempoIQ.csproj
-
-compile-snippets: compile
-	xbuild TempoIQ.Snippets/TempoIQ.Snippets.csproj
+		xbuild TempoIQ/TempoIQ.csproj
 
 compile-test: compile
-	xbuild TempoIQ.Tests/TempoIQ.Tests.csproj
+		xbuild TempoIQ.Tests/TempoIQ.Tests.csproj
 
-compile-all: update compile compile-test compile-snippets
+update-build:
+		xbuild TempoIQ/TempoIQ.csproj /t:RestorePackages
 
-update:
-	nuget restore TempoIQ.sln
+update-test:
+		xbuild TempoIQ.Tests/TempoIQ.Tests.csproj /t:RestorePackages
+
+update: update-build update-test
 
 test: compile-test
-	mono packages/NUnit.Runners.2.6.4/tools/nunit-console.exe TempoIQ.Tests/bin/Debug/TempoIQTests.dll
+		mono packages/NUnit.Runners.2.6.4/tools/nunit-console.exe TempoIQ.Tests/bin/Debug/TempoIQNUnit.dll
 
 check: test
 
-check-snippets:
-	mono packages/NUnit.Runners.2.6.4/tools/nunit-console.exe TempoIQ.Snippets/bin/Debug/TempoIQSnippets.dll
-
 clean-build:
-	rm -rf TempoIQ/bin
-	rm -rf TempoIQ/obj
+		rm -rf TempoIQ/bin
+			rm -rf TempoIQ/obj
 
 clean-test:
-	rm -rf TempoIQ.Tests/bin
-	rm -rf TempoIQ.Tests/obj
+		rm -rf TempoIQ.Tests/bin
+			rm -rf TempoIQ.Tests/obj
 
 clean-packages:
-	rm -rf packages
+		rm -rf packages
 
 clean: clean-build clean-test
