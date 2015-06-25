@@ -11,6 +11,7 @@ using NUnit.Framework;
 namespace TempoIQTests
 {
     [TestFixture]
+    [Category("IntegrationTests")]
     public class ClientIT
     {
         public static Client Client { get; set; }
