@@ -25,7 +25,7 @@ namespace TempoIQ.Models
 
         [JsonProperty("attributes")]
         public IDictionary<string, string> Attributes { get; set; }
-        
+
         [JsonConstructor]
         public Sensor(string key, string name, IDictionary<string, string> attributes)
         {
@@ -48,12 +48,12 @@ namespace TempoIQ.Models
             else if (obj == this)
                 return true;
             else if (obj is Sensor)
-                return this.Equals((Sensor)obj);
+                return this.Equals(obj as Sensor);
             else
                 return false;
         }
 
-        public bool Equals(Device that)
+        public bool Equals(Sensor that)
         {
             return this.Key.Equals(that.Key)
                 && this.Attributes.SequenceEqual(that.Attributes)

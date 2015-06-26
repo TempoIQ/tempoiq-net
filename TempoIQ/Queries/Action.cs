@@ -9,22 +9,22 @@ using TempoIQ.Json;
 
 namespace TempoIQ.Queries
 {
-	/// <summary>
-	/// A Search's behavior towards the objects it selects
-	/// </summary>
-	public interface Action
-	{
+    /// <summary>
+    /// A Search's behavior towards the objects it selects
+    /// </summary>
+    public interface Action
+    {
         string Name { get; }
         int? Limit { get; }
-	}
+    }
 
-	/// <summary>
-	/// The behavior to find objects through a Query
-	/// </summary>
-	[JsonObject]
-	public class Find : Action
-	{
-		[JsonIgnore]
+    /// <summary>
+    /// The behavior to find objects through a Query
+    /// </summary>
+    [JsonObject]
+    public class Find : Action
+    {
+        [JsonIgnore]
         public string Name { get { return "find"; } }
 
         [JsonProperty("quantifier")]
@@ -54,14 +54,14 @@ namespace TempoIQ.Queries
         /// Gets the name of the action-type.
         /// </summary>
         /// <value>The name.</value>
-		[JsonIgnore]
-		public string Name { get { return "read"; } }
+        [JsonIgnore]
+        public string Name { get { return "read"; } }
 
-		/// <summary>
-		/// The start time of the Read
-		/// </summary>
-		[JsonProperty ("start")]
-		public ZonedDateTime Start { get; private set; }
+        /// <summary>
+        /// The start time of the Read
+        /// </summary>
+        [JsonProperty("start")]
+        public ZonedDateTime Start { get; private set; }
 
         /// <summary>
         /// The maximum number of items to return per network-loaded page of data. 
@@ -70,38 +70,38 @@ namespace TempoIQ.Queries
         [JsonProperty(PropertyName = "limit", NullValueHandling = NullValueHandling.Ignore)]
         public int? Limit { get; set; }
 
-		/// <summary>
-		/// The stop time of the Read
-		/// </summary>
-		[JsonProperty ("stop")]
-		public ZonedDateTime Stop { get; private set; }
+        /// <summary>
+        /// The stop time of the Read
+        /// </summary>
+        [JsonProperty("stop")]
+        public ZonedDateTime Stop { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TempoIQ.Queries.Read"/> class.
         /// </summary>
         /// <param name="start">Start.</param>
         /// <param name="stop">Stop.</param>
-		[JsonConstructor]
-		public Read (ZonedDateTime start, ZonedDateTime stop, int? limit = null)
-		{
-			this.Start = start;
-			this.Stop = stop;
+        [JsonConstructor]
+        public Read(ZonedDateTime start, ZonedDateTime stop, int? limit = null)
+        {
+            this.Start = start;
+            this.Stop = stop;
             this.Limit = limit;
-		}
-	}
+        }
+    }
 
     /// <summary>
     /// The Action object for specifying latest-value queries 
     /// </summary>
-	[JsonObject]
-	public class SingleValueAction
-	{
+    [JsonObject]
+    public class SingleValueAction
+    {
         /// <summary>
         /// Gets the name of the action-type.
         /// </summary>
         /// <value>The name.</value>
-		[JsonIgnore]
-		public string Name { get { return "single"; } }
+        [JsonIgnore]
+        public string Name { get { return "single"; } }
 
         /// <summary>
         /// The maximum number of items to return per network-loaded page of data. 

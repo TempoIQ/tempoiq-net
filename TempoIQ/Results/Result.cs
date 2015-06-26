@@ -53,11 +53,11 @@ namespace TempoIQ.Results
 
         public virtual State State
         {
-            get 
+            get
             {
-                if (this.UpsertStatus != null) 
+                if (this.UpsertStatus != null)
                     return this.UpsertState;
-                else 
+                else
                 {
                     if (this.Code == 200)
                         return State.Success;
@@ -71,7 +71,7 @@ namespace TempoIQ.Results
 
         private State UpsertState
         {
-            get 
+            get
             {
                 if (this.UpsertStatus.Success == true)
                     return State.Success;
@@ -90,7 +90,7 @@ namespace TempoIQ.Results
                 return true;
             if (obj is Result<T>)
                 return this.Equals((Result<T>)obj);
-            else 
+            else
                 return false;
         }
 
@@ -109,7 +109,7 @@ namespace TempoIQ.Results
                 multiStatuses = true;
             else if ((this.UpsertStatus == null) || (that.UpsertStatus == null))
                 multiStatuses = false;
-            else 
+            else
                 multiStatuses = this.UpsertStatus.Equals(that.UpsertStatus);
 
             bool codes = this.Code.Equals(that.Code);
@@ -124,7 +124,7 @@ namespace TempoIQ.Results
             hash = HashCodeHelper.Hash(hash, Message);
             hash = HashCodeHelper.Hash(hash, State);
             hash = HashCodeHelper.Hash(hash, UpsertStatus);
-            return hash; 
+            return hash;
         }
     }
 
@@ -150,4 +150,4 @@ namespace TempoIQ.Results
     {
         public TempoIQException(string message) : base(message) { }
     }
-} 
+}

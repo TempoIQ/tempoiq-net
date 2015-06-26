@@ -13,18 +13,18 @@ using TempoIQ.Results;
 using TempoIQ.Json;
 
 namespace TempoIQ.Utilities
-{    
+{
     public class Executor
     {
         private RestClient Rest { get; set; }
-        
+
         private TempoIQSerializer Serialization { get; set; }
 
         public Executor(Uri uri, Credentials credentials, int timeout = 50000)
         {
             this.Serialization = new TempoIQSerializer();
             this.Rest = new RestClient(uri.AbsoluteUri);
-            this.Rest.Authenticator = new HttpBasicAuthenticator(credentials.Key, credentials.secret);
+            this.Rest.Authenticator = new HttpBasicAuthenticator(credentials.Key, credentials.Secret);
             this.Rest.Timeout = timeout;
         }
 

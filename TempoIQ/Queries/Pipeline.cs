@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NodaTime;
+using NodaTime.Text;
 using TempoIQ.Utilities;
 
 namespace TempoIQ.Queries
@@ -12,8 +13,10 @@ namespace TempoIQ.Queries
     /// <summary>
     /// Pipeline functions represent server-side transformations on data
     /// </summary>
+    [JsonObject]
     public interface PipelineFunction
     {
+        [JsonProperty("name")]
         string Name { get; }
 
         IList<string> Arguments { get; }
@@ -22,8 +25,10 @@ namespace TempoIQ.Queries
     /// <summary>
     /// A Pipeline represents a series of transformations on a stream of sensor data
     /// </summary>
+    [JsonObject]
     public class Pipeline
     {
+        [JsonProperty("functions")]
         public IList<PipelineFunction> Functions { get; private set; }
 
         public Pipeline AddFunction(PipelineFunction function)
@@ -71,34 +76,35 @@ namespace TempoIQ.Queries
     /// Rollups represent a function application over a data stream broken into chunks of a provided period's duration
     /// </summary>
     public class Rollup : PipelineFunction
-    { 
+    {
         /// <summary>
         /// The 'chunk-size' of the Rollup
         /// </summary>
         [JsonProperty("period")]
-        public Period Period { get; set; } 
+        public Period Period { get; set; }
 
         /// <summary>
         /// The folding function for the Rollup
         /// </summary>
-        [JsonIgnore]
-        public Fold Fold { get; set; } 
+        public Fold Fold { get; set; }
 
         [JsonProperty("start")]
         public ZonedDateTime Start { get; set; }
 
         [JsonProperty("name")]
         public string Name { get { return "rollup"; } }
-        
+
         [JsonProperty("arguments")]
         public IList<string> Arguments
         {
             get
             {
-                return new List<string>{ Fold.ToString().ToLower(), Period.ToString(), Start.ToString() };
+                var startString = NodaTime.Text.InstantPattern.ExtendedIsoPattern.Format(Start.ToInstant());
+                return new List<string> { Fold.ToString().ToLower(), Period.ToString(), startString };
             }
         }
 
+        [JsonConstructor]
         public Rollup(Period period, Fold fold, ZonedDateTime start)
         {
             this.Period = period;
@@ -106,8 +112,8 @@ namespace TempoIQ.Queries
             this.Start = start;
         }
 
-        public Rollup() 
-        { 
+        public Rollup()
+        {
             this.Period = Period.FromMinutes(1);
             this.Fold = Fold.Sum;
             var now = SystemClock.Instance.Now;
@@ -121,7 +127,7 @@ namespace TempoIQ.Queries
                 return false;
             else if (obj is Rollup)
                 return ((Rollup)obj).Equals(this);
-            else 
+            else
                 return false;
         }
 
@@ -162,11 +168,11 @@ namespace TempoIQ.Queries
         public string Name { get { return "aggregation"; } }
 
         [JsonProperty("arguments")]
-        public IList<string> Arguments 
-        { 
-            get 
-            { 
-                return new List<string>{ Fold.ToString().ToLower() };
+        public IList<string> Arguments
+        {
+            get
+            {
+                return new List<string> { Fold.ToString().ToLower() };
             }
         }
 

@@ -25,7 +25,7 @@ namespace TempoIQ.Queries
         /// Maximum of Datapoints
         /// </summary>
         Max,
-        
+
         /// <summary>
         /// Arithmetic mean of Datapoints (average)
         /// </summary>

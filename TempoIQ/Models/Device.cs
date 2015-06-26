@@ -59,7 +59,7 @@ namespace TempoIQ.Models
             else if (obj == this)
                 return true;
             else if (obj is Device)
-                return this.Equals((Device)obj);
+                return this.Equals(obj as Device);
             else
                 return false;
         }

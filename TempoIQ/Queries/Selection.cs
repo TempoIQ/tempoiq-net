@@ -138,7 +138,7 @@ namespace TempoIQ.Queries
     {
         [JsonProperty("key")]
         public string Key { get; set; }
-        
+
         [JsonConstructor]
         public KeySelector(string key)
         {

@@ -44,21 +44,21 @@ namespace TempoIQ.Results
 
         public bool IsSuccess { get { return this.Statuses.All(s => s.IsSuccess); } }
 
-        public bool IsPartialSuccess 
-        { 
+        public bool IsPartialSuccess
+        {
             get { return this.Statuses.Any(s => s.IsSuccess) && !this.IsSuccess; }
         }
 
-        public IEnumerable<Status> Failures 
-        { 
-            get 
-            { 
+        public IEnumerable<Status> Failures
+        {
+            get
+            {
                 return from s in this.Statuses
                        where !s.IsSuccess
-                       select s; 
+                       select s;
             }
         }
-      
+
         ///<summary>Base constructor</summary>
         ///<param name="Statuses"> List of <cref>ResponseStatus</cref> objects.</param>
         public MultiStatus(IList<Status> statuses = null)
@@ -71,7 +71,7 @@ namespace TempoIQ.Results
 
         ///<summary> Returns iterator over the Statuses.</summary>
         public IEnumerator<Status> GetEnumerator()
-        { 
+        {
             return Statuses.GetEnumerator();
         }
 

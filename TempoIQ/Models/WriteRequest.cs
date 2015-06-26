@@ -14,9 +14,10 @@ namespace TempoIQ.Models
     public class WriteRequest : Dictionary<String, IDictionary<String, IList<DataPoint>>>
     {
         [JsonConstructor]
-        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data) : base()
+        public WriteRequest(IDictionary<String, IDictionary<String, IList<DataPoint>>> data)
+            : base()
         {
-            foreach(var pair in data)
+            foreach (var pair in data)
                 this.Add(pair.Key, pair.Value);
         }
 
@@ -48,12 +49,12 @@ namespace TempoIQ.Models
                 if (innerDict.ContainsKey(sensorKey))
                     innerDict[sensorKey].Add(datapoint);
                 else
-                    innerDict[sensorKey] = new List<DataPoint>{ datapoint };
+                    innerDict[sensorKey] = new List<DataPoint> { datapoint };
             }
             else
             {
                 var map = new Dictionary<string, IList<DataPoint>>();
-                map.Add(sensorKey, new List<DataPoint>{ datapoint });
+                map.Add(sensorKey, new List<DataPoint> { datapoint });
                 this.Add(deviceKey, map);
             }
             return this;
@@ -72,7 +73,7 @@ namespace TempoIQ.Models
                 if (innerDict.ContainsKey(sensorKey))
                     foreach (var dp in datapoints)
                         innerDict[sensorKey].Add(dp);
-                else 
+                else
                     innerDict[sensorKey] = datapoints;
             }
             else

@@ -7,7 +7,8 @@ using TempoIQ.Json;
 
 namespace TempoIQ.Models
 {
-    public enum DeviceState {
+    public enum DeviceState
+    {
         Existing,
         Modified,
         Created
@@ -24,9 +25,10 @@ namespace TempoIQ.Models
     public class UpsertResponse : Dictionary<String, DeviceStatus>
     {
         [JsonConstructor]
-        public UpsertResponse(IDictionary<String, DeviceStatus> data) : base()
+        public UpsertResponse(IDictionary<String, DeviceStatus> data)
+            : base()
         {
-            foreach(var pair in data)
+            foreach (var pair in data)
                 this.Add(pair.Key, pair.Value);
         }
 
@@ -42,13 +44,13 @@ namespace TempoIQ.Models
         {
             get
             {
-                return this.Values.Count(status => ! status.Success) < this.Values.Count;
+                return this.Values.Count(status => !status.Success) < this.Values.Count;
             }
         }
 
         public IDictionary<String, DeviceStatus> Existing
         {
-            get 
+            get
             {
                 return this.Where(kvp => kvp.Value.State == DeviceState.Existing)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -57,7 +59,7 @@ namespace TempoIQ.Models
 
         public IDictionary<String, DeviceStatus> Created
         {
-            get 
+            get
             {
                 return this.Where(kvp => kvp.Value.State == DeviceState.Created)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -66,7 +68,7 @@ namespace TempoIQ.Models
 
         public IDictionary<String, DeviceStatus> Modified
         {
-            get 
+            get
             {
                 return this.Where(kvp => kvp.Value.State == DeviceState.Modified)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
