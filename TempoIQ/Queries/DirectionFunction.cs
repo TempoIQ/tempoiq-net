@@ -27,7 +27,7 @@ namespace TempoIQ.Queries
         /// The point with the nearest timestamp before the one provided. Takes a timestamp as an argument
         /// </summary>
         Before,
-        
+
         /// <summary>
         /// The point with the nearest timestamp after the one provided. Takes a timestamp as an argument
         /// </summary>

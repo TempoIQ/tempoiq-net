@@ -13,11 +13,11 @@ using TempoIQ.Results;
 using TempoIQ.Json;
 
 namespace TempoIQ.Utilities
-{    
+{
     public class Executor
     {
         private RestClient Rest { get; set; }
-        
+
         private TempoIQSerializer Serialization { get; set; }
 
         public Executor(Uri uri, Credentials credentials, int timeout = 50000)

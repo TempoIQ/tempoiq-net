@@ -77,7 +77,7 @@ namespace TempoIQ.Results
                 return true;
             if (obj is Row)
                 return this.Equals(obj);
-            else 
+            else
                 return false;
         }
 

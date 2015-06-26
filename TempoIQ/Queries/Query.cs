@@ -32,7 +32,7 @@ namespace TempoIQ.Queries
     /// The various querying operations TempoIQ will perform
     /// </summary>
     public interface IQuery { }
-    
+
     /// <summary>
     /// A Query for reading data out of TempoIQ
     /// </summary>
