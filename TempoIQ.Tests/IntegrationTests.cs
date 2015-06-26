@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -206,7 +206,7 @@ namespace TempoIQTests
             var cursor = Client.Read(selection, start, stop);
             Assert.IsTrue(cursor.Any());
         }
-        
+
         [Test]
         public void TestPagingReadDataPoints()
         {
@@ -224,7 +224,7 @@ namespace TempoIQTests
             foreach (var sensor in device.Sensors)
                 points.Add(device, sensor, lst);
             Client.WriteDataPoints(points);
-            
+
             //Read that data out
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
@@ -261,7 +261,7 @@ namespace TempoIQTests
                 foreach (var sensor in device.Sensors)
                     req.Add(device, sensor, pts.ToList());
             var result = Client.WriteDataPoints(req);
-            
+
             //Read that data out with a pipeline
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));
@@ -364,16 +364,16 @@ namespace TempoIQTests
             var mp = new MultiDataPoint(ts, points1);
             var mp2 = new MultiDataPoint(ts, points2);
             var allPoints = new List<MultiDataPoint> { mp, mp2 };
-            
+
             var result = Client.WriteDataPoints(device, allPoints);
 
             Assert.AreEqual(State.Success, result.State);
 
             var start = UTC.AtStrictly(new LocalDateTime(2011, 1, 1, 1, 1, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2013, 1, 3, 0, 0, 0, 0));
-       
+
             var deleteResult = Client.DeleteDataPoints(device.Key, sensor1.Key, start, stop);
-            
+
             Assert.AreEqual(State.Success, deleteResult.State);
             Assert.AreEqual(1, deleteResult.Value.Deleted);
 
