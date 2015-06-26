@@ -76,31 +76,31 @@ namespace TempoIQ.Queries
     /// Rollups represent a function application over a data stream broken into chunks of a provided period's duration
     /// </summary>
     public class Rollup : PipelineFunction
-    { 
+    {
         /// <summary>
         /// The 'chunk-size' of the Rollup
         /// </summary>
         [JsonProperty("period")]
-        public Period Period { get; set; } 
+        public Period Period { get; set; }
 
         /// <summary>
         /// The folding function for the Rollup
         /// </summary>
-        public Fold Fold { get; set; } 
+        public Fold Fold { get; set; }
 
         [JsonProperty("start")]
         public ZonedDateTime Start { get; set; }
 
         [JsonProperty("name")]
         public string Name { get { return "rollup"; } }
-        
+
         [JsonProperty("arguments")]
         public IList<string> Arguments
         {
             get
             {
                 var startString = NodaTime.Text.InstantPattern.ExtendedIsoPattern.Format(Start.ToInstant());
-                return new List<string>{ Fold.ToString().ToLower(), Period.ToString(), startString };
+                return new List<string> { Fold.ToString().ToLower(), Period.ToString(), startString };
             }
         }
 
@@ -112,8 +112,8 @@ namespace TempoIQ.Queries
             this.Start = start;
         }
 
-        public Rollup() 
-        { 
+        public Rollup()
+        {
             this.Period = Period.FromMinutes(1);
             this.Fold = Fold.Sum;
             var now = SystemClock.Instance.Now;
@@ -127,7 +127,7 @@ namespace TempoIQ.Queries
                 return false;
             else if (obj is Rollup)
                 return ((Rollup)obj).Equals(this);
-            else 
+            else
                 return false;
         }
 
@@ -168,11 +168,11 @@ namespace TempoIQ.Queries
         public string Name { get { return "aggregation"; } }
 
         [JsonProperty("arguments")]
-        public IList<string> Arguments 
-        { 
-            get 
-            { 
-                return new List<string>{ Fold.ToString().ToLower() };
+        public IList<string> Arguments
+        {
+            get
+            {
+                return new List<string> { Fold.ToString().ToLower() };
             }
         }
 
