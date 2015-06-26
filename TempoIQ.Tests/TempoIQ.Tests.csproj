@@ -52,6 +52,7 @@
     <Compile Include="AggregationTests.cs" />
     <Compile Include="DataPointJsonConverterTests.cs" />
     <Compile Include="IntegrationTests.cs" />
+    <Compile Include="Snippets.cs" />
     <Compile Include="SelectionJsonConvertersTests.cs" />
     <Compile Include="WriteRequestConverterTests.cs" />
   </ItemGroup>

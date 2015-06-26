@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+
 using TempoIQ;
 using TempoIQ.Models;
 using TempoIQ.Queries;
 using TempoIQ.Results;
+
 using NodaTime;
 using NUnit.Framework;
 
@@ -28,11 +31,15 @@ namespace TempoIQTests
         [SetUp]
         public void InitCredentials()
         {
-            string key = "YOUR KEY";
-            string secret = "YOUR SECRET";
-            string domain = "YOUR DOMAIN";
-            InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), domain);
-            Client = new Client(new Credentials(key, secret), domain);
+            var data = new Dictionary<string, string>();
+            foreach (var row in File.ReadLines("../../user.config"))
+                data.Add(row.Split('=')[0], row.Split('=')[1]);
+            var key = data["key"];
+            var secret = data["secret"];
+            var host = data["host"];
+            var creds = new Credentials(key, secret);
+            InvalidClient = new Client(new Credentials("invalidKey", "invalidSecret"), host);
+            Client = new Client(creds, host, "https", 443);
         }
 
         [TearDown]
@@ -159,7 +166,7 @@ namespace TempoIQTests
                 foreach (var sensor in device.Sensors)
                     points.Add(device, sensor, lst);
             Client.WriteDataPoints(points);
-            
+
             //Read that data out
             var start = UTC.AtStrictly(new LocalDateTime(2012, 1, 1, 0, 0, 0, 0));
             var stop = UTC.AtStrictly(new LocalDateTime(2021, 1, 1, 0, 0, 0, 0));

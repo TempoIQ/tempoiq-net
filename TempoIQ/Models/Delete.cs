@@ -26,7 +26,7 @@ namespace TempoIQ.Models
             this.start = start;
             this.stop = stop;
         }
-        
+
         public override bool Equals(object obj)
         {
             if (obj is Delete)

@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Linq;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
 using TempoIQ;
-using NodaTime;
 using TempoIQ.Models;
 using TempoIQ.Queries;
 using TempoIQ.Results;
+
+using NodaTime;
 using NUnit.Framework;
 
 namespace TempoIQTests
@@ -20,7 +22,7 @@ namespace TempoIQTests
         public void InitSnippets()
         {
             var data = new Dictionary<string, string>();
-            foreach (var row in File.ReadLines("../../snippets.properties"))
+            foreach (var row in File.ReadLines("../../user.config"))
                 data.Add(row.Split('=')[0], row.Split('=')[1]);
             var key = data["key"];
             var secret = data["secret"];
@@ -52,13 +54,10 @@ namespace TempoIQTests
             var result = Client.CreateDevice(device);
 
             // Check that the request was successful
-            if(result.State != State.Success) {
+            if(result.State != State.Success)
                 Console.WriteLine(String.Format("Error creating device! {0}", result.Message));
-            }
 
             // snippet-end
-            var expected = new Result<Device>(device, 200, "OK");
-            Assert.AreEqual(expected, result);
             Assert.AreEqual(State.Success, result.State);
             Assert.AreEqual(device, result.Value);
         }
@@ -78,8 +77,8 @@ namespace TempoIQTests
             var device = new Device("thermostat.0");
 
             var utc = DateTimeZone.Utc;
-            var start = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 1, 0, 0, 0, 0)), utc);
-            var end = new ZonedDateTime(Instant.FromDateTimeUtc(new DateTime(2015, 1, 2, 0, 0, 0, 0)), utc);
+            var start = new ZonedDateTime(Instant.FromUtc(2015, 1, 1, 0, 0), utc);
+            var end = new ZonedDateTime(Instant.FromUtc(2015, 1, 2, 0, 0), utc);
 
             var selection = new Selection(
                                 Select.Type.Devices,
@@ -91,7 +90,6 @@ namespace TempoIQTests
                             row.Get("thermostat.0", "temperature"),
                             row.Get("thermostat.0", "humidity")));
             // snippet-end
-            Assert.IsTrue(cursor.Any());
         }
 
         [Test]
@@ -156,8 +154,8 @@ namespace TempoIQTests
             }
             // mutate the device
             var device = deviceResult.Value;
-            device.Attributes.Add("customer", "internal-test");
-            device.Attributes.Add("region", "east");
+            device.Attributes["customer"] = "internal-test";
+            device.Attributes["region"] = "east";
 
             // update in TempoIQ
             deviceResult = Client.UpdateDevice(device);
