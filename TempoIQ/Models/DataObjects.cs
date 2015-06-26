@@ -18,11 +18,12 @@ namespace TempoIQ.Models
     /// Used in cases where the Result of a 
     /// query does not provide any other value
     /// </summary>
-    public class Unit : IModel {
+    public class Unit : IModel
+    {
         public override bool Equals(object obj)
         {
-            if (obj is Unit) 
-                return true; 
+            if (obj is Unit)
+                return true;
             return false;
         }
 

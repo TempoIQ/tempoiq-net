@@ -21,7 +21,7 @@ namespace TempoIQ.Json
         /// </summary>
         public static JsonConverter[] Converters
         {
-            get 
+            get
             {
                 return new JsonConverter[]
                 {

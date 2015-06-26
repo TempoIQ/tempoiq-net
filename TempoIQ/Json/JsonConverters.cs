@@ -61,14 +61,14 @@ namespace TempoIQ.Json
             string valStr = (string)reader.Value;
             switch (valStr)
             {
-            case "existing":
-                return DeviceState.Existing;
-            case "mpdified":
-                return DeviceState.Modified;
-            case "created":
-                return DeviceState.Created;
-            default:
-                throw new JsonException(String.Format("Unrecognized device state {0}", valStr));
+                case "existing":
+                    return DeviceState.Existing;
+                case "mpdified":
+                    return DeviceState.Modified;
+                case "created":
+                    return DeviceState.Created;
+                default:
+                    throw new JsonException(String.Format("Unrecognized device state {0}", valStr));
             }
         }
     }
@@ -146,7 +146,8 @@ namespace TempoIQ.Json
             var selection = (Selection)value;
             writer.WriteStartObject();
             List<String> Fields = new List<String>();
-            foreach (var pair in selection.Selectors) {
+            foreach (var pair in selection.Selectors)
+            {
                 Fields.Add(JsonUtil.RawJsonField(pair));
             }
             writer.WriteRaw(String.Join(",", Fields));
@@ -164,7 +165,7 @@ namespace TempoIQ.Json
     {
         public override bool CanConvert(Type objectType)
         {
-          return typeof(Select.Type).IsAssignableFrom(objectType);
+            return typeof(Select.Type).IsAssignableFrom(objectType);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -230,10 +231,10 @@ namespace TempoIQ.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            string[] allKeywords = {"all", "*", "any"};
+            string[] allKeywords = { "all", "*", "any" };
             if (allKeywords.Any((string s) => s == (string)reader.Value))
                 return new AllSelector();
-            else 
+            else
                 throw new JsonException(String.Format("cannot deserialize an AllSelector from %s", (string)reader.Value));
         }
 

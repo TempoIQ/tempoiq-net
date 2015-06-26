@@ -39,7 +39,7 @@ namespace TempoIQ.Results
         /// the underlying chunk of data
         /// </summary>
         [JsonProperty("data")]
-        public IList<T> Data{ get; set; }
+        public IList<T> Data { get; set; }
 
         /// <summary>
         /// a pointer to the next segment
@@ -49,7 +49,7 @@ namespace TempoIQ.Results
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach(var item in this.Data)
+            foreach (var item in this.Data)
                 yield return item;
         }
 
@@ -85,7 +85,7 @@ namespace TempoIQ.Results
             return obj.SequenceEqual(this);
         }
 
-        public override int GetHashCode ()
+        public override int GetHashCode()
         {
             int hash = HashCodeHelper.Initialize();
             hash = HashCodeHelper.Hash(hash, Data);

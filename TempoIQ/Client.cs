@@ -36,9 +36,10 @@ namespace TempoIQ
         /// <param name="host"></param>
         /// <param name="port"></param>
         /// <param name="timeout"></param>
-        public Client(Credentials credentials, string host, string scheme="https", int port = 443, int timeout = 50000)
+        public Client(Credentials credentials, string host, string scheme = "https", int port = 443, int timeout = 50000)
         {
-            var builder = new UriBuilder {
+            var builder = new UriBuilder
+            {
                 Scheme = scheme,
                 Host = host,
                 Port = port
@@ -54,7 +55,7 @@ namespace TempoIQ
         public Result<Device> CreateDevice(Device device)
         {
             string target = String.Format("{0}/devices/", API_VERSION);
-            return Runner.Post<Device>(target, device, MediaType("device", "v1"), 
+            return Runner.Post<Device>(target, device, MediaType("device", "v1"),
                 new string[] { MediaType("device", "v1"), MediaType("error", "v1") });
         }
 
@@ -186,7 +187,7 @@ namespace TempoIQ
         /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<UpsertResponse> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
         {
-            var writeRequest = data.Aggregate(new WriteRequest(), 
+            var writeRequest = data.Aggregate(new WriteRequest(),
                 (req, dp) => req.Add(deviceKey, sensorKey, dp));
             var result = WriteDataPoints(writeRequest);
             return result;
@@ -201,7 +202,7 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/write/", API_VERSION);
             string contentType = MediaType("write-request", "v1");
-            var mediaTypes = new string[] { MediaType("error", "v1") } ; 
+            var mediaTypes = new string[] { MediaType("error", "v1") };
             var result = Runner.Post<UpsertResponse>(target, writeRequest, contentType, mediaTypes);
             return result;
         }
@@ -247,7 +248,7 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/read/query/", API_VERSION);
             string contentType = MediaType("query", "v1");
-            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v2") } ; 
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v2") };
             return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
                 .ToCursor<Row>(Runner, target, contentType, mediaTypes);
         }
@@ -262,7 +263,7 @@ namespace TempoIQ
         {
             var target = String.Format("{0}/single/query", API_VERSION);
             string contentType = MediaType("query", "v1");
-            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v1") } ; 
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("datapoint-collection", "v1") };
             return Runner.Post<Segment<Row>>(target, query, contentType, mediaTypes)
                 .ToCursor<Row>(Runner, target, contentType, mediaTypes);
         }
@@ -280,7 +281,7 @@ namespace TempoIQ
             var query = new SingleValueQuery(new Search(Select.Type.Sensors, selection), single, pipeline);
             return this.Single(query);
         }
-        
+
         /// <summary>
         /// Read the datapoints for the items from a SingleValueQuery
         /// </summary>
@@ -329,10 +330,10 @@ namespace TempoIQ
 
         public Result<DeleteSummary> DeleteDataPoints(string deviceKey, string sensorKey, ZonedDateTime start, ZonedDateTime stop)
         {
-            var del = new Delete{ start = start, stop = stop };
+            var del = new Delete { start = start, stop = stop };
             var target = String.Format("{0}/devices/{1}/sensors/{2}/datapoints", API_VERSION, deviceKey, sensorKey);
             string contentType = MediaType("delete-interval", "v1");
-            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("delete-summary", "v1") } ; 
+            var mediaTypes = new string[] { MediaType("error", "v1"), MediaType("delete-summary", "v1") };
             return Runner.Delete<DeleteSummary>(target, del, contentType, mediaTypes);
         }
     }
