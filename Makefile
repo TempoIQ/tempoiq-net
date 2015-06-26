@@ -15,10 +15,10 @@ update-test:
 update: update-build update-test
 
 test: compile-test
-		mono packages/NUnit.Runners.2.6.4/tools/nunit-console.exe TempoIQ.Tests/bin/Debug/TempoIQTests.dll
+		mono packages/NUnit.Runners.2.6.4/tools/nunit-console.exe --exclude=Snippet TempoIQ.Tests/bin/Debug/TempoIQTests.dll
 
-snippets: compile-test
-		mono packages/NUnit.Runners.2.6.4/tools/nunit-console.exe TempoIQ.Tests/bin/Debug/TempoIQSnippets.dll
+snippet: compile-test
+		mono packages/NUnit.Runners.2.6.4/tools/nunit-console.exe --include=Snippet TempoIQ.Tests/bin/Debug/TempoIQTests.dll
 
 check: test
 

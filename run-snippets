@@ -62,4 +62,4 @@ python $INSTALL_SCRIPT -k $key -s $secret -n $host
 
 echo "Running snippets tests"
 make clean
-make test
+make snippet

@@ -14,6 +14,7 @@ using NUnit.Framework;
 namespace TempoIQTests
 {
     [TestFixture]
+    [Category("Snippet")]
     public class Snippets
     {
         public static Client Client { get; set; }
@@ -32,6 +33,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestCreateDevice()
         {
             // snippet-begin create-device
@@ -63,6 +65,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestReadRawDataPoints()
         {
             // snippet-begin read-data-one-device
@@ -93,6 +96,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestGetDevice()
         {
             // snippet-begin get-device
@@ -114,6 +118,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestGetDevices()
         {
             // snippet-begin get-devices
@@ -138,6 +143,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestUpdateDevice()
         {
             // snippet-begin update-device
@@ -167,6 +173,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestDeleteDevices()
         {
             var create = new Device("thermostat.5");
@@ -189,6 +196,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestSinglePoint()
         {
             // snippet-begin single-point
@@ -218,6 +226,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestDeleteDataPoints()
         {
 
@@ -246,6 +255,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestPipeline() 
         {
             // snippet-begin pipeline
@@ -280,6 +290,7 @@ namespace TempoIQTests
         }
 
         [Test]
+        [Category("Snippet")]
         public void TestSearch()
         {
             // snippet-begin search

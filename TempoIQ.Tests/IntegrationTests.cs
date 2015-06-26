@@ -318,7 +318,7 @@ namespace TempoIQTests
             var cursor = Client.Single(sel, single);
             Assert.AreEqual(4.0, cursor.First().Data[device.Key]["sensor1"]);
         }
-        
+
         [Ignore]
         public void TestEarliest()
         {
