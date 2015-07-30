@@ -10,6 +10,9 @@ using TempoIQ.Json;
 
 namespace TempoIQTests
 {
+    using IWriteRequest = IDictionary<String, IDictionary<String, IList<DataPoint>>>;
+    using WriteRequest = Dictionary<String, IDictionary<String, IList<DataPoint>>>;
+
     [TestFixture]
     public class WriteRequestConverterTests
     {
@@ -19,8 +22,8 @@ namespace TempoIQTests
         public void SerializeWriteRequestTest()
         {
             var json = "{" +
-                       "\"device-1\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}," +
-                       "\"device-2\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}" +
+                            "\"device-1\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}," +
+                            "\"device-2\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}" +
                        "}";
             var reqIn = JsonConvert.DeserializeObject<WriteRequest>(json, TempoIQSerializer.Converters);
             var reqOut = JsonConvert.SerializeObject(reqIn, TempoIQSerializer.Converters);
@@ -30,7 +33,10 @@ namespace TempoIQTests
         [Test]
         public void DeserializeWriteRequestTest()
         {
-            var json = "{\"device-1\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]},\"device-2\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}}";
+            var json = "{" +
+                            "\"device-1\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}," +
+                            "\"device-2\":{\"sensor-1\":[{\"t\":\"2014-01-01T00:00:00Z\",\"v\":1.0}]}" +
+                        "}";
             JsonConvert.DeserializeObject<WriteRequest>(json, TempoIQSerializer.Converters);
         }
     }
