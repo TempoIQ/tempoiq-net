@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 
 using TempoIQ;
+//using TempoIQ.WriteRequests;
 using TempoIQ.Models;
 using TempoIQ.Queries;
 using TempoIQ.Results;
@@ -13,6 +14,9 @@ using NUnit.Framework;
 
 namespace TempoIQTests
 {
+    using IWriteRequest = IDictionary<String, IDictionary<String, IList<DataPoint>>>;
+    using WriteRequest = Dictionary<String, IDictionary<String, IList<DataPoint>>>;
+
     [TestFixture]
     public class ClientIT
     {

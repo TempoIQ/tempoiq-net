@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using TempoIQ.Json;
 using TempoIQ.Models;
+//using TempoIQ.WriteRequests;
 using TempoIQ.Results;
 using TempoIQ.Queries;
 using TempoIQ.Utilities;
@@ -14,6 +15,9 @@ using NodaTime;
 
 namespace TempoIQ
 {
+    using IWriteRequest = IDictionary<String, IDictionary<String, IList<DataPoint>>>;
+    using WriteRequest = Dictionary<String, IDictionary<String, IList<DataPoint>>>;
+
     /// <summary>
     /// The Client is the primary interface with TempoIQ
     /// </summary>
@@ -160,7 +164,7 @@ namespace TempoIQ
         {
             var writeRequest = data.Aggregate(new WriteRequest(),
                                    (acc, mdp) => mdp.vs.Aggregate(acc,
-                                       (req, pair) => req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
+                                       (req, pair) => (WriteRequest)req.Add(device.Key, pair.Key, new DataPoint(mdp.t, pair.Value))));
             var result = WriteDataPoints(writeRequest);
             return result;
         }
@@ -187,8 +191,7 @@ namespace TempoIQ
         /// <returns>a Result with the success or failure of the operation only</returns>
         public Result<UpsertResponse> WriteDataPoints(string deviceKey, string sensorKey, IList<DataPoint> data)
         {
-            var writeRequest = data.Aggregate(new WriteRequest(),
-                (req, dp) => req.Add(deviceKey, sensorKey, dp));
+            var writeRequest = data.Aggregate(new WriteRequest(), (req, dp) => (WriteRequest)req.Add(deviceKey, sensorKey, dp));
             var result = WriteDataPoints(writeRequest);
             return result;
         }
@@ -198,13 +201,23 @@ namespace TempoIQ
         /// </summary>
         /// <param name="writeRequest"></param>
         /// <returns>a Result with the success or failure of the operation only</returns>
-        public Result<UpsertResponse> WriteDataPoints(WriteRequest writeRequest)
+        public Result<UpsertResponse> WriteDataPoints(IWriteRequest writeRequest)
         {
             var target = String.Format("{0}/write/", API_VERSION);
             string contentType = MediaType("write-request", "v1");
             var mediaTypes = new string[] { MediaType("error", "v1") };
             var result = Runner.Post<UpsertResponse>(target, writeRequest, contentType, mediaTypes);
             return result;
+        }
+
+        /// <summary>
+        /// Write data from a nested dictionary of IDictionary<String, IDictionary<String, IList<DataPoint>>>
+        /// </summary>
+        /// <param name="writeRequest"></param>
+        /// <returns>a Result with the success or failure of the operation only</returns>
+        public Result<UpsertResponse> WriteDataPoint(WriteRequest data)
+        {
+            return WriteDataPoints(data);
         }
 
         /// <summary>
@@ -337,7 +350,6 @@ namespace TempoIQ
             return Runner.Delete<DeleteSummary>(target, del, contentType, mediaTypes);
         }
     }
-
 
     public static class SegmentCursorTableConversion
     {

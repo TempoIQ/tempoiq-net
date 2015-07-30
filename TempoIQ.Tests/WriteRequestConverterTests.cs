@@ -10,6 +10,9 @@ using TempoIQ.Json;
 
 namespace TempoIQTests
 {
+    using IWriteRequest = IDictionary<String, IDictionary<String, IList<DataPoint>>>;
+    using WriteRequest = Dictionary<String, IDictionary<String, IList<DataPoint>>>;
+
     [TestFixture]
     public class WriteRequestConverterTests
     {
