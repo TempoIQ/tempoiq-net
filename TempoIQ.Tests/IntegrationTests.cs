@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 
 using TempoIQ;
-//using TempoIQ.WriteRequests;
 using TempoIQ.Models;
 using TempoIQ.Queries;
 using TempoIQ.Results;
